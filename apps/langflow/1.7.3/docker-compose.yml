@@ -1,0 +1,40 @@
+services:
+  langflow:
+    image: langflowai/langflow:1.7.3
+    container_name: ${CONTAINER_NAME}
+    pull_policy: always
+    user: root
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:7860
+    depends_on:
+      - postgres
+    environment:
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      - LANGFLOW_CONFIG_DIR=/app/langflow
+    volumes:
+      - ./data:/app/langflow
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+  postgres:
+    image: postgres:16
+    container_name: ${CONTAINER_NAME}-postgres
+    environment:
+      POSTGRES_USER: langflow
+      POSTGRES_PASSWORD: langflow
+      POSTGRES_DB: langflow
+    ports:
+      - 5432:5432
+    volumes:
+      - langflow-postgres:/var/lib/postgresql/data
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+volumes:
+  langflow-postgres: null
+  langflow-data: null
+networks:
+  1panel-network:
+    external: true

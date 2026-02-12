@@ -1,0 +1,25 @@
+services:
+  next-ai-draw-io:
+    image: ghcr.io/dayuanjiang/next-ai-draw-io:0.4.12
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:3000
+    depends_on:
+      - drawio
+    env_file: .env.local
+    container_name: ${CONTAINER_NAME}
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+  drawio:
+    image: jgraph/drawio:latest
+    ports:
+      - 8080:8080
+    container_name: ${CONTAINER_NAME}-drawio
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+networks:
+  1panel-network:
+    external: true
