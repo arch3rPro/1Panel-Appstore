@@ -1,0 +1,16 @@
+services:
+  moontv:
+    image: ghcr.io/moontechlab/lunatv:v100.1.1
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    networks:
+      - 1panel-network
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:3000
+    environment:
+      - PASSWORD=${PASSWORD}
+    labels:
+      createdBy: Apps
+networks:
+  1panel-network:
+    external: true

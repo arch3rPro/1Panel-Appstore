@@ -1,0 +1,15 @@
+services:
+  whatsupdocker:
+    image: getwud/wud:8.2.2
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:3000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+networks:
+  1panel-network:
+    external: true

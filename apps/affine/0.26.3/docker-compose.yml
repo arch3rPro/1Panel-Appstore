@@ -1,0 +1,98 @@
+services:
+  affine:
+    image: ghcr.io/toeverything/affine:0.26.3
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:3010
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      affine_migration:
+        condition: service_completed_successfully
+    volumes:
+      - ${UPLOAD_LOCATION}:/root/.affine/storage
+      - ${CONFIG_LOCATION}:/root/.affine/config
+    environment:
+      - REDIS_SERVER_HOST=redis
+      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/${DB_DATABASE:-affine}
+      - AFFINE_INDEXER_ENABLED=false
+    networks:
+      - 1panel-network
+    restart: always
+    labels:
+      createdBy: Apps
+  affine_migration:
+    image: ghcr.io/toeverything/affine:0.26.3
+    container_name: ${CONTAINER_NAME}_migration_job
+    volumes:
+      - ${UPLOAD_LOCATION}:/root/.affine/storage
+      - ${CONFIG_LOCATION}:/root/.affine/config
+    command:
+      - sh
+      - -c
+      - node ./scripts/self-host-predeploy.js
+    networks:
+      - 1panel-network
+    environment:
+      - REDIS_SERVER_HOST=redis
+      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/${DB_DATABASE:-affine}
+      - AFFINE_INDEXER_ENABLED=false
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    labels:
+      createdBy: Apps
+      skipStatusCheck: 'true'
+    restart: 'no'
+  redis:
+    image: redis
+    container_name: ${CONTAINER_NAME}_redis
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - --raw
+        - incr
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+    restart: always
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: ${CONTAINER_NAME}_postgres
+    volumes:
+      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE:-affine}
+      POSTGRES_INITDB_ARGS: --data-checksums
+      POSTGRES_HOST_AUTH_METHOD: trust
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -U
+        - ${DB_USERNAME}
+        - -d
+        - ${DB_DATABASE:-affine}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+networks:
+  1panel-network:
+    external: true

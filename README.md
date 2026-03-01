@@ -178,7 +178,7 @@
 
 🚀 免费的GPT-4和其他大语言模型API接口
 
-<kbd>7.0.7-slim</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
+<kbd>7.2.5-slim</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
 
 </td>
 <td width="33%" align="center">
@@ -246,7 +246,7 @@
 
 美观强大的在线静态博客管理器，支持多种平台
 
-<kbd>4.0.0</kbd> • [官网链接](https://github.com/Qexo/Qexo)
+<kbd>4.0.1</kbd> • [官网链接](https://github.com/Qexo/Qexo)
 
 </td>
 </tr>
@@ -275,7 +275,7 @@
 
 自托管全能书签管理工具，支持AI自动标签功能
 
-<kbd>0.30.0</kbd> • [官网链接](https://github.com/karakeep-app/karakeep)
+<kbd>0.31.0</kbd> • [官网链接](https://github.com/karakeep-app/karakeep)
 
 </td>
 <td width="33%" align="center">
@@ -304,7 +304,7 @@
 
 文档、白板和数据库完全整合的工作空间
 
-<kbd>0.26.2</kbd> • [官网链接](https://github.com/toeverything/AFFiNE)
+<kbd>0.26.3</kbd> • [官网链接](https://github.com/toeverything/AFFiNE)
 
 </td>
 <td width="33%" align="center">
@@ -357,7 +357,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 开源Airtable替代品，将任何数据库转换为智能电子表格
 
-<kbd>0.301.2</kbd> • [官网链接](https://github.com/nocodb/nocodb)
+<kbd>0.301.3</kbd> • [官网链接](https://github.com/nocodb/nocodb)
 
 </td>
 <td width="33%" align="center">
@@ -400,7 +400,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔗 NPS客户端，轻量级高性能内网穿透代理工具
 
-<kbd>0.34.3</kbd> • [官网链接](https://github.com/djylb/nps)
+<kbd>0.34.4</kbd> • [官网链接](https://github.com/djylb/nps)
 
 </td>
 <td width="33%" align="center">
@@ -515,7 +515,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🍥 新一代大模型网关与AI资产管理系统，支持多种模型统一调用
 
-<kbd>0.10.8-allinone</kbd> • [官网链接](https://docs.newapi.pro/)
+<kbd>0.10.9-allinone</kbd> • [官网链接](https://docs.newapi.pro/)
 
 </td>
 <td width="33%" align="center">
@@ -539,7 +539,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🚀 智能密钥轮询的多渠道AI代理，高性能企业级AI接口透明代理服务
 
-<kbd>1.4.3</kbd> • [官网链接](https://github.com/tbphp/gpt-load)
+<kbd>1.4.4</kbd> • [官网链接](https://github.com/tbphp/gpt-load)
 
 </td>
 </tr>
@@ -568,7 +568,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔍 模型上下文协议调试工具，支持MCP服务器测试与开发
 
-<kbd>0.20.0</kbd> • [官网链接](https://github.com/modelcontextprotocol/inspector)
+<kbd>0.21.1</kbd> • [官网链接](https://github.com/modelcontextprotocol/inspector)
 
 </td>
 <td width="33%" align="center">
@@ -662,7 +662,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 n8n汉化版，具有原生AI能力的Fair-code工作流自动化平台
 
-<kbd>2.8.1</kbd> • [官网链接](https://n8n.io/)
+<kbd>2.10.2</kbd> • [官网链接](https://n8n.io/)
 
 </td>
 </tr>
@@ -763,7 +763,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🌱 开源高性能BT/PT下载工具，支持Web界面
 
-<kbd>4.1.0</kbd> • [官网链接](https://transmissionbt.com/)
+<kbd>4.1.1</kbd> • [官网链接](https://transmissionbt.com/)
 
 </td>
 <td width="33%" align="center">
@@ -775,7 +775,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🎬 开箱即用的跨平台影视聚合播放器，支持多源搜索和在线播放
 
-<kbd>4.3.0</kbd> • [官网链接](https://github.com/MoonTechLab/LunaTV)
+<kbd>100.1.1</kbd> • [官网链接](https://github.com/MoonTechLab/LunaTV)
 
 </td>
 </tr>
@@ -794,7 +794,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📊 开源轻量易用的服务器监控运维工具
 
-<kbd>1.14.14</kbd> • [官网链接](https://github.com/naiba/nezha/)
+<kbd>2.0.4</kbd> • [官网链接](https://github.com/naiba/nezha/)
 
 </td>
 <td width="33%" align="center">
@@ -847,7 +847,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🖥️ 开源跨平台远程桌面客户端，支持多种协议
 
-<kbd>1.4.40</kbd> • [官网链接](https://remmina.org/)
+<kbd>1.4.43</kbd> • [官网链接](https://remmina.org/)
 
 </td>
 <td width="33%" align="center">
@@ -859,7 +859,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 多平台Git仓库自动同步与备份工具，支持定时任务和Docker部署
 
-<kbd>0.20.0</kbd> • [官网链接](https://github.com/AkashRajpurohit/git-sync)
+<kbd>0.21.0</kbd> • [官网链接](https://github.com/AkashRajpurohit/git-sync)
 
 </td>
 </tr>
@@ -876,7 +876,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📊 开源 all-in-one 数据洞察中心，集成网站分析、服务监控、服务器状态监控
 
-<kbd>1.31.10</kbd> • [官网链接](https://tianji.msgbyte.com/)
+<kbd>1.31.13</kbd> • [官网链接](https://tianji.msgbyte.com/)
 
 </td>
 <td width="33%" align="center">
@@ -888,7 +888,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 ⚡ 轻量级服务器监控代理，支持实时性能数据收集
 
-<kbd>0.18.3</kbd> • [官网链接](https://github.com/henrygd/beszel)
+<kbd>0.18.4</kbd> • [官网链接](https://github.com/henrygd/beszel)
 
 </td>
 <td width="33%" align="center">
@@ -931,7 +931,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 多AdGuardHome实例间配置同步工具
 
-<kbd>0.8.2</kbd> • [官网链接](https://github.com/bakito/adguardhome-sync)
+<kbd>0.9.0</kbd> • [官网链接](https://github.com/bakito/adguardhome-sync)
 
 </td>
 <td width="33%" align="center">
@@ -960,7 +960,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 Docker 镜像加速与私有部署服务，支持多平台和多架构
 
-<kbd>0.6.5</kbd> • [官网链接](https://kspeeder.istoreos.com/)
+<kbd>0.6.6</kbd> • [官网链接](https://kspeeder.istoreos.com/)
 
 </td>
 <td width="33%" align="center">
@@ -1001,7 +1001,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📺 动漫自动订阅与下载工具，支持多平台和主流下载器，适合NAS自动追番
 
-<kbd>2.5.3</kbd> • [官网链接](https://github.com/wushuo894/ani-rss)
+<kbd>4.0.3</kbd> • [官网链接](https://github.com/wushuo894/ani-rss)
 
 </td>
 <td width="33%" align="center">
@@ -1150,7 +1150,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 监控Docker基础镜像自动更新
 
-<kbd>8.1.1</kbd> • [官网链接](https://github.com/sergi0g/cup/)
+<kbd>8.2.2</kbd> • [官网链接](https://github.com/sergi0g/cup/)
 
 </td>
 </tr>

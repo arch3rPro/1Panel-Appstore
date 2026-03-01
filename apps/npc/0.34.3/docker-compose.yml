@@ -1,9 +1,0 @@
-services:
-  npc:
-    image: duan2001/npc:v0.34.3
-    restart: always
-    network_mode: host
-    command: -server=${NPS_SERVER_ADDR} -vkey=${NPS_VKEY}
-    container_name: ${CONTAINER_NAME}
-    labels:
-      createdBy: Apps

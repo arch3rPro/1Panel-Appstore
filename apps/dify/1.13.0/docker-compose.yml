@@ -1041,7 +1041,7 @@ services:
       - ssrf_proxy_network
       - default
   worker:
-    image: langgenius/dify-api:1.12.1
+    image: langgenius/dify-api:1.13.0
     env_file:
       - dify.env
     restart: always
@@ -1570,7 +1570,7 @@ services:
       - ssrf_proxy_network
       - default
   web:
-    image: langgenius/dify-web:1.12.1
+    image: langgenius/dify-web:1.13.0
     container_name: ${CONTAINER_NAME}
     env_file:
       - dify.env
