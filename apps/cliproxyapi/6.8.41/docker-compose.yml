@@ -11,8 +11,9 @@ services:
       - ${HOST_IP}:${PANEL_APP_PORT_OPENAI}:51121
       - ${HOST_IP}:${PANEL_APP_PORT_CODEX}:11451
     volumes:
-      - ./data:/CLIProxyAPI
-      - ./auths:/root/.cli-proxy-api
+      - ./config.yaml:/CLIProxyAPI/config.yaml
+      - ./auths:/CLIProxyAPI/auths
+      - ./logs:/CLIProxyAPI/logs
     environment:
       - TZ=${TZ}
       - DEPLOY=${DEPLOY}
