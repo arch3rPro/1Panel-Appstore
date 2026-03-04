@@ -2,12 +2,14 @@ name: Speaches
 tags:
   - AI
 title: Speaches语音识别/生成服务器
-description: 一个兼容OpenAI API的流式语音识别、翻译和语音生成的服务器。
+description: 
+  en: An OpenAI API-compatible server supporting streaming transcription, translation, and speech generation.
+  zh: 一个兼容OpenAI API的流式语音识别、翻译和语音生成的服务器。
 additionalProperties:
   key: speaches
   name: Speaches
   tags:
-    - Website
+    - AI
   shortDescZh: 一个兼容OpenAI API的流式语音识别、翻译和语音生成的服务器。
   shortDescEn: An OpenAI API-compatible server supporting streaming transcription, translation, and speech generation.
   type: website
