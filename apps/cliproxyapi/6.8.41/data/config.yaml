@@ -1,0 +1,19 @@
+# CLIProxyAPI configuration example.
+# For full options, see: https://github.com/router-for-me/CLIProxyAPI/blob/main/config.example.yaml
+
+host: ""
+port: 8317
+
+auth-dir: "~/.cli-proxy-api"
+
+# API keys used by compatible clients/SDKs to access this proxy.
+# Replace with your own key and remove unused entries.
+api-keys:
+  - "change-this-api-key"
+
+debug: false
+logging-to-file: false
+
+remote-management:
+  allow-remote: false
+  secret-key: ""
