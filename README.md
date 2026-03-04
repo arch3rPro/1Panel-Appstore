@@ -222,7 +222,7 @@
 
 轻量级文档管理系统，支持多人协作编辑与版本控制
 
-<kbd>0.70.0</kbd> • [官网链接](https://github.com/docmost/docmost)
+<kbd>0.70.1</kbd> • [官网链接](https://github.com/docmost/docmost)
 
 </td>
 <td width="33%" align="center">
@@ -515,7 +515,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🍥 新一代大模型网关与AI资产管理系统，支持多种模型统一调用
 
-<kbd>0.11.0-allinone</kbd> • [官网链接](https://docs.newapi.pro/)
+<kbd>0.11.2-allinone</kbd> • [官网链接](https://docs.newapi.pro/)
 
 </td>
 <td width="33%" align="center">
@@ -662,7 +662,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 n8n汉化版，具有原生AI能力的Fair-code工作流自动化平台
 
-<kbd>2.11.0</kbd> • [官网链接](https://n8n.io/)
+<kbd>2.11.1</kbd> • [官网链接](https://n8n.io/)
 
 </td>
 </tr>
