@@ -1,0 +1,64 @@
+additionalProperties:
+  formFields:
+    - envKey: PANEL_APP_PORT_HTTP
+      labelZh: API 端口
+      labelEn: API Port
+      default: 8317
+      required: true
+      edit: true
+      rule: paramPort
+      type: number
+    - envKey: PANEL_APP_PORT_MGMT
+      labelZh: 管理端口
+      labelEn: Management Port
+      default: 8085
+      required: true
+      edit: true
+      rule: paramPort
+      type: number
+    - envKey: PANEL_APP_PORT_CLAUDE
+      labelZh: Claude OAuth 回调端口
+      labelEn: Claude OAuth Callback Port
+      default: 1455
+      required: true
+      edit: true
+      rule: paramPort
+      type: number
+    - envKey: PANEL_APP_PORT_GEMINI
+      labelZh: Gemini OAuth 回调端口
+      labelEn: Gemini OAuth Callback Port
+      default: 54545
+      required: true
+      edit: true
+      rule: paramPort
+      type: number
+    - envKey: PANEL_APP_PORT_OPENAI
+      labelZh: OpenAI OAuth 回调端口
+      labelEn: OpenAI OAuth Callback Port
+      default: 51121
+      required: true
+      edit: true
+      rule: paramPort
+      type: number
+    - envKey: PANEL_APP_PORT_CODEX
+      labelZh: Codex OAuth 回调端口
+      labelEn: Codex OAuth Callback Port
+      default: 11451
+      required: true
+      edit: true
+      rule: paramPort
+      type: number
+    - envKey: TZ
+      labelZh: 时区
+      labelEn: Time Zone
+      default: Asia/Shanghai
+      required: true
+      edit: true
+      type: text
+    - envKey: DEPLOY
+      labelZh: 部署标识（可选）
+      labelEn: Deploy Identifier (Optional)
+      default: ""
+      required: false
+      edit: true
+      type: text
