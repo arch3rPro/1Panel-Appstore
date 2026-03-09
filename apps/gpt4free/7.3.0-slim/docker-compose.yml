@@ -1,18 +1,16 @@
 services:
   gpt4free:
-    image: hlohaus789/g4f:v7.2.5
+    image: hlohaus789/g4f:v7.3.0-slim
     container_name: ${CONTAINER_NAME}
     restart: always
     networks:
       - 1panel-network
-    shm_size: 2gb
     volumes:
       - ./har_and_cookies:/app/har_and_cookies
       - ./generated_media:/app/generated_media
     ports:
       - ${PANEL_APP_PORT_HTTP}:8080
       - ${PANEL_APP_PORT_API}:8080
-      - ${PANEL_APP_PORT_REMOTE}:7900
     environment:
       - OLLAMA_HOST=host.docker.internal
     labels:

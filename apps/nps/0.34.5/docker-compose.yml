@@ -1,6 +1,6 @@
 services:
   nps:
-    image: duan2001/nps:v0.34.4
+    image: duan2001/nps:v0.34.5
     container_name: ${CONTAINER_NAME}
     ports:
       - ${PANEL_APP_PORT_HTTP}:${PANEL_APP_PORT_HTTP}

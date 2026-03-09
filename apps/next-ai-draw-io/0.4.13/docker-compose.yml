@@ -1,6 +1,6 @@
 services:
   next-ai-draw-io:
-    image: ghcr.io/dayuanjiang/next-ai-draw-io:0.4.12
+    image: ghcr.io/dayuanjiang/next-ai-draw-io:0.4.13
     ports:
       - ${PANEL_APP_PORT_HTTP}:3000
     depends_on:

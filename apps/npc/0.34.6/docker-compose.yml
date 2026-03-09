@@ -1,6 +1,6 @@
 services:
   npc:
-    image: duan2001/npc:v0.34.4
+    image: duan2001/npc:v0.34.6
     restart: always
     network_mode: host
     command: -server=${NPS_SERVER_ADDR} -vkey=${NPS_VKEY}
