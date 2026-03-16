@@ -1,0 +1,15 @@
+services:
+  magic-wormhole-relay:
+    image: leastauthority/magic-wormhole-relay:latest
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - ${PANEL_APP_PORT_RELAY}:4001
+    restart: always
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: Apps
+
+networks:
+  1panel-network:
+    external: true

@@ -1,0 +1,10 @@
+additionalProperties:
+  formFields:
+    - default: "4001"
+      envKey: PANEL_APP_PORT_RELAY
+      required: true
+      type: number
+      labelEn: Relay Port
+      labelZh: 中继端口
+      edit: true
+      rule: paramPort

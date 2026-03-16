@@ -1,0 +1,25 @@
+name: Magic-Wormhole-Relay
+tags:
+  - 实用工具
+  - 开发工具
+title: Magic Wormhole 中继服务
+description:
+  en: Self-hosted Magic Wormhole transit relay service
+  zh: 自托管 Magic Wormhole 传输中继服务
+additionalProperties:
+  key: magic-wormhole-relay
+  name: Magic-Wormhole-Relay
+  tags:
+    - Tool
+    - DevTool
+  shortDescZh: 自托管 Magic Wormhole 传输中继服务
+  shortDescEn: Self-hosted Magic Wormhole transit relay service
+  type: tool
+  crossVersionUpdate: true
+  limit: 0
+  website: https://magic-wormhole.readthedocs.io/
+  github: https://github.com/LeastAuthority/magic-wormhole
+  document: https://github.com/LeastAuthority/magic-wormhole/tree/master/src/wormhole_transit_relay
+  architectures:
+    - amd64
+    - arm64
