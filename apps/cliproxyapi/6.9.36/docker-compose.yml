@@ -1,0 +1,27 @@
+services:
+  cliproxyapi:
+    image: eceasy/cli-proxy-api:v6.9.36
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - ${HOST_IP}:${PANEL_APP_PORT_HTTP}:8317
+      - ${HOST_IP}:${PANEL_APP_PORT_MGMT}:8085
+      - ${HOST_IP}:${PANEL_APP_PORT_CLAUDE}:1455
+      - ${HOST_IP}:${PANEL_APP_PORT_GEMINI}:54545
+      - ${HOST_IP}:${PANEL_APP_PORT_OPENAI}:51121
+      - ${HOST_IP}:${PANEL_APP_PORT_CODEX}:11451
+    volumes:
+      - ./data/config.yaml:/CLIProxyAPI/config.yaml
+      - ./data/auths:/CLIProxyAPI/auths
+      - ./data/logs:/CLIProxyAPI/logs
+    environment:
+      - TZ=${TZ}
+      - DEPLOY=${DEPLOY}
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true
