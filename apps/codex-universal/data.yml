@@ -1,0 +1,33 @@
+name: Codex Universal
+tags:
+    - 开发工具
+    - 开发环境
+title: OpenAI Codex 的基础 Docker 镜像，提供完整的开发环境
+description: OpenAI Codex 的基础 Docker 镜像，提供完整的开发环境
+additionalProperties:
+  key: codex-universal
+  name: Codex Universal
+  tags:
+    - DevTool
+    - DevEnv
+  shortDescZh: OpenAI Codex 的基础 Docker 镜像，提供完整的开发环境
+  shortDescEn: Base Docker image used in OpenAI Codex environments
+  description:
+    en: codex-universal is a reference implementation of the base Docker image available in OpenAI Codex. This repository is intended to help developers customize environments in Codex, by providing a similar image that can be pulled and run locally.
+    ja: OpenAI Codex 環境で使用されるベース Docker イメージ
+    ms: Imej Docker asas yang digunakan dalam persekitaran OpenAI Codex
+    pt-br: Imagem Docker base usada em ambientes OpenAI Codex
+    ru: Базовый Docker-образ, используемый в средах OpenAI Codex
+    ko: OpenAI Codex 환경에서 사용되는 기본 Docker 이미지
+    zh-Hant: OpenAI Codex 的基礎 Docker 鏡像，提供完整的開發環境
+    zh: codex-universal 是 OpenAI Codex 中可用的基础 Docker 镜像的参考实现。该仓库旨在帮助开发者自定义 Codex 中的环境，提供一个可以拉取并在本地运行的类似镜像。
+  type: runtime
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/openai/codex-universal
+  github: https://github.com/openai/codex-universal
+  document: https://github.com/openai/codex-universal
+  architectures:
+    - amd64
+    - arm64

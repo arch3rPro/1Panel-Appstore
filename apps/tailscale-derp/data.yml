@@ -1,0 +1,29 @@
+name: Tailscale Derp
+tags:
+    - 网络工具
+    - VPN
+title: Tailscale DERP 中继服务器
+description: Tailscale DERP 中继服务器，无需域名即可使用
+additionalProperties:
+    key: tailscale-derp
+    name: Tailscale Derp
+    tags:
+        - Network
+        - VPN
+    shortDescZh: Tailscale DERP 中继服务器，无需域名即可使用
+    shortDescEn: Tailscale DERP relay server, no domain required
+    description:
+        en: Tailscale DERP relay server for private VPN connections without domain requirements
+        zh: Tailscale DERP 中继服务器，用于无需域名的私有 VPN 连接
+        zh-Hant: Tailscale DERP 中繼服務器，用於無需域名的私有 VPN 連線
+    type: website
+    crossVersionUpdate: true
+    limit: 0
+    recommend: 50
+    website: https://tailscale.com
+    github: https://github.com/yangchuansheng/ip_derper
+    document: https://ameow.xyz/archives/tailscale-derp-server-deployment
+    architectures:
+      - amd64
+      - arm64
+      - arm/v7

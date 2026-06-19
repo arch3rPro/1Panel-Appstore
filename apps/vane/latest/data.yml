@@ -1,0 +1,18 @@
+additionalProperties:
+  formFields:
+    - default: 3000
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: Web 端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: ""
+      edit: true
+      envKey: SEARXNG_API_URL
+      labelEn: SearXNG API URL (Optional, leave empty to use built-in)
+      labelZh: SearXNG API 地址（可选，留空则使用内置）
+      required: false
+      rule: paramExtUrl
+      type: text

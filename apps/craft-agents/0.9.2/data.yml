@@ -1,0 +1,29 @@
+additionalProperties:
+  formFields:
+    - default: 9100
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: Web端口
+      required: true
+      rule: paramPort
+      type: number
+      label:
+        en: Web Port
+        zh: Web端口
+        ja: Webポート
+        ko: Web 포트
+    - default: "Craft-Agents-"
+      edit: true
+      envKey: CRAFT_SERVER_TOKEN
+      labelEn: Server Token
+      labelZh: 服务器令牌
+      random: true
+      required: true
+      rule: paramComplexity
+      type: password
+      label:
+        en: Server Token
+        zh: 服务器令牌
+        ja: サーバートークン
+        ko: 서버 토큰

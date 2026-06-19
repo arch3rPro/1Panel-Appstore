@@ -1,0 +1,29 @@
+name: Fast Note Sync Service
+tags:
+  - 实用工具
+  - 云存储
+title: 高性能低延迟的 Obsidian 笔记同步服务
+description: Fast Note Sync Service 是一个基于 Go、WebSocket 和 React 的笔记同步、在线管理与 REST API 服务平台。
+additionalProperties:
+  key: fast-note-sync-service
+  name: Fast Note Sync Service
+  tags:
+    - Tool
+    - Storage
+  shortDescZh: 高性能低延迟的 Obsidian 笔记同步服务
+  shortDescEn: High-performance low-latency note synchronization service for Obsidian.
+  description:
+    zh: Fast Note Sync Service 是一个基于 Go、WebSocket 和 React 的笔记同步、在线管理与 REST API 服务平台，支持 Obsidian 客户端同步、附件同步、历史版本、分享、备份和 MCP 接入。
+    en: Fast Note Sync Service is a Go, WebSocket, and React based platform for note synchronization, online management, and REST APIs, supporting Obsidian client sync, attachments, history, sharing, backups, and MCP integration.
+    zh-Hant: Fast Note Sync Service 是一個基於 Go、WebSocket 和 React 的筆記同步、線上管理與 REST API 服務平台，支援 Obsidian 客戶端同步、附件同步、歷史版本、分享、備份和 MCP 接入。
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/haierkeys/fast-note-sync-service
+  github: https://github.com/haierkeys/fast-note-sync-service
+  document: https://github.com/haierkeys/fast-note-sync-service/blob/master/README.md
+  architectures:
+    - amd64
+    - arm64
+    - arm/v7

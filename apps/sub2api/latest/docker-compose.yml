@@ -1,0 +1,56 @@
+services:
+  sub2api:
+    image: weishaw/sub2api:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    networks:
+      - 1panel-network
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - TZ=${TZ}
+      - POSTGRES_CONN_STRING=postgres://sub2api:${POSTGRES_PASSWORD}@postgres:5432/sub2api?sslmode=disable
+      - REDIS_CONN_STRING=redis://redis:6379/0
+      - JWT_SECRET=${JWT_SECRET}
+    labels:
+      createdBy: "Apps"
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${CONTAINER_NAME}-postgres
+    restart: always
+    networks:
+      - 1panel-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=sub2api
+      - POSTGRES_USER=sub2api
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    labels:
+      createdBy: "Apps"
+
+  redis:
+    image: redis:7-alpine
+    container_name: ${CONTAINER_NAME}-redis
+    restart: always
+    networks:
+      - 1panel-network
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:

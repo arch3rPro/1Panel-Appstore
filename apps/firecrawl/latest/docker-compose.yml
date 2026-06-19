@@ -1,0 +1,115 @@
+services:
+  firecrawl-api:
+    image: ghcr.io/firecrawl/firecrawl:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    environment:
+      - HOST=0.0.0.0
+      - PORT=${PANEL_APP_PORT_HTTP}
+      - REDIS_URL=redis://firecrawl-redis:6379
+      - REDIS_RATE_LIMIT_URL=redis://firecrawl-redis:6379
+      - PLAYWRIGHT_MICROSERVICE_URL=http://firecrawl-playwright:3000/scrape
+      - POSTGRES_USER=${POSTGRES_USER:-firecrawl}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-firecrawl}
+      - POSTGRES_DB=firecrawl
+      - POSTGRES_HOST=firecrawl-postgres
+      - POSTGRES_PORT=5432
+      - USE_DB_AUTHENTICATION=false
+      - NUM_WORKERS_PER_QUEUE=8
+      - CRAWL_CONCURRENT_REQUESTS=10
+      - MAX_CONCURRENT_JOBS=5
+      - BROWSER_POOL_SIZE=5
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - BULL_AUTH_KEY=${BULL_AUTH_KEY:-CHANGEME}
+      - NUQ_RABBITMQ_URL=amqp://firecrawl-rabbitmq:5672
+      - ENV=local
+      - EXTRACT_WORKER_PORT=3004
+      - WORKER_PORT=3005
+      - HARNESS_STARTUP_TIMEOUT_MS=60000
+      - TZ=Asia/Shanghai
+    depends_on:
+      firecrawl-redis:
+        condition: service_started
+      firecrawl-playwright:
+        condition: service_started
+      firecrawl-rabbitmq:
+        condition: service_healthy
+      firecrawl-postgres:
+        condition: service_started
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:3002"
+    command: node dist/src/harness.js --start-docker
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    volumes:
+      - ./data/api:/app/data
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+
+  firecrawl-playwright:
+    image: ghcr.io/firecrawl/playwright-service:latest
+    container_name: ${CONTAINER_NAME}-playwright
+    restart: always
+    environment:
+      - PORT=3000
+      - PROXY_SERVER=
+      - PROXY_USERNAME=
+      - PROXY_PASSWORD=
+      - ALLOW_LOCAL_WEBHOOKS=false
+      - BLOCK_MEDIA=false
+      - MAX_CONCURRENT_PAGES=10
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data/playwright:/tmp/.cache
+    networks:
+      - 1panel-network
+    tmpfs:
+      - /tmp/.cache:noexec,nosuid,size=1g
+    labels:
+      createdBy: "Apps"
+
+  firecrawl-redis:
+    image: redis:alpine
+    container_name: ${CONTAINER_NAME}-redis
+    restart: always
+    command: redis-server --bind 0.0.0.0
+    networks:
+      - 1panel-network
+    volumes:
+      - ./data/redis:/data
+
+  firecrawl-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ${CONTAINER_NAME}-rabbitmq
+    restart: always
+    command: rabbitmq-server
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - 1panel-network
+
+  firecrawl-postgres:
+    image: postgres:16-alpine
+    container_name: ${CONTAINER_NAME}-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-firecrawl}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-firecrawl}
+      - POSTGRES_DB=firecrawl
+      - TZ=Asia/Shanghai
+    networks:
+      - 1panel-network
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+networks:
+  1panel-network:
+    external: true

@@ -1,0 +1,28 @@
+name: MCPHub
+tags:
+    - 开发工具
+    - AI工具
+title: MCP 服务器统一管理中心
+description: MCP 服务器统一管理中心，支持集中管理、灵活路由和智能发现
+additionalProperties:
+  key: mcphub
+  name: MCPHub
+  tags:
+    - DevTool
+    - AI
+  shortDescZh: MCP 服务器统一管理中心
+  shortDescEn: Unified Hub for Model Context Protocol (MCP) Servers
+  type: tool
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://docs.mcphub.app
+  github: https://github.com/samanhappy/mcphub
+  document: https://docs.mcphub.app
+  architectures:
+    - amd64
+    - arm64
+  description:
+    en: MCPHub makes it easy to manage and scale multiple MCP servers by organizing them into flexible Streamable HTTP endpoints
+    zh: MCP 服务器统一管理中心，支持集中管理、灵活路由和智能发现
+  memoryRequired: 1024

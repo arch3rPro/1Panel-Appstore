@@ -1,0 +1,45 @@
+services:
+  hermes-agent:
+    container_name: ${CONTAINER_NAME}-agent
+    image: 1panel/hermes-agent:latest
+    restart: always
+    networks:
+      - 1panel-network
+    environment:
+      HOME: /opt/data/home
+      HERMES_HOME: /opt/data
+      HERMES_DASHBOARD: "1"
+      HERMES_DASHBOARD_HOST: 0.0.0.0
+      HERMES_DASHBOARD_PORT: 9119
+      TERM: xterm-256color
+    volumes:
+      - ./data:/opt/data
+      - /etc/localtime:/etc/localtime
+    init: true
+    labels:
+      createdBy: "Apps"
+  hermes-webui:
+    container_name: ${CONTAINER_NAME}
+    image: ekkoye8888/hermes-web-ui:latest
+    entrypoint: ["node", "dist/server/index.js"]
+    restart: always
+    networks:
+      - 1panel-network
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:6060"
+    volumes:
+      - ./data:/opt/data
+      - ./webui-data:/home/agent/.hermes-web-ui
+    environment:
+      - PORT=6060
+      - HERMES_HOME=/opt/data
+      - HERMES_BIN=/opt/hermes/.venv/bin/hermes
+      - AUTH_DISABLED=false
+      - PATH=/opt/hermes/.venv/bin:/opt/data/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    depends_on:
+      - hermes-agent
+    labels:
+      createdBy: "Apps"
+networks:
+  1panel-network:
+    external: true

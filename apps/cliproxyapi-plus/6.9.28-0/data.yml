@@ -1,0 +1,57 @@
+additionalProperties:
+  formFields:
+    - default: 8317
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web UI Port
+      labelZh: Web界面端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 8085
+      edit: true
+      envKey: PANEL_APP_PORT_PROXY
+      labelEn: Proxy Port
+      labelZh: 代理端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 1455
+      edit: true
+      envKey: PANEL_APP_PORT_1455
+      labelEn: Additional Port 1455
+      labelZh: 额外端口 1455
+      required: true
+      rule: paramPort
+      type: number
+    - default: 54545
+      edit: true
+      envKey: PANEL_APP_PORT_54545
+      labelEn: Additional Port 54545
+      labelZh: 额外端口 54545
+      required: true
+      rule: paramPort
+      type: number
+    - default: 51121
+      edit: true
+      envKey: PANEL_APP_PORT_51121
+      labelEn: Additional Port 51121
+      labelZh: 额外端口 51121
+      required: true
+      rule: paramPort
+      type: number
+    - default: 11451
+      edit: true
+      envKey: PANEL_APP_PORT_11451
+      labelEn: Additional Port 11451
+      labelZh: 额外端口 11451
+      required: true
+      rule: paramPort
+      type: number
+    - default: Asia/Shanghai
+      edit: true
+      envKey: TZ
+      labelEn: Time Zone
+      labelZh: 时区
+      required: true
+      type: text

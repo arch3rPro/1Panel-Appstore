@@ -1,0 +1,29 @@
+name: Claude Code Hub
+tags:
+  - 开发工具
+  - AI
+  - API网关
+title: 智能 AI API 代理中转服务平台
+description: 智能 AI API 代理中转服务平台
+additionalProperties:
+  key: claude-code-hub
+  name: Claude Code Hub
+  tags:
+    - DevTool
+    - AI
+    - APIGateway
+  shortDescZh: 智能 AI API 代理中转服务平台
+  shortDescEn: Intelligent AI API Gateway and Management Platform
+  description:
+    en: Claude Code Hub is an intelligent AI API gateway that provides unified access to multiple AI providers (Claude, OpenAI, Gemini, Codex) with load balancing, rate limiting, monitoring, and comprehensive management features.
+    zh: Claude Code Hub 是一个智能 AI API 代理中转服务平台，提供多供应商统一接入、智能负载均衡、限流控制、实时监控和精细化管理功能。
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/ding113/claude-code-hub
+  github: https://github.com/ding113/claude-code-hub
+  document: https://github.com/ding113/claude-code-hub/blob/main/README.md
+  architectures:
+    - amd64
+    - arm64

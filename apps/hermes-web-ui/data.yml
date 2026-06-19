@@ -1,0 +1,33 @@
+name: Hermes Web UI
+tags:
+    - AI
+title: Hermes Agent 的全功能 Web 管理面板
+description: Hermes Agent 的全功能 Web 管理面板
+additionalProperties:
+    key: hermes-web-ui
+    name: Hermes Web UI
+    type: website
+    tags:
+        - AI
+    shortDescZh: Hermes Agent 的全功能 Web 管理面板
+    shortDescEn: A full-featured web dashboard for Hermes Agent
+    description:
+        en: A full-featured web dashboard for Hermes Agent. Manage AI chat sessions, monitor usage & costs, configure platform channels, schedule cron jobs, browse skills — all from a clean, responsive web interface.
+        ja: Hermes Agent のフル機能 Web ダッシュボード。AIチャットセッション管理、使用量・コスト監視、プラットフォームチャンネル設定、cronジョブスケジュール、スキル閲覧など。
+        ms: Papan pemuka web berciri penuh untuk Hermes Agent
+        pt-br: Um painel web completo para Hermes Agent
+        ru: Полнофункциональная веб-панель для Hermes Agent
+        ko: Hermes Agent를 위한 완전한 기능의 웹 대시보드
+        zh-Hant: Hermes Agent 的全功能 Web 管理面板
+        zh: Hermes Agent 的全功能 Web 管理面板。管理 AI 聊天会话、监控使用量与成本、配置平台渠道、调度定时任务、浏览技能等，全部通过简洁响应式 Web 界面完成。
+        tr: Hermes Agent için tam özellikli web kontrol paneli
+        es-es: Un panel web completo para Hermes Agent
+    crossVersionUpdate: true
+    limit: 0
+    recommend: 13
+    website: https://github.com/EKKOLearnAI/hermes-web-ui
+    github: https://github.com/EKKOLearnAI/hermes-web-ui
+    document: https://github.com/EKKOLearnAI/hermes-web-ui
+    architectures:
+      - amd64
+      - arm64

@@ -1,0 +1,28 @@
+additionalProperties:
+  formFields:
+    - default: 8090
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: Web端口
+      required: true
+      rule: paramPort
+      type: number
+      label:
+        en: Web Port
+        zh: Web端口
+        ja: Webポート
+        ko: Web 포트
+    - default: ""
+      edit: true
+      envKey: AXONHUB_DB_PASSWORD
+      labelEn: Database Password
+      labelZh: 数据库密码
+      required: false
+      rule: paramComplexity
+      type: password
+      label:
+        en: Database Password
+        zh: 数据库密码
+        ja: データベースパスワード
+        ko: 데이터베이스 비밀번호

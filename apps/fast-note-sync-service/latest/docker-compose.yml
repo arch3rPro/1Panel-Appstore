@@ -1,0 +1,18 @@
+services:
+  fast-note-sync-service:
+    image: haierkeys/fast-note-sync-service:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:9000"
+    networks:
+      - 1panel-network
+    volumes:
+      - ./data/storage:/fast-note-sync/storage
+      - ./data/config:/fast-note-sync/config
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true

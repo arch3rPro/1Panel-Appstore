@@ -10,19 +10,19 @@ services:
     #  - "--config=/app/config.yaml"
     ##############################################
     ports:
-      - ${PANEL_APP_PORT_HTTP}:4000 # Map the container port to the host, change the host port if necessary
+      - "${PANEL_APP_PORT_HTTP}:4000"
     environment:
       DATABASE_URL: "postgresql://llmproxy:dbpassword9090@db:5432/litellm"
-      STORE_MODEL_IN_DB: "True" # allows adding models to proxy via UI
+      STORE_MODEL_IN_DB: "True"
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
     depends_on:
-      - db  # Indicates that this service depends on the 'db' service, ensuring 'db' starts first
-    healthcheck:  # Defines the health check configuration for the container
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 http://localhost:4000/health/liveliness || exit 1" ]  # Command to execute for health check
-      interval: 30s  # Perform health check every 30 seconds
-      timeout: 10s   # Health check command times out after 10 seconds
-      retries: 3     # Retry up to 3 times if health check fails
-      start_period: 40s  # Wait 40 seconds after container start before beginning health checks
+      - db
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 http://localhost:4000/health/liveliness || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
     networks:
       - 1panel-network
@@ -39,7 +39,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Persists Postgres data across container restarts
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d litellm -U llmproxy"]
       interval: 1s
@@ -72,7 +72,7 @@ volumes:
   prometheus_data:
     driver: local
   postgres_data:
-    name: litellm_postgres_data # Named volume for Postgres data persistence
+    name: litellm_postgres_data
 
 networks:
   1panel-network:

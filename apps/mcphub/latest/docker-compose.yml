@@ -1,0 +1,49 @@
+services:
+  mcphub:
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    networks:
+      - 1panel-network
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - TZ=Asia/Shanghai
+      - PORT=3000
+      - NODE_ENV=production
+      - TRUST_PROXY=1
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DB_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    image: samanhappy/mcphub:latest
+    labels:
+      createdBy: "Apps"
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: ${CONTAINER_NAME}-pg
+    restart: always
+    networks:
+      - 1panel-network
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true

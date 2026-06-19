@@ -1,0 +1,24 @@
+name: CLIProxyAPI Plus
+tags:
+    - 网络工具
+    - 代理服务
+title: CLIProxyAPI Plus - 代理API服务
+description: CLIProxyAPI Plus - 代理API服务
+additionalProperties:
+  key: cliproxyapi-plus
+  name: CLIProxyAPI Plus
+  tags:
+    - Proxy
+    - Network
+  shortDescZh: CLIProxyAPI Plus 代理API服务
+  shortDescEn: CLIProxyAPI Plus Proxy API Service
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/router-for-me/CLIProxyAPIPlus
+  github: https://github.com/router-for-me/CLIProxyAPIPlus
+  document: https://help.router-for.me/cn/introduction/quick-start.html
+  architectures:
+    - amd64
+    - arm64

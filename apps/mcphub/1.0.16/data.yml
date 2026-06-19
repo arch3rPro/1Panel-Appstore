@@ -1,0 +1,58 @@
+additionalProperties:
+  formFields:
+    - default: 3000
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: Web 端口
+      required: true
+      rule: paramPort
+      type: number
+      edit: true
+      label:
+        en: Web Port
+        zh: Web 端口
+    - default: ""
+      envKey: ADMIN_PASSWORD
+      labelEn: Admin Password
+      labelZh: 管理员密码
+      required: false
+      rule: paramComplexity
+      type: password
+      edit: true
+      label:
+        en: Admin Password
+        zh: 管理员密码
+    - default: mcphub_db
+      envKey: POSTGRES_DB
+      labelEn: Database
+      labelZh: 数据库名
+      required: true
+      rule: paramCommon
+      type: text
+      edit: true
+      label:
+        en: Database
+        zh: 数据库名
+    - default: mcphub_user
+      envKey: POSTGRES_USER
+      labelEn: Database User
+      labelZh: 数据库用户
+      required: true
+      rule: paramCommon
+      type: text
+      edit: true
+      label:
+        en: Database User
+        zh: 数据库用户
+    - default: ""
+      envKey: POSTGRES_PASSWORD
+      labelEn: Database Password
+      labelZh: 数据库密码
+      random: true
+      required: true
+      rule: paramComplexity
+      type: password
+      edit: true
+      label:
+        en: Database Password
+        zh: 数据库密码

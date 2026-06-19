@@ -1,0 +1,20 @@
+services:
+  axonhub:
+    image: looplj/axonhub:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    networks:
+      - 1panel-network
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:8090"
+    volumes:
+      - ./data:/data
+    environment:
+      - TZ=Asia/Shanghai
+      - AXONHUB_DB_DIALECT=sqlite3
+      - AXONHUB_DB_DSN=file:/data/axonhub.db?cache=shared&_fk=1&pragma=journal_mode(WAL)
+    labels:
+      createdBy: "Apps"
+networks:
+  1panel-network:
+    external: true

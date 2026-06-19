@@ -1,0 +1,29 @@
+name: AxonHub
+tags:
+  - 开发工具
+  - AI工具
+title: 一站式AI开发平台 - 统一API网关，支持多种LLM提供商
+description: 一站式AI开发平台 - 统一API网关，支持多种LLM提供商
+additionalProperties:
+  key: axonhub
+  name: AxonHub
+  tags:
+    - DevTool
+    - AI
+  shortDescZh: 一站式AI开发平台 - 统一API网关
+  shortDescEn: All-in-one AI Development Platform - Unified API Gateway
+  description:
+    en: AxonHub is an AI gateway that lets you switch between model providers without changing a single line of code. Use any SDK to call 100+ LLMs. Built-in failover, load balancing, cost control & end-to-end tracing.
+    zh: AxonHub是一个AI网关，让您无需修改任何代码即可在模型提供商之间切换。使用任何SDK调用100+个LLM。内置故障转移、负载均衡、成本控制和端到端追踪。
+    ja: AxonHubは、コードを1行も変更せずにモデルプロバイダー間を切り替えることができるAIゲートウェイです。任意のSDKを使用して100以上のLLMを呼び出します。フェイルオーバー、負荷分散、コスト制御、エンドツーエンドのトレースを内蔵。
+    ko: AxonHub는 코드를 한 줄도 변경하지 않고 모델 제공자 간에 전환할 수 있는 AI 게이트웨이입니다. 모든 SDK를 사용하여 100개 이상의 LLM을 호출합니다. 장애 조치, 로드 밸런싱, 비용 제어 및 엔드 투 엔드 추적이 내장되어 있습니다.
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/looplj/axonhub
+  github: https://github.com/looplj/axonhub
+  document: https://github.com/looplj/axonhub#readme
+  architectures:
+    - amd64
+    - arm64

@@ -1,0 +1,19 @@
+services:
+  vane:
+    image: itzcrazykns1337/vane:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:3000"
+    volumes:
+      - ./data:/home/vane/data
+    environment:
+      - TZ=Asia/Shanghai
+      - SEARXNG_API_URL=${SEARXNG_API_URL}
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+networks:
+  1panel-network:
+    external: true

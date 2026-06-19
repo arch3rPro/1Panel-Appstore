@@ -1,0 +1,72 @@
+additionalProperties:
+  formFields:
+    - default: "9527"
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Service Port
+      labelZh: 服务端口
+      required: true
+      rule: paramPort
+      type: number
+      label:
+        en: Service Port
+        zh: 服务端口
+    - default: "123456"
+      edit: true
+      envKey: FRONTEND_PASSWORD
+      labelEn: Admin Password
+      labelZh: 管理后台密码
+      required: false
+      rule: paramCommon
+      type: password
+      label:
+        en: Admin Password
+        zh: 管理后台密码
+    - default: "false"
+      edit: true
+      envKey: ENABLE_WEBPLAYER_AUTH
+      labelEn: Enable Player Auth
+      labelZh: 启用播放器访问密码
+      required: false
+      rule: paramCommon
+      type: select
+      values:
+        - label: "True"
+          value: "true"
+        - label: "False"
+          value: "false"
+      label:
+        en: Enable Player Auth
+        zh: 启用播放器访问密码
+    - default: "123456"
+      edit: true
+      envKey: WEBPLAYER_PASSWORD
+      labelEn: Player Password
+      labelZh: 播放器访问密码
+      required: false
+      rule: paramCommon
+      type: password
+      label:
+        en: Player Password
+        zh: 播放器访问密码
+    - default: "/music"
+      edit: true
+      envKey: PLAYER_PATH
+      labelEn: Player Path
+      labelZh: 播放器访问路径
+      required: false
+      rule: paramCommon
+      type: text
+      label:
+        en: Player Path
+        zh: 播放器访问路径
+    - default: "Asia/Shanghai"
+      edit: true
+      envKey: TZ
+      labelEn: Time Zone
+      labelZh: 时区
+      required: true
+      type: text
+      label:
+        en: Time Zone
+        zh: 时区

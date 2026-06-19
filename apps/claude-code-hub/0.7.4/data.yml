@@ -1,0 +1,131 @@
+additionalProperties:
+  formFields:
+    - default: 23000
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: Web端口
+      required: true
+      rule: paramPort
+      type: number
+      label:
+        en: Web Port
+        zh: Web端口
+        ja: Webポート
+        ko: Web 포트
+    - default: ""
+      edit: true
+      envKey: ADMIN_TOKEN
+      labelEn: Admin Token
+      labelZh: 管理员令牌
+      required: true
+      rule: paramCommon
+      type: password
+      label:
+        en: Admin Token
+        zh: 管理员令牌
+        ja: 管理者トークン
+        ko: 관리자 토큰
+    - default: postgres
+      edit: true
+      envKey: DB_USER
+      labelEn: Database User
+      labelZh: 数据库用户名
+      required: true
+      rule: paramCommon
+      type: text
+      label:
+        en: Database User
+        zh: 数据库用户名
+        ja: データベースユーザー
+        ko: 데이터베이스 사용자
+    - default: ""
+      edit: true
+      envKey: DB_PASSWORD
+      labelEn: Database Password
+      labelZh: 数据库密码
+      required: true
+      rule: paramCommon
+      type: password
+      label:
+        en: Database Password
+        zh: 数据库密码
+        ja: データベースパスワード
+        ko: 데이터베이스 비밀번호
+    - default: claude_code_hub
+      edit: true
+      envKey: DB_NAME
+      labelEn: Database Name
+      labelZh: 数据库名称
+      required: true
+      rule: paramCommon
+      type: text
+      label:
+        en: Database Name
+        zh: 数据库名称
+        ja: データベース名
+        ko: 데이터베이스 이름
+    - default: "true"
+      edit: true
+      envKey: ENABLE_RATE_LIMIT
+      labelEn: Enable Rate Limit
+      labelZh: 启用限流
+      required: false
+      type: select
+      values:
+        - label: Enable
+          value: "true"
+        - label: Disable
+          value: "false"
+      label:
+        en: Enable Rate Limit
+        zh: 启用限流
+        ja: レート制限を有効化
+        ko: 속도 제한 활성화
+    - default: "300"
+      edit: true
+      envKey: SESSION_TTL
+      labelEn: Session TTL (seconds)
+      labelZh: 会话过期时间（秒）
+      required: false
+      rule: paramCommon
+      type: number
+      label:
+        en: Session TTL (seconds)
+        zh: 会话过期时间（秒）
+        ja: セッションTTL（秒）
+        ko: 세션 TTL (초)
+    - default: "true"
+      edit: true
+      envKey: AUTO_MIGRATE
+      labelEn: Auto Database Migration
+      labelZh: 自动数据库迁移
+      required: false
+      type: select
+      values:
+        - label: Enable
+          value: "true"
+        - label: Disable
+          value: "false"
+      label:
+        en: Auto Database Migration
+        zh: 自动数据库迁移
+        ja: 自動データベース移行
+        ko: 자동 데이터베이스 마이그레이션
+    - default: "false"
+      edit: true
+      envKey: ENABLE_SECURE_COOKIES
+      labelEn: Enable Secure Cookies (HTTPS only)
+      labelZh: 启用安全Cookie（仅HTTPS）
+      required: false
+      type: select
+      values:
+        - label: Enable (HTTPS only)
+          value: "true"
+        - label: Disable (HTTP/HTTPS)
+          value: "false"
+      label:
+        en: Enable Secure Cookies (HTTPS only)
+        zh: 启用安全Cookie（仅HTTPS）
+        ja: セキュアCookieを有効化（HTTPSのみ）
+        ko: 보안 쿠키 활성화 (HTTPS만)

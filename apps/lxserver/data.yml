@@ -1,0 +1,29 @@
+name: LXServer
+tags:
+  - 音乐
+  - 媒体
+title: LXServer
+description: LX Music 数据同步服务器与 Web 播放器
+additionalProperties:
+  key: lxserver
+  name: LXServer
+  tags:
+    - Music
+    - Media
+  shortDescZh: LX Music 数据同步服务器与 Web 播放器
+  shortDescEn: LX Music data sync server and web player
+  description:
+    zh: LX Music Sync Server 是一个基于 Node.js 的音乐同步服务器和 Web 播放器，支持多端数据同步、自定义音乐源、Subsonic 协议兼容、现代化 Web 播放器等功能。
+    en: LX Music Sync Server is a Node.js-based music sync server and web player, supporting multi-device sync, custom music sources, Subsonic protocol compatibility, and modern web playback.
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://xcq0607.github.io/lxserver/
+  github: https://github.com/XCQ0607/lxserver
+  document: https://xcq0607.github.io/lxserver/
+  architectures:
+    - amd64
+    - arm64
+    - arm/v7
+    - "386"

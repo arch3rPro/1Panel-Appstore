@@ -18,16 +18,88 @@
 </p>
 
 ### 📖 仓库介绍
- - 本仓库包含多个适用于 1Panel 的应用，旨在为用户提供简单、快速的安装与更新体验。应用均为开源项目，支持通过 1Panel 的计划任务功能自动化安装和更新。通过仓库提供的脚本，可以轻松地将应用集成到 1Panel 系统中。
- - 仓库主打优质应用合集，不追求大而全(很多基本用不上的应用会干扰检索查看)，有推荐的应用可以在issue中进行提交
+
+- 本仓库包含多个适用于 1Panel 的应用，旨在为用户提供简单、快速的安装与更新体验。应用均为开源项目，支持通过 1Panel 的计划任务功能自动化安装和更新。通过仓库提供的脚本，可以轻松地将应用集成到 1Panel 系统中。
+- 仓库主打优质应用合集，不追求大而全(很多基本用不上的应用会干扰检索查看)，有推荐的应用可以在issue中进行提交
 
 ### ⚠️ 仓库申明
 
-
 - 非官方，第三方应用商店
 - 不对任何原始镜像的有效性做出任何明示或暗示的保证或声明，安全性和风险自查
-- 个人仓库，可以Fork后自行更新，但是严禁未经授权，私自删除个人信息后合并发布 
+- 个人仓库，可以Fork后自行更新，但是严禁未经授权，私自删除个人信息后合并发布
 
+### 🚀 使用方法
+
+#### 📋 添加脚本到 1Panel 计划任务
+
+1. 在 1Panel 控制面板中，进入"计划任务"页面。
+2. 点击"新增任务"，选择任务类型为"Shell 脚本"。
+3. 在脚本框中粘贴以下代码：
+
+```bash
+#!/bin/bash
+
+# 清理旧的临时目录
+rm -rf /tmp/appstore_merge
+
+# 克隆 appstore-arch3rPro
+git clone --depth=1 https://ghfast.top/https://github.com/arch3rPro/1Panel-Appstore /tmp/appstore_merge/appstore-arch3rPro
+
+# 复制 数据（完整复制）
+cp -rf /tmp/appstore_merge/appstore-arch3rPro/apps/* /opt/1panel/resource/apps/local/
+
+# 清理临时目录
+rm -rf /tmp/appstore_merge
+echo "应用商店数据已更新"
+```
+
+### 🤖 使用 AI 快速生成应用配置
+
+本仓库提供了 Skill 配置，支持在 Cursor、Windsurf、Claude Code 等 AI 客户端中快速生成 1Panel 应用配置。
+
+#### 📁 Skills 目录结构
+
+```
+skills/
+├── SKILL.md              # 1Panel App Builder 技能定义
+├── README.md             # 使用文档
+├── templates/            # 配置模板
+│   ├── data.yml.tpl      # 应用元数据模板
+│   └── docker-compose.yml.tpl # 编排文件模板
+├── scripts/              # 工具脚本
+│   ├── generate-app.sh   # 主生成脚本
+│   ├── download-icon.sh  # 图标下载工具
+│   └── validate-app.sh   # 配置验证工具
+├── references/           # 参考示例
+│   └── 1panel-examples.md
+└── examples/             # 使用示例
+    └── example-usage.md
+```
+
+#### 💡 使用示例
+
+只需向 AI 提供以下任一信息，即可自动生成完整的应用配置：
+
+```
+# GitHub 项目
+添加应用 AList https://github.com/alist-org/alist
+
+# docker-compose 文件
+根据这个 docker-compose.yml 生成 1Panel 应用配置
+
+# docker run 命令
+将这个 docker run 命令转换为 1Panel 应用：
+docker run -d --name=nginx -p 80:80 nginx:latest
+```
+
+#### ✨ AI 生成的配置包含
+
+- `data.yml` - 应用元数据（顶层）
+- `version/data.yml` - 参数定义（表单字段）
+- `docker-compose.yml` - Docker 编排文件
+- `README.md` - 中文文档
+- `README_en.md` - 英文文档
+- `logo.png` - 应用图标
 
 ### 📱 应用列表
 
@@ -36,13 +108,8 @@
 #### 🤖LLM免费API接口
 
 - 支持一键部署AI免费API接口，使用方式请参考应用内**README介绍**
-
 - **Free-API系列应用已下架，原项目由于供应链投毒，被植入恶意代码，请及时停止运行并删除这些服务！！！**
-
 - 经过几天的排查和重构，已重新上架[GLM-Free-API](https://github.com/xiaoY233/GLM-Free-API)、[MiniMax-Free-API](https://github.com/xiaoY233/MiniMax-Free-API)、[Qwen-Free-API](https://github.com/xiaoY233/Qwen-Free-API)、[Kimi-Free-API](https://github.com/xiaoY233/Kimi-Free-API)，[DeepSeek-Free-API](https://github.com/xiaoY233/DeepSeek-Free-API),欢迎各位对源码进行审查，如果不放心，建议还是暂停使用！
-
-- 其他的Free-API系列看情况再搞了,后续主要更新上述几个Free-API兼容Gemini-cli和Claude的API接入。
-
 
 <table>
 <tr>
@@ -103,8 +170,8 @@
 
 <!-- <a href="./apps/jimeng-free-api/README.md">
 <img src="./apps/jimeng-free-api/logo.png" width="60" height="60" alt="Jimeng-Free-API"> -->
-<br><b>Jimeng-Free-API</b>
-</a>
+
+<b>Jimeng-Free-API</b> </a>
 
 🚀 即梦3.0逆向API【特长：图像生成顶流】
 
@@ -115,8 +182,8 @@
 
 <!-- <a href="./apps/spark-free-api/README.md">
 <img src="./apps/spark-free-api/logo.png" width="60" height="60" alt="Spark-Free-API"> -->
-<br><b>Spark-Free-API</b>
-</a>
+
+<b>Spark-Free-API</b> </a>
 
 🚀 讯飞星火大模型逆向API【特长：办公助手】
 
@@ -144,8 +211,8 @@
 
 <!-- <a href="./apps/step-free-api/README.md">
 <img src="./apps/step-free-api/logo.png" width="60" height="60" alt="Step-Free-API"> -->
-<br><b>Step-Free-API</b>
-</a>
+
+<b>Step-Free-API</b> </a>
 
 🚀 阶跃星辰跃问Step 多模态大模型逆向API【特长：超强多模态】
 
@@ -156,8 +223,8 @@
 
 <!-- <a href="./apps/metaso-free-api/README.md">
 <img src="./apps/metaso-free-api/logo.png" width="60" height="60" alt="Metaso-Free-API"> -->
-<br><b>Metaso-Free-API</b>
-</a>
+
+<b>Metaso-Free-API</b> </a>
 
 🚀 秘塔AI搜索逆向API【特长：超强检索超长输出】
 
@@ -178,7 +245,7 @@
 
 🚀 免费的GPT-4和其他大语言模型API接口
 
-<kbd>7.3.0-slim</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
+<kbd>7.6.6-slim</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
 
 </td>
 <td width="33%" align="center">
@@ -208,7 +275,6 @@
 </tr>
 </table>
 
-
 #### 📝 文档与内容管理
 
 <table>
@@ -222,7 +288,7 @@
 
 轻量级文档管理系统，支持多人协作编辑与版本控制
 
-<kbd>0.70.1</kbd> • [官网链接](https://github.com/docmost/docmost)
+<kbd>0.90.1</kbd> • [官网链接](https://github.com/docmost/docmost)
 
 </td>
 <td width="33%" align="center">
@@ -234,7 +300,7 @@
 
 快速静态博客框架，支持Markdown编写，丰富的插件和主题
 
-<kbd>stable-25-05-01</kbd> • [官网链接](https://github.com/hexojs/hexo)
+<kbd>stable-26-06-04</kbd> • [官网链接](https://github.com/hexojs/hexo)
 
 </td>
 <td width="33%" align="center">
@@ -246,7 +312,7 @@
 
 美观强大的在线静态博客管理器，支持多种平台
 
-<kbd>4.0.1</kbd> • [官网链接](https://github.com/Qexo/Qexo)
+<kbd>4.2.0</kbd> • [官网链接](https://github.com/Qexo/Qexo)
 
 </td>
 </tr>
@@ -275,7 +341,7 @@
 
 自托管全能书签管理工具，支持AI自动标签功能
 
-<kbd>0.31.0</kbd> • [官网链接](https://github.com/karakeep-app/karakeep)
+<kbd>0.32.0</kbd> • [官网链接](https://github.com/karakeep-app/karakeep)
 
 </td>
 <td width="33%" align="center">
@@ -287,7 +353,7 @@
 
 自托管协作书签管理工具，支持网页归档和团队协作
 
-<kbd>2.13.5</kbd> • [官网链接](https://github.com/linkwarden/linkwarden)
+<kbd>2.14.1</kbd> • [官网链接](https://github.com/linkwarden/linkwarden)
 
 </td>
 </tr>
@@ -316,7 +382,7 @@
 
 开源自托管个人笔记工具，支持AI增强笔记检索
 
-<kbd>1.8.5</kbd> • [官网链接](https://github.com/blinko-space/blinko)
+<kbd>1.8.7</kbd> • [官网链接](https://github.com/blinko-space/blinko)
 
 </td>
 <td width="33%" align="center">
@@ -345,7 +411,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 更优雅的微信公众号订阅方式，支持RSS输出和全文内容
 
-<kbd>2.6.1-sqlite</kbd> • [官网链接](https://github.com/cooderl/wewe-rss)
+<kbd>2.6.1</kbd> • [官网链接](https://github.com/cooderl/wewe-rss)
 
 </td>
 <td width="33%" align="center">
@@ -357,7 +423,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 开源Airtable替代品，将任何数据库转换为智能电子表格
 
-<kbd>0.301.3</kbd> • [官网链接](https://github.com/nocodb/nocodb)
+<kbd>2026.06.1</kbd> • [官网链接](https://github.com/nocodb/nocodb)
 
 </td>
 <td width="33%" align="center">
@@ -388,7 +454,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🌐 简单安全去中心化的内网穿透 VPN 组网方案
 
-<kbd>2.5.0</kbd> • [官网链接](https://github.com/EasyTier/Easytier)
+<kbd>2.6.4</kbd> • [官网链接](https://github.com/EasyTier/Easytier)
 
 </td>
 <td width="33%" align="center">
@@ -400,7 +466,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔗 NPS客户端，轻量级高性能内网穿透代理工具
 
-<kbd>0.34.6</kbd> • [官网链接](https://github.com/djylb/nps)
+<kbd>0.34.7</kbd> • [官网链接](https://github.com/djylb/nps)
 
 </td>
 <td width="33%" align="center">
@@ -429,7 +495,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🛡️ 简单好用的Web应用防火墙(WAF)
 
-<kbd>9.3.2.1</kbd> • [官网链接](https://github.com/chaitin/SafeLine)
+<kbd>9.3.7</kbd> • [官网链接](https://github.com/chaitin/SafeLine)
 
 </td>
 
@@ -461,6 +527,35 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 </tr>
 </table>
 
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/tailscale/README.md">
+<img src="./apps/tailscale/logo.png" width="60" height="60" alt="Tailscale">
+<br><b>Tailscale</b>
+</a>
+
+🔐 私有 WireGuard 网络组网工具
+
+<kbd>1.98.4</kbd> • [官网链接](https://tailscale.com)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/tailscale-derp/README.md">
+<img src="./apps/tailscale-derp/logo.png" width="60" height="60" alt="Tailscale DERP">
+<br><b>Tailscale DERP</b>
+</a>
+
+🛰️ Tailscale DERP 中继服务器，无需域名即可使用
+
+<kbd>latest</kbd> • [官网链接](https://tailscale.com)
+
+</td>
+</tr>
+</table>
+
 #### 🤖 AI 与智能应用
 
 <table>
@@ -486,7 +581,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🤖 开源LLM应用开发平台，支持AI工作流和RAG管道
 
-<kbd>1.13.0</kbd> • [官网链接](https://github.com/langgenius/dify)
+<kbd>1.14.2</kbd> • [官网链接](https://github.com/langgenius/dify)
 
 </td>
 <td width="33%" align="center">
@@ -498,7 +593,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🚀 强大的AI提示词优化工具，支持多种主流大语言模型
 
-<kbd>2.5.5</kbd> • [官网链接](https://github.com/arch3rPro/Prompt-Optimizer)
+<kbd>2.11.6</kbd> • [官网链接](https://github.com/arch3rPro/Prompt-Optimizer)
 
 </td>
 </tr>
@@ -515,7 +610,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🍥 新一代大模型网关与AI资产管理系统，支持多种模型统一调用
 
-<kbd>0.11.2-allinone</kbd> • [官网链接](https://docs.newapi.pro/)
+<kbd>0.13.2</kbd> • [官网链接](https://docs.newapi.pro/)
 
 </td>
 <td width="33%" align="center">
@@ -539,7 +634,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🚀 智能密钥轮询的多渠道AI代理，高性能企业级AI接口透明代理服务
 
-<kbd>1.4.4</kbd> • [官网链接](https://github.com/tbphp/gpt-load)
+<kbd>1.4.8</kbd> • [官网链接](https://github.com/tbphp/gpt-load)
 
 </td>
 </tr>
@@ -556,7 +651,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔮 开源可视化AI工作流构建平台，拖拽式设计LLM应用
 
-<kbd>3.0.13</kbd> • [官网链接](https://github.com/FlowiseAI/Flowise)
+<kbd>3.1.2</kbd> • [官网链接](https://github.com/FlowiseAI/Flowise)
 
 </td>
 <td width="33%" align="center">
@@ -568,7 +663,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔍 模型上下文协议调试工具，支持MCP服务器测试与开发
 
-<kbd>0.21.1</kbd> • [官网链接](https://github.com/modelcontextprotocol/inspector)
+<kbd>0.22.0</kbd> • [官网链接](https://github.com/modelcontextprotocol/inspector)
 
 </td>
 <td width="33%" align="center">
@@ -609,7 +704,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔍 开源无广告元搜索引擎，保护隐私无追踪，支持自建部署
 
-<kbd>2025.12.3-1f6ea4127</kbd> • [官网链接](https://docs.searxng.org/)
+<kbd>2026.6.17-4dfdc822c</kbd> • [官网链接](https://docs.searxng.org/)
 
 </td>
 <td width="33%" align="center">
@@ -638,7 +733,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔮 强大的AI应用构建平台，可视化设计AI驱动的工作流和代理
 
-<kbd>1.8.0</kbd> • [官网链接](https://langflow.org/)
+<kbd>1.10.0</kbd> • [官网链接](https://langflow.org/)
 
 </td>
 <td width="33%" align="center">
@@ -650,7 +745,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔧 使用OpenAI格式统一调用所有LLM API，支持多种云服务商
 
-<kbd>latest</kbd> • [官网链接](https://github.com/BerriAI/litellm)
+<kbd>1.89.1</kbd> • [官网链接](https://github.com/BerriAI/litellm)
 
 </td>
 <td width="33%" align="center">
@@ -662,7 +757,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 n8n汉化版，具有原生AI能力的Fair-code工作流自动化平台
 
-<kbd>2.12.0</kbd> • [官网链接](https://n8n.io/)
+<kbd>2.27.1</kbd> • [官网链接](https://n8n.io/)
 
 </td>
 </tr>
@@ -679,7 +774,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🤖 AI驱动的图表创建工具
 
-<kbd>0.4.13</kbd> • [官网链接](https://next-ai-drawio.jiang.jp/)
+<kbd>0.4.15</kbd> • [官网链接](https://next-ai-drawio.jiang.jp/)
 
 </td>
 <td width="33%" align="center">
@@ -691,7 +786,200 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📝 私有的、多模型的Google Notebook LM替代方案，支持多模态内容和AI播客生成
 
-<kbd>1.2.4</kbd> • [官网链接](https://www.open-notebook.ai/)
+<kbd>1.9.0</kbd> • [官网链接](https://www.open-notebook.ai/)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/sub2api/README.md">
+<img src="./apps/sub2api/logo.png" width="60" height="60" alt="Sub2API">
+<br><b>Sub2API</b>
+</a>
+
+🍥 AI API 网关平台，支持订阅配额分发、API Key 管理、计费和负载均衡
+
+<kbd>0.1.137</kbd> • [官网链接](https://sub2api.org)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/cliproxyapi-plus/README.md">
+<img src="./apps/cliproxyapi-plus/logo.png" width="60" height="60" alt="CLIProxyAPI Plus">
+<br><b>CLIProxyAPI Plus</b>
+</a>
+
+🔗 CLIProxyAPI Plus 代理API服务
+
+<kbd>6.9.28-0</kbd> • [官网链接](https://github.com/router-for-me/CLIProxyAPIPlus)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/trae-proxy/README.md">
+<img src="./apps/trae-proxy/logo.png" width="60" height="60" alt="Trae-Proxy">
+<br><b>Trae-Proxy</b>
+</a>
+
+🎯 一个智能的API代理工具，专门用于拦截和重定向OpenAI API请求到自定义后端服务
+
+<kbd>1.0.0</kbd> • [官网链接](https://github.com/arch3rPro/Trae-Proxy)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/9router/README.md">
+<img src="./apps/9router/logo.png" width="60" height="60" alt="9Router">
+<br><b>9Router</b>
+</a>
+
+🚀 免费 AI 路由器和 Token 节省工具
+
+<kbd>0.5.2</kbd> • [官网链接](https://9router.com)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/apipark/README.md">
+<img src="./apps/apipark/logo.png" width="60" height="60" alt="APIPark">
+<br><b>APIPark</b>
+</a>
+
+🌐 开源企业级 API 全生命周期管理平台
+
+<kbd>1.9.6-beta</kbd> • [官网链接](https://apipark.com)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/axonhub/README.md">
+<img src="./apps/axonhub/logo.png" width="60" height="60" alt="AxonHub">
+<br><b>AxonHub</b>
+</a>
+
+🤖 一站式AI开发平台 - 统一API网关
+
+<kbd>0.9.43</kbd> • [官网链接](https://github.com/looplj/axonhub)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/browser-use/README.md">
+<img src="./apps/browser-use/logo.png" width="60" height="60" alt="Browser Use">
+<br><b>Browser Use</b>
+</a>
+
+🌐 让 AI 代理可以访问网站，轻松实现在线任务自动化
+
+<kbd>latest</kbd> • [官网链接](https://browser-use.com/)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/claude-code-hub/README.md">
+<img src="./apps/claude-code-hub/logo.png" width="60" height="60" alt="Claude Code Hub">
+<br><b>Claude Code Hub</b>
+</a>
+
+🔗 智能 AI API 代理中转服务平台
+
+<kbd>0.7.4</kbd> • [官网链接](https://github.com/ding113/claude-code-hub)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/craft-agents/README.md">
+<img src="./apps/craft-agents/logo.png" width="60" height="60" alt="Craft Agents">
+<br><b>Craft Agents</b>
+</a>
+
+🤖 AI Agent工作空间，支持多LLM提供商和MCP集成
+
+<kbd>0.9.2</kbd> • [官网链接](https://github.com/lukilabs/craft-agents-oss)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/firecrawl/README.md">
+<img src="./apps/firecrawl/logo.png" width="60" height="60" alt="Firecrawl">
+<br><b>Firecrawl</b>
+</a>
+
+🔥 将任意网站转换为适合大语言模型的结构化数据
+
+<kbd>v2.10.0</kbd> • [官网链接](https://www.firecrawl.dev)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/hermes-web-ui/README.md">
+<img src="./apps/hermes-web-ui/logo.png" width="60" height="60" alt="Hermes Web UI">
+<br><b>Hermes Web UI</b>
+</a>
+
+🧭 Hermes Agent 的全功能 Web 管理面板
+
+<kbd>0.6.17</kbd> • [官网链接](https://github.com/EKKOLearnAI/hermes-web-ui)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/mcphub/README.md">
+<img src="./apps/mcphub/logo.png" width="60" height="60" alt="MCPHub">
+<br><b>MCPHub</b>
+</a>
+
+🔌 MCP 服务器统一管理中心
+
+<kbd>1.0.16</kbd> • [官网链接](https://docs.mcphub.app)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/playwright-mcp/README.md">
+<img src="./apps/playwright-mcp/logo.png" width="60" height="60" alt="Playwright MCP">
+<br><b>Playwright MCP</b>
+</a>
+
+🎭 提供浏览器自动化功能的 MCP 服务器
+
+<kbd>1.61.0-noble</kbd> • [官网链接](https://github.com/microsoft/playwright-mcp)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/vane/README.md">
+<img src="./apps/vane/logo.png" width="60" height="60" alt="Vane">
+<br><b>Vane</b>
+</a>
+
+🔍 专注于隐私的 AI 问答搜索引擎
+
+<kbd>v1.12.2</kbd> • [官网链接](https://github.com/ItzCrazyKns/Vane)
 
 </td>
 </tr>
@@ -710,7 +998,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🎵 使用小爱/红米音箱播放音乐，支持yt-dlp下载
 
-<kbd>0.3.83</kbd> • [官网链接](https://github.com/hanxi/xiaomusic)
+<kbd>0.6.1</kbd> • [官网链接](https://github.com/hanxi/xiaomusic)
 
 </td>
 <td width="33%" align="center">
@@ -722,7 +1010,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📁 开源支持多存储的文件列表程序和私人网盘
 
-<kbd>4.1.0</kbd> • [官网链接](https://github.com/OpenListTeam/OpenList)
+<kbd>4.2.2-ffmpeg</kbd> • [官网链接](https://github.com/OpenListTeam/OpenList)
 
 </td>
 <td width="33%" align="center">
@@ -734,7 +1022,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🖼️ 高效云存储和图床平台管理工具
 
-<kbd>2.3.3</kbd> • [官网链接](https://github.com/Kuingsmile/PicList)
+<kbd>2.4.2</kbd> • [官网链接](https://github.com/Kuingsmile/PicList)
 
 </td>
 </tr>
@@ -751,7 +1039,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📥 高性能Usenet下载工具，支持Web界面管理
 
-<kbd>26.0</kbd> • [官网链接](https://nzbget.net/)
+<kbd>26.1</kbd> • [官网链接](https://nzbget.net/)
 
 </td>
 <td width="33%" align="center">
@@ -763,7 +1051,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🌱 开源高性能BT/PT下载工具，支持Web界面
 
-<kbd>4.1.1</kbd> • [官网链接](https://transmissionbt.com/)
+<kbd>2021.11.18</kbd> • [官网链接](https://transmissionbt.com/)
 
 </td>
 <td width="33%" align="center">
@@ -775,7 +1063,24 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🎬 开箱即用的跨平台影视聚合播放器，支持多源搜索和在线播放
 
-<kbd>100.1.1</kbd> • [官网链接](https://github.com/MoonTechLab/LunaTV)
+<kbd>100.1.3</kbd> • [官网链接](https://github.com/MoonTechLab/LunaTV)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/lxserver/README.md">
+<img src="./apps/lxserver/logo.png" width="60" height="60" alt="LXServer">
+<br><b>LXServer</b>
+</a>
+
+🎵 LX Music 数据同步服务器与 Web 播放器
+
+<kbd>1.9.4</kbd> • [官网链接](https://xcq0607.github.io/lxserver/)
 
 </td>
 </tr>
@@ -794,7 +1099,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📊 开源轻量易用的服务器监控运维工具
 
-<kbd>2.0.5</kbd> • [官网链接](https://github.com/naiba/nezha/)
+<kbd>2.0.12</kbd> • [官网链接](https://github.com/naiba/nezha/)
 
 </td>
 <td width="33%" align="center">
@@ -806,7 +1111,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 👁️ 轻量级可视化综合服务器监控方案
 
-<kbd>latest</kbd> • [官网链接](https://github.com/arch3rPro/Glance-Monitor)
+<kbd>0.1.0</kbd> • [官网链接](https://github.com/arch3rPro/Glance-Monitor)
 
 </td>
 <td width="33%" align="center">
@@ -818,7 +1123,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🖥️ 简单好用安全的开源交互审计系统
 
-<kbd>3.0.2</kbd> • [官网链接](https://github.com/dushixiang/next-terminal)
+<kbd>3.3.6</kbd> • [官网链接](https://github.com/dushixiang/next-terminal)
 
 </td>
 </tr>
@@ -876,7 +1181,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📊 开源 all-in-one 数据洞察中心，集成网站分析、服务监控、服务器状态监控
 
-<kbd>1.31.13</kbd> • [官网链接](https://tianji.msgbyte.com/)
+<kbd>1.32.2</kbd> • [官网链接](https://tianji.msgbyte.com/)
 
 </td>
 <td width="33%" align="center">
@@ -888,7 +1193,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 ⚡ 轻量级服务器监控代理，支持实时性能数据收集
 
-<kbd>0.18.4</kbd> • [官网链接](https://github.com/henrygd/beszel)
+<kbd>0.18.7</kbd> • [官网链接](https://github.com/henrygd/beszel)
 
 </td>
 <td width="33%" align="center">
@@ -960,7 +1265,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 Docker 镜像加速与私有部署服务，支持多平台和多架构
 
-<kbd>0.7.1</kbd> • [官网链接](https://kspeeder.istoreos.com/)
+<kbd>0.7.6</kbd> • [官网链接](https://kspeeder.istoreos.com/)
 
 </td>
 <td width="33%" align="center">
@@ -984,7 +1289,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🌌 简单易用的自托管VPN服务，支持多平台和Docker快速部署
 
-<kbd>5.1.5</kbd> • [官网链接](https://github.com/starvpn/starvpn)
+<kbd>6.0.6</kbd> • [官网链接](https://github.com/starvpn/starvpn)
 
 </td>
 </tr>
@@ -1042,7 +1347,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔐 跨平台开源密码管理器，支持Web界面和多种平台，安全可靠
 
-<kbd>2.7.11</kbd> • [官网链接](https://keepassxc.org/)
+<kbd>2.7.12</kbd> • [官网链接](https://keepassxc.org/)
 
 </td>
 <td width="33%" align="center">
@@ -1095,7 +1400,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🛠️ 功能强大的日常任务网络工具，自托管无广告追踪
 
-<kbd>latest</kbd> • [官网链接](https://omnitools.app/)
+<kbd>0.6.0</kbd> • [官网链接](https://omnitools.app/)
 
 </td>
 <td width="33%" align="center">
@@ -1107,7 +1412,36 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🎭 专业的 Web 应用自动化测试环境，支持多浏览器
 
-<kbd>6.6.7</kbd> • [官网链接](https://playwright.dev/)
+<kbd>1.55.0-noble</kbd> • [官网链接](https://playwright.dev/)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+<a href="./apps/fast-note-sync-service/README.md">
+<img src="./apps/fast-note-sync-service/logo.png" width="60" height="60" alt="Fast Note Sync Service">
+<br><b>Fast Note Sync Service</b>
+</a>
+
+📝 高性能低延迟的 Obsidian 笔记同步服务
+
+<kbd>3.3.3</kbd> • [官网链接](https://github.com/haierkeys/fast-note-sync-service)
+
+</td>
+<td width="33%" align="center">
+
+<a href="./apps/trendradar/README.md">
+<img src="./apps/trendradar/logo.png" width="60" height="60" alt="TrendRadar">
+<br><b>TrendRadar</b>
+</a>
+
+📡 多平台热点推送
+
+<kbd>6.9.1</kbd> • [官网链接](https://github.com/sansan0/TrendRadar)
 
 </td>
 </tr>
@@ -1179,7 +1513,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔔 Docker镜像更新监控和通知工具
 
-<kbd>4.31.0</kbd> • [官网链接](https://github.com/crazy-max/diun)
+<kbd>4.33.0</kbd> • [官网链接](https://github.com/crazy-max/diun)
 
 </td>
 <td width="33%" align="center">
@@ -1197,33 +1531,23 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 </tr>
 </table>
 
-### 🚀 使用方法
+<table>
+<tr>
+<td width="33%" align="center">
 
-#### 📋 添加脚本到 1Panel 计划任务
+<a href="./apps/dpanel/README.md">
+<img src="./apps/dpanel/logo.png" width="60" height="60" alt="DPanel">
+<br><b>DPanel</b>
+</a>
 
-1. 在 1Panel 控制面板中，进入"计划任务"页面。
-2. 点击"新增任务"，选择任务类型为"Shell 脚本"。
-3. 在脚本框中粘贴以下代码：
+🐳 轻量化 docker 可视化管理面板
 
-```bash
-#!/bin/bash
+<kbd>1.10.4-lite</kbd> • [官网链接](https://dpanel.cc/)
 
-# 清理旧的临时目录
-rm -rf /tmp/appstore_merge
-
-# 克隆 appstore-arch3rPro
-git clone --depth=1 https://ghfast.top/https://github.com/arch3rPro/1Panel-Appstore /tmp/appstore_merge/appstore-arch3rPro
-
-# 复制 数据（完整复制）
-cp -rf /tmp/appstore_merge/appstore-arch3rPro/apps/* /opt/1panel/resource/apps/local/
-
-# 清理临时目录
-rm -rf /tmp/appstore_merge
-echo "应用商店数据已更新"
-```
-
+</td>
+</tr>
+</table>
 
 <!-- 橙色风格 -->
 
-![Copyright-arch3rPro](https://img.shields.io/badge/Copyright-arch3rPro-ff9800?style=flat&logo=github&logoColor=white)
-
+!\[Copyright-arch3rPro]\(<https://img.shields.io/badge/Copyright-arch3rPro-ff9800?style=flat&logo=github&logoColor=white> null)

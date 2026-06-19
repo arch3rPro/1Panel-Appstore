@@ -1,0 +1,27 @@
+name: Vane
+tags:
+  - AI / 大模型
+  - 搜索
+title: 专注于隐私的 AI 问答搜索引擎
+description: 专注于隐私的 AI 问答搜索引擎，完全在您自己的硬件上运行
+additionalProperties:
+  key: vane
+  name: Vane
+  tags:
+    - AI
+    - Search
+  shortDescZh: 专注于隐私的 AI 问答搜索引擎
+  shortDescEn: Privacy-focused AI answering engine
+  description:
+    en: Vane is a privacy-focused AI answering engine that runs entirely on your own hardware. It combines knowledge from the vast internet with support for local LLMs (Ollama) and cloud providers (OpenAI, Claude, Groq), delivering accurate answers with cited sources while keeping your searches completely private.
+    zh: Vane 是一个专注于隐私的 AI 问答搜索引擎，完全在您自己的硬件上运行。它将来自互联网的知识与本地 LLM（Ollama）和云提供商（OpenAI、Claude、Groq）的支持相结合，提供带有引用来源的准确答案，同时保持您的搜索完全私密。
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/ItzCrazyKns/Vane
+  github: https://github.com/ItzCrazyKns/Vane
+  document: https://github.com/ItzCrazyKns/Vane/tree/master/docs
+  architectures:
+    - amd64
+    - arm64

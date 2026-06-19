@@ -1,0 +1,24 @@
+additionalProperties:
+  formFields:
+    - default: "./data"
+      edit: true
+      envKey: "APP_DATA"
+      labelEn: "Data Storage Path"
+      labelZh: "数据存储路径"
+      required: true
+      type: "text"
+    - default: "58090"
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: "Service Port"
+      labelZh: "服务端口"
+      required: true
+      rule: paramPort
+      type: number
+    - default: "Asia/Shanghai"
+      edit: true
+      envKey: "TZ"
+      labelEn: "Time Zone"
+      labelZh: "时区"
+      required: true
+      type: "text"

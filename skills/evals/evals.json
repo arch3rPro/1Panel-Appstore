@@ -1,0 +1,23 @@
+{
+  "skill_name": "1panel-app-builder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我把这个项目打包成1Panel本地应用：https://github.com/0xJacky/nginx-ui 这是一个Nginx配置管理工具，用docker部署，默认端口是9000",
+      "expected_output": "Create a 1Panel app package draft for nginx-ui with proper directory structure, data.yml metadata, docker-compose.yml variable substitution, README files, and either a real logo.png or a clear note that the icon is missing; never create a placeholder logo",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我有一个docker-compose.yml文件，内容如下：\n```yaml\nversion: '3'\nservices:\n  memos:\n    image: neosmemo/memos:latest\n    container_name: memos\n    ports:\n      - \"5230:5230\"\n    volumes:\n      - ./memos_data:/var/opt/memos\n    restart: always\n```\n帮我生成1Panel应用商店的配置",
+      "expected_output": "Parse the docker-compose file and generate a 1Panel app package for memos with PANEL_APP_PORT_HTTP, matching version data.yml port field, preserved volume mapping, and validation-ready supporting files",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "docker run -d --name umami -p 3000:3000 -e DATABASE_URL=postgresql://user:pass@db:5432/umami ghcr.io/umami-software/umami:postgresql-latest\n请帮我把这个umami网站统计工具做成1Panel应用",
+      "expected_output": "Parse the docker run command, extract port 3000 and DATABASE_URL, preserve the environment setting, and generate a 1Panel app package with appropriate form fields and validation guidance",
+      "files": []
+    }
+  ]
+}

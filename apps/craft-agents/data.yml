@@ -1,0 +1,31 @@
+name: Craft Agents
+tags:
+    - 开发工具
+    - AI助手
+title: AI Agent工作空间，支持多LLM提供商和MCP集成
+description: AI Agent工作空间，支持多LLM提供商和MCP集成
+additionalProperties:
+  key: craft-agents
+  name: Craft Agents
+  tags:
+    - DevTool
+    - AI
+  shortDescZh: AI Agent工作空间，支持多LLM提供商和MCP集成
+  shortDescEn: AI Agent workspace with multi-LLM provider support and MCP integration
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://agents.craft.do
+  github: https://github.com/lukilabs/craft-agents-oss
+  document: https://github.com/lukilabs/craft-agents-oss#readme
+  architectures:
+    - amd64
+    - arm64
+  description:
+    en: Craft Agents is an AI agent workspace that supports multiple LLM providers (Anthropic, Google AI Studio, ChatGPT Plus, GitHub Copilot) and MCP integration. It features multi-session management, dynamic status workflow, and can run as a headless server.
+    zh: Craft Agents是一个AI Agent工作空间，支持多种LLM提供商（Anthropic、Google AI Studio、ChatGPT Plus、GitHub Copilot）和MCP集成。它具有多会话管理、动态状态工作流等功能，可以作为无头服务器运行。
+    zh-Hant: Craft Agents是一個AI Agent工作空間，支持多種LLM提供商（Anthropic、Google AI Studio、ChatGPT Plus、GitHub Copilot）和MCP集成。它具有多會話管理、動態狀態工作流等功能，可以作為無頭服務器運行。
+    ja: Craft Agentsは、複数のLLMプロバイダー（Anthropic、Google AI Studio、ChatGPT Plus、GitHub Copilot）とMCP統合をサポートするAIエージェントワークスペースです。マルチセッション管理、動的ステータスワークフローなどの機能を備え、ヘッドレスサーバーとして実行できます。
+    ko: Craft Agents는 여러 LLM 제공자(Anthropic, Google AI Studio, ChatGPT Plus, GitHub Copilot)와 MCP 통합을 지원하는 AI 에이전트 워크스페이스입니다. 다중 세션 관리, 동적 상태 워크플로 등의 기능을 갖추고 있으며 헤드리스 서버로 실행할 수 있습니다.
+  memoryRequired: 512

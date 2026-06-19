@@ -1,0 +1,69 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:v1.89.1
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:4000"
+    environment:
+      DATABASE_URL: "postgresql://llmproxy:dbpassword9090@db:5432/litellm"
+      STORE_MODEL_IN_DB: "True"
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 http://localhost:4000/health/liveliness\
+          \ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+  db:
+    image: postgres:16
+    restart: always
+    container_name: ${CONTAINER_NAME}-db
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: llmproxy
+      POSTGRES_PASSWORD: dbpassword9090
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d litellm -U llmproxy"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+  prometheus:
+    image: prom/prometheus
+    container_name: ${CONTAINER_NAME}-prometheus
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+    restart: always
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+volumes:
+  prometheus_data:
+    driver: local
+  postgres_data:
+    name: litellm_postgres_data
+networks:
+  1panel-network:
+    external: true

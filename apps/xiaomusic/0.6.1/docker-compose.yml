@@ -1,0 +1,13 @@
+services:
+  xiaomusic:
+    image: hanxi/xiaomusic:v0.6.1
+    container_name: xiaomusic
+    restart: unless-stopped
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:8090
+    environment:
+      XIAOMUSIC_PUBLIC_PORT: ${PANEL_APP_PORT_HTTP}
+      TZ: ${TZ}
+    volumes:
+      - ${APP_DATA}/music:/app/music
+      - ${APP_DATA}/conf:/app/conf

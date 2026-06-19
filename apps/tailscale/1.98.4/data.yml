@@ -1,0 +1,62 @@
+additionalProperties:
+  formFields:
+    - default: ""
+      edit: true
+      envKey: TS_AUTHKEY
+      labelEn: Tailscale Auth Key
+      labelZh: Tailscale 认证密钥
+      required: false
+      rule: paramCommon
+      type: password
+      description:
+        zh: 从 https://login.tailscale.com/admin/settings/keys 获取认证密钥，留空则需要在容器内执行 tailscale up 进行交互登录
+        en: Get auth key from https://login.tailscale.com/admin/settings/keys, leave empty for interactive login via tailscale up
+    - default: "false"
+      edit: true
+      envKey: TS_USERSPACE
+      labelEn: Userspace Mode
+      labelZh: 用户空间模式
+      required: false
+      type: select
+      values:
+        - label: "false (Kernel Networking)"
+          value: "false"
+        - label: "true (Userspace)"
+          value: "true"
+      description:
+        zh: "false 使用内核网络（推荐），true 使用用户空间网络"
+        en: "false for kernel networking (recommended), true for userspace"
+    - default: ""
+      edit: true
+      envKey: TS_ROUTES
+      labelEn: Subnet Routes (Optional)
+      labelZh: 子网路由（可选）
+      required: false
+      rule: paramCommon
+      type: text
+      description:
+        zh: 要广播的子网路由，如 192.168.1.0/24,10.0.0.0/8
+        en: Subnet routes to advertise, e.g. 192.168.1.0/24,10.0.0.0/8
+    - default: "true"
+      edit: true
+      envKey: TS_ACCEPT_DNS
+      labelEn: Accept DNS
+      labelZh: 接受 DNS
+      required: false
+      type: select
+      values:
+        - label: "true"
+          value: "true"
+        - label: "false"
+          value: "false"
+    - default: ""
+      edit: true
+      envKey: TS_EXTRA_ARGS
+      labelEn: Extra Arguments (Optional)
+      labelZh: 额外参数（可选）
+      required: false
+      rule: paramCommon
+      type: text
+      description:
+        zh: tailscale up 命令的额外参数，如 --accept-routes
+        en: Extra arguments for tailscale up command, e.g. --accept-routes

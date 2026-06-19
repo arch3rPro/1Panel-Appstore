@@ -1,0 +1,28 @@
+services:
+  lxserver:
+    image: xcq0607/lxserver:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    networks:
+      - 1panel-network
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:9527"
+    volumes:
+      - ./data:/server/data
+      - ./logs:/server/logs
+      - ./cache:/server/cache
+      - ./music:/server/music
+    environment:
+      - TZ=Asia/Shanghai
+      - NODE_ENV=production
+      - PORT=9527
+      - FRONTEND_PASSWORD=${FRONTEND_PASSWORD}
+      - ENABLE_WEBPLAYER_AUTH=${ENABLE_WEBPLAYER_AUTH}
+      - WEBPLAYER_PASSWORD=${WEBPLAYER_PASSWORD}
+      - PLAYER_PATH=${PLAYER_PATH}
+      - TZ=${TZ}
+    labels:
+      createdBy: "Apps"
+networks:
+  1panel-network:
+    external: true

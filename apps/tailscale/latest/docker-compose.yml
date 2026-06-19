@@ -1,0 +1,28 @@
+services:
+  tailscaled:
+    container_name: ${CONTAINER_NAME}
+    image: tailscale/tailscale:latest
+    hostname: ${HOSTNAME:-tailscale}
+    restart: always
+    volumes:
+      - ./data/state:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    network_mode: host
+    privileged: true
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_USERSPACE=${TS_USERSPACE:-false}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_ROUTES=${TS_ROUTES:-}
+      - TS_ACCEPT_DNS=${TS_ACCEPT_DNS:-true}
+      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS:-}
+      - TS_AUTH_ONCE=${TS_AUTH_ONCE:-false}
+    command: containerboot
+    labels:
+      createdBy: "Apps"
+networks:
+  1panel-network:
+    external: true

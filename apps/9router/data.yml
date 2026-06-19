@@ -1,0 +1,29 @@
+name: 9Router
+tags:
+  - 开发工具
+  - AI
+  - API网关
+title: 免费 AI 路由器和 Token 节省工具
+description: 免费 AI 路由器和 Token 节省工具
+additionalProperties:
+  key: 9router
+  name: 9Router
+  tags:
+    - DevTool
+    - AI
+    - APIGateway
+  shortDescZh: 免费 AI 路由器和 Token 节省工具
+  shortDescEn: FREE AI Router & Token Saver
+  description:
+    en: 9Router is a free AI router that provides unified access to 40+ AI providers and 100+ models. Features RTK token saver (20-40% token savings), auto fallback from subscription to cheap to free models, quota tracking, and multi-account support. Works with Claude Code, Cursor, Codex, Copilot, Cline, and more.
+    zh: 9Router 是一个免费的 AI 路由器，提供对 40+ AI 提供商和 100+ 模型的统一访问。具有 RTK Token 节省功能（节省 20-40% 的 token），从订阅到廉价再到免费模型的自动降级，配额跟踪和多账户支持。兼容 Claude Code、Cursor、Codex、Copilot、Cline 等工具。
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://9router.com
+  github: https://github.com/decolua/9router
+  document: https://github.com/decolua/9router/blob/master/README.md
+  architectures:
+    - amd64
+    - arm64

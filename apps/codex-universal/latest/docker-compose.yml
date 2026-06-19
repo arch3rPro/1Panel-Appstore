@@ -1,0 +1,27 @@
+services:
+  codex-universal:
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    networks:
+      - 1panel-network
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./data:/workspace
+    working_dir: /workspace
+    environment:
+      - TZ=Asia/Shanghai
+      - CODEX_ENV_PYTHON_VERSION=${CODEX_ENV_PYTHON_VERSION}
+      - CODEX_ENV_NODE_VERSION=${CODEX_ENV_NODE_VERSION}
+      - CODEX_ENV_RUST_VERSION=${CODEX_ENV_RUST_VERSION}
+      - CODEX_ENV_GO_VERSION=${CODEX_ENV_GO_VERSION}
+      - CODEX_ENV_SWIFT_VERSION=${CODEX_ENV_SWIFT_VERSION}
+      - CODEX_ENV_RUBY_VERSION=${CODEX_ENV_RUBY_VERSION}
+      - CODEX_ENV_PHP_VERSION=${CODEX_ENV_PHP_VERSION}
+      - CODEX_ENV_JAVA_VERSION=${CODEX_ENV_JAVA_VERSION}
+    image: ghcr.io/openai/codex-universal:latest
+    labels:
+      createdBy: "Apps"
+networks:
+  1panel-network:
+    external: true

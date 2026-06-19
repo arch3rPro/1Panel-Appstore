@@ -1,0 +1,35 @@
+additionalProperties:
+  formFields:
+    - default: 8080
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: Web 端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: Asia/Shanghai
+      edit: true
+      envKey: TZ
+      labelEn: Time Zone
+      labelZh: 时区
+      required: true
+      type: text
+    - default: sub2api-jwt-secret-change-in-production
+      edit: true
+      envKey: JWT_SECRET
+      labelEn: JWT Secret
+      labelZh: JWT 密钥
+      random: true
+      required: true
+      rule: paramComplexity
+      type: password
+    - default: sub2api_db_pass
+      edit: true
+      envKey: POSTGRES_PASSWORD
+      labelEn: PostgreSQL Password
+      labelZh: PostgreSQL 密码
+      random: true
+      required: true
+      rule: paramComplexity
+      type: password

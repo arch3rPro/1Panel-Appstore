@@ -1,0 +1,22 @@
+name: Sub2API
+tags:
+    - AI / 大模型
+title: Sub2API - AI API 网关平台
+description: Sub2API - AI API 网关平台
+additionalProperties:
+  key: sub2api
+  name: Sub2API
+  tags:
+    - AI
+  shortDescZh: AI API 网关平台，支持订阅配额分发、API Key 管理、计费和负载均衡
+  shortDescEn: AI API gateway platform for subscription quota distribution
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://sub2api.org
+  github: https://github.com/Wei-Shaw/sub2api
+  document: https://github.com/Wei-Shaw/sub2api
+  architectures:
+    - amd64
+    - arm64

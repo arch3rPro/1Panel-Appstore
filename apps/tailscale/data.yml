@@ -1,0 +1,29 @@
+name: Tailscale
+tags:
+  - 网络工具
+  - 安全
+title: 私有 WireGuard 网络组网工具
+description: 最简单的 WireGuard 私有网络组网解决方案，支持多设备安全互联
+additionalProperties:
+  key: tailscale
+  name: Tailscale
+  tags:
+    - Networking
+    - Security
+  shortDescZh: 私有 WireGuard 网络组网工具
+  shortDescEn: Private WireGuard networking tool
+  description:
+    en: The easiest, most secure way to use WireGuard. Create private networks with secure mesh connectivity between devices.
+    zh: 最简单、最安全的 WireGuard 使用方式。创建设备间安全 mesh 连接的私有网络。
+  type: tool
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 90
+  website: https://tailscale.com
+  github: https://github.com/tailscale/tailscale
+  document: https://tailscale.com/kb
+  architectures:
+    - amd64
+    - arm64
+    - arm/v7
+  hostMode: true

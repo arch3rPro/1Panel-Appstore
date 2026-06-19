@@ -1,0 +1,52 @@
+additionalProperties:
+    formFields:
+        - default: 43443
+          edit: true
+          envKey: PANEL_APP_PORT_TCP
+          labelEn: TCP Port
+          labelZh: TCP 端口
+          required: true
+          rule: paramPort
+          type: number
+          label:
+            en: TCP Port
+            ja: TCP ポート
+            ms: Port TCP
+            pt-br: Porta TCP
+            ru: TCP порт
+            ko: TCP 포트
+            zh-Hant: TCP 埠
+            zh: TCP 端口
+        - default: 43478
+          edit: true
+          envKey: PANEL_APP_PORT_UDP
+          labelEn: UDP Port
+          labelZh: UDP 端口
+          required: true
+          rule: paramPort
+          type: number
+          label:
+            en: UDP Port
+            ja: UDP ポート
+            ms: Port UDP
+            pt-br: Porta UDP
+            ru: UDP порт
+            ko: UDP 포트
+            zh-Hant: UDP 埠
+            zh: UDP 端口
+        - default: true
+          edit: true
+          envKey: DERP_VERIFY_CLIENTS
+          labelEn: Verify Clients
+          labelZh: 验证客户端
+          required: false
+          type: boolean
+          label:
+            en: Verify Clients
+            ja: クライアント認証
+            ms: Verifikasi Pelanggan
+            pt-br: Verificar Clientes
+            ru: Проверка клиентов
+            ko: 클라이언트 확인
+            zh-Hant: 驗證客戶端
+            zh: 验证客户端
