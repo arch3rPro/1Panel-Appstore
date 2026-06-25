@@ -26,7 +26,8 @@ services:
             curl -sSf "$${SPEACHES_BASE_URL}/v1/models/Systran/faster-whisper-tiny" -H "Authorization: Bearer ${SECRET_KEY}" -X POST &&
             curl -sSf "$${SPEACHES_BASE_URL}/v1/models/Systran/faster-whisper-small" -H "Authorization: Bearer ${SECRET_KEY}" -X POST &&
             curl -sSf "$${SPEACHES_BASE_URL}/v1/models/Systran/faster-whisper-large-v3" -H "Authorization: Bearer ${SECRET_KEY}" -X POST &&
-            curl -sSf "$${SPEACHES_BASE_URL}/v1/models/quantumcookie/anime-whisper-ct2-fp16" -H "Authorization: Bearer ${SECRET_KEY}" -X POST
+            curl -sSf "$${SPEACHES_BASE_URL}/v1/models/quantumcookie/anime-whisper-ct2" -H "Authorization: Bearer ${SECRET_KEY}" -X POST &&
+            curl -sSf "$${SPEACHES_BASE_URL}/v1/models/quantumcookie/anime-whisper-ct2-fp16" -H "Authorization: Bearer ${SECRET_KEY}" -X POST &&
             curl -sSf "$${SPEACHES_BASE_URL}/v1/models/quantumcookie/anime-whisper-ct2-int8" -H "Authorization: Bearer ${SECRET_KEY}" -X POST
           '
     environment:
