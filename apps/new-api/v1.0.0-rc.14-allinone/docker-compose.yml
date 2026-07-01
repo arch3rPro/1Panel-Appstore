@@ -1,0 +1,67 @@
+services:
+  new-api:
+    image: calciumion/new-api:v1.0.0-rc.14
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:3000
+    networks:
+      - 1panel-network
+    command: --log-dir /app/logs
+    volumes:
+      - ./data:/data
+      - ./logs:/app/logs
+    environment:
+      - SQL_DSN=root:${PANEL_DB_ROOT_PASSWORD}@tcp(${CONTAINER_NAME}-mysql:3306)/${PANEL_DB_NAME}
+      - TZ=Asia/Shanghai
+      - REDIS_CONN_STRING=redis://${CONTAINER_NAME}-redis
+      - ERROR_LOG_ENABLED=true
+      - BATCH_UPDATE_ENABLED=true
+    depends_on:
+      redis:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'wget -q -O - http://localhost:3000/api/status | grep -o "success":\s*true'
+          | awk -F: '{print $2}'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      createdBy: Apps
+  mysql:
+    image: mysql:8.2
+    container_name: ${CONTAINER_NAME}-mysql
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PANEL_DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${PANEL_DB_NAME}
+    networks:
+      - 1panel-network
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - -h
+        - localhost
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+  redis:
+    image: redis:latest
+    container_name: ${CONTAINER_NAME}-redis
+    restart: always
+    networks:
+      - 1panel-network
+volumes:
+  mysql_data: null
+networks:
+  1panel-network:
+    external: true

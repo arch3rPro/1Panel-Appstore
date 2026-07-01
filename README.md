@@ -245,7 +245,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🚀 免费的GPT-4和其他大语言模型API接口
 
-<kbd>7.6.6-slim</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
+<kbd>7.7.0-slim</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
 
 </td>
 <td width="33%" align="center">
@@ -382,7 +382,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 开源自托管个人笔记工具，支持AI增强笔记检索
 
-<kbd>1.8.7</kbd> • [官网链接](https://github.com/blinko-space/blinko)
+<kbd>1.8.8</kbd> • [官网链接](https://github.com/blinko-space/blinko)
 
 </td>
 <td width="33%" align="center">
@@ -423,7 +423,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 开源Airtable替代品，将任何数据库转换为智能电子表格
 
-<kbd>2026.06.1</kbd> • [官网链接](https://github.com/nocodb/nocodb)
+<kbd>2026.06.2</kbd> • [官网链接](https://github.com/nocodb/nocodb)
 
 </td>
 <td width="33%" align="center">
@@ -593,7 +593,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🚀 强大的AI提示词优化工具，支持多种主流大语言模型
 
-<kbd>2.11.6</kbd> • [官网链接](https://github.com/arch3rPro/Prompt-Optimizer)
+<kbd>2.11.7</kbd> • [官网链接](https://github.com/arch3rPro/Prompt-Optimizer)
 
 </td>
 </tr>
@@ -651,7 +651,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔮 开源可视化AI工作流构建平台，拖拽式设计LLM应用
 
-<kbd>3.1.2</kbd> • [官网链接](https://github.com/FlowiseAI/Flowise)
+<kbd>3.1.3</kbd> • [官网链接](https://github.com/FlowiseAI/Flowise)
 
 </td>
 <td width="33%" align="center">
@@ -704,7 +704,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔍 开源无广告元搜索引擎，保护隐私无追踪，支持自建部署
 
-<kbd>2026.6.17-4dfdc822c</kbd> • [官网链接](https://docs.searxng.org/)
+<kbd>2026.6.30-d115c61a7</kbd> • [官网链接](https://docs.searxng.org/)
 
 </td>
 <td width="33%" align="center">
@@ -733,7 +733,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔮 强大的AI应用构建平台，可视化设计AI驱动的工作流和代理
 
-<kbd>1.10.0</kbd> • [官网链接](https://langflow.org/)
+<kbd>1.10.1</kbd> • [官网链接](https://langflow.org/)
 
 </td>
 <td width="33%" align="center">
@@ -745,7 +745,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔧 使用OpenAI格式统一调用所有LLM API，支持多种云服务商
 
-<kbd>1.89.1</kbd> • [官网链接](https://github.com/BerriAI/litellm)
+<kbd>1.90.0</kbd> • [官网链接](https://github.com/BerriAI/litellm)
 
 </td>
 <td width="33%" align="center">
@@ -757,7 +757,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 n8n汉化版，具有原生AI能力的Fair-code工作流自动化平台
 
-<kbd>2.27.1</kbd> • [官网链接](https://n8n.io/)
+<kbd>2.29.0</kbd> • [官网链接](https://n8n.io/)
 
 </td>
 </tr>
@@ -786,7 +786,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📝 私有的、多模型的Google Notebook LM替代方案，支持多模态内容和AI播客生成
 
-<kbd>1.9.0</kbd> • [官网链接](https://www.open-notebook.ai/)
+<kbd>1.10.0</kbd> • [官网链接](https://www.open-notebook.ai/)
 
 </td>
 </tr>
@@ -803,7 +803,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🍥 AI API 网关平台，支持订阅配额分发、API Key 管理、计费和负载均衡
 
-<kbd>0.1.137</kbd> • [官网链接](https://sub2api.org)
+<kbd>0.1.141</kbd> • [官网链接](https://sub2api.org)
 
 </td>
 <td width="33%" align="center">
@@ -844,7 +844,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🚀 免费 AI 路由器和 Token 节省工具
 
-<kbd>0.5.2</kbd> • [官网链接](https://9router.com)
+<kbd>0.5.15</kbd> • [官网链接](https://9router.com)
 
 </td>
 <td width="33%" align="center">
@@ -938,7 +938,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🧭 Hermes Agent 的全功能 Web 管理面板
 
-<kbd>0.6.17</kbd> • [官网链接](https://github.com/EKKOLearnAI/hermes-web-ui)
+<kbd>0.6.22</kbd> • [官网链接](https://github.com/EKKOLearnAI/hermes-web-ui)
 
 </td>
 <td width="33%" align="center">
@@ -950,7 +950,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔌 MCP 服务器统一管理中心
 
-<kbd>1.0.16</kbd> • [官网链接](https://docs.mcphub.app)
+<kbd>1.0.21</kbd> • [官网链接](https://docs.mcphub.app)
 
 </td>
 </tr>
@@ -967,7 +967,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🎭 提供浏览器自动化功能的 MCP 服务器
 
-<kbd>1.61.0-noble</kbd> • [官网链接](https://github.com/microsoft/playwright-mcp)
+<kbd>0.0.77</kbd> • [官网链接](https://github.com/microsoft/playwright-mcp)
 
 </td>
 <td width="33%" align="center">
@@ -1039,7 +1039,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📥 高性能Usenet下载工具，支持Web界面管理
 
-<kbd>26.1</kbd> • [官网链接](https://nzbget.net/)
+<kbd>26.2</kbd> • [官网链接](https://nzbget.net/)
 
 </td>
 <td width="33%" align="center">
@@ -1123,7 +1123,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🖥️ 简单好用安全的开源交互审计系统
 
-<kbd>3.3.6</kbd> • [官网链接](https://github.com/dushixiang/next-terminal)
+<kbd>3.4.2</kbd> • [官网链接](https://github.com/dushixiang/next-terminal)
 
 </td>
 </tr>
@@ -1181,7 +1181,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📊 开源 all-in-one 数据洞察中心，集成网站分析、服务监控、服务器状态监控
 
-<kbd>1.32.2</kbd> • [官网链接](https://tianji.msgbyte.com/)
+<kbd>1.32.13</kbd> • [官网链接](https://tianji.msgbyte.com/)
 
 </td>
 <td width="33%" align="center">
@@ -1236,7 +1236,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 多AdGuardHome实例间配置同步工具
 
-<kbd>0.9.0</kbd> • [官网链接](https://github.com/bakito/adguardhome-sync)
+<kbd>0.9.2</kbd> • [官网链接](https://github.com/bakito/adguardhome-sync)
 
 </td>
 <td width="33%" align="center">
@@ -1265,7 +1265,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 Docker 镜像加速与私有部署服务，支持多平台和多架构
 
-<kbd>0.7.6</kbd> • [官网链接](https://kspeeder.istoreos.com/)
+<kbd>0.7.10</kbd> • [官网链接](https://kspeeder.istoreos.com/)
 
 </td>
 <td width="33%" align="center">
@@ -1289,7 +1289,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🌌 简单易用的自托管VPN服务，支持多平台和Docker快速部署
 
-<kbd>6.0.6</kbd> • [官网链接](https://github.com/starvpn/starvpn)
+<kbd>6.0.7</kbd> • [官网链接](https://github.com/starvpn/starvpn)
 
 </td>
 </tr>
@@ -1429,7 +1429,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📝 高性能低延迟的 Obsidian 笔记同步服务
 
-<kbd>3.3.3</kbd> • [官网链接](https://github.com/haierkeys/fast-note-sync-service)
+<kbd>3.4.0</kbd> • [官网链接](https://github.com/haierkeys/fast-note-sync-service)
 
 </td>
 <td width="33%" align="center">
@@ -1441,7 +1441,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📡 多平台热点推送
 
-<kbd>6.9.1</kbd> • [官网链接](https://github.com/sansan0/TrendRadar)
+<kbd>6.10.0</kbd> • [官网链接](https://github.com/sansan0/TrendRadar)
 
 </td>
 </tr>
@@ -1501,7 +1501,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 ⚡ Docker镜像加速命令查询获取、镜像搜索、配置教程文档展示UI面板
 
-<kbd>4.1.0</kbd> • [官网链接](https://github.com/dqzboy/Docker-Proxy)
+<kbd>4.1.2</kbd> • [官网链接](https://github.com/dqzboy/Docker-Proxy)
 
 </td>
 <td width="33%" align="center">
@@ -1542,7 +1542,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🐳 轻量化 docker 可视化管理面板
 
-<kbd>1.10.4-lite</kbd> • [官网链接](https://dpanel.cc/)
+<kbd>1.10.5-lite</kbd> • [官网链接](https://dpanel.cc/)
 
 </td>
 </tr>

@@ -1,0 +1,26 @@
+additionalProperties:
+  formFields:
+    - default: 8001
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: Web 端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: admin
+      edit: true
+      envKey: PANEL_APP_USERNAME
+      labelEn: Admin Username
+      labelZh: 管理员用户名
+      required: true
+      rule: paramCommon
+      type: text
+    - default: admin@123
+      edit: true
+      envKey: PANEL_APP_PASSWORD
+      labelEn: Admin Password
+      labelZh: 管理员密码
+      required: true
+      rule: paramComplexity
+      type: password

@@ -1,0 +1,22 @@
+services:
+  we-mp-rss:
+    image: ghcr.io/rachelos/we-mp-rss:1.4.5
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    networks:
+      - 1panel-network
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:8001"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DB=sqlite:///data/we_mp_rss.db
+      - USERNAME=${PANEL_APP_USERNAME}
+      - PASSWORD=${PANEL_APP_PASSWORD}
+      - TZ=Asia/Shanghai
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true

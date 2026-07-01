@@ -1,0 +1,26 @@
+name: WeRSS
+tags:
+  - 实用工具
+title: 微信公众号订阅助手
+description: WeRSS 是一个用于订阅和管理微信公众号内容的工具，提供 RSS 订阅功能，支持多种数据库、多主题、级联系统和多种通知渠道。
+additionalProperties:
+  key: we-mp-rss
+  name: WeRSS
+  tags:
+    - Tool
+  shortDescZh: 微信公众号 RSS 订阅助手，支持内容抓取、RSS 生成和多主题。
+  shortDescEn: WeChat Official Account RSS subscription assistant with content crawling and multi-theme support.
+  description:
+    en: WeRSS is a tool for subscribing to and managing WeChat Official Account content, providing RSS subscription functionality. It supports content crawling and parsing, RSS feed generation, a user-friendly web UI, scheduled auto-updates, multiple databases (SQLite/MySQL), multi-theme switching, a cascade node system, and various notification channels.
+    zh-Hant: WeRSS 是一個用於訂閱和管理微信公眾號內容的工具，提供 RSS 訂閱功能，支持內容抓取解析、RSS 生成、Web 管理界面、定時更新、多資料庫、多主題切換、級聯系統和多種通知渠道。
+    zh: WeRSS 是一个用于订阅和管理微信公众号内容的工具，提供 RSS 订阅功能，支持内容抓取和解析、RSS 订阅生成、用户友好的 Web 管理界面、定时自动更新、多种数据库（默认 SQLite，可选 MySQL）、多种抓取方式、多主题切换、级联系统和多种通知渠道。
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/rachelos/we-mp-rss
+  github: https://github.com/rachelos/we-mp-rss
+  document: https://github.com/rachelos/we-mp-rss
+  architectures:
+    - amd64
+    - arm64
