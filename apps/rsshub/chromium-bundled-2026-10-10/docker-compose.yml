@@ -1,6 +1,6 @@
 services:
   rsshub:
-    image: diygod/rsshub:chromium-bundled-2026-10-09
+    image: diygod/rsshub:chromium-bundled-2026-10-10
     container_name: ${CONTAINER_NAME}
     restart: always
     ports:
