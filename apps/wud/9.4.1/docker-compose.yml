@@ -1,6 +1,6 @@
 services:
   whatsupdocker:
-    image: getwud/wud:9.3.0
+    image: getwud/wud:9.4.1
     container_name: ${CONTAINER_NAME}
     ports:
       - ${PANEL_APP_PORT_HTTP}:3000
