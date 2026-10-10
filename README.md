@@ -323,7 +323,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🤖 AI驱动的图表创建工具
 
-<kbd>0.4.15</kbd> • [官网链接](https://next-ai-drawio.jiang.jp/)
+<kbd>0.5.0</kbd> • [官网链接](https://next-ai-drawio.jiang.jp/)
 
 </td>
 <td width="33%" align="center">
