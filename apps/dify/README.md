@@ -93,3 +93,7 @@ Dify 是一个开源的 LLM 应用开发平台。其直观的界面结合了 AI 
     <td align="center">❌</td>
   </tr>
 </table>
+
+## Weaviate 升级说明（1.27.0 → 1.39.13）
+
+内置的 Weaviate 向量数据库已从 1.27.0 升级到 1.39.13。`volumes/weaviate` 中的数据会保留，但升级前请先备份：Weaviate 建议逐个小版本升级。Dify 在 Weaviate 1.27.0 上写入的向量可能无法被语义检索命中；如果升级后检索没有结果，请对相关知识库重新索引。
