@@ -797,7 +797,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🚀 免费的GPT-4和其他大语言模型API接口
 
-<kbd>8.8.8</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
+<kbd>8.8.9</kbd> • [官网链接](https://github.com/xtekky/gpt4free)
 
 </td>
 <td width="33%" align="center">
