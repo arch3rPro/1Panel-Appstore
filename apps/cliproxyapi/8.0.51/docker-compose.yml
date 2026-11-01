@@ -1,6 +1,6 @@
 services:
   cliproxyapi:
-    image: eceasy/cli-proxy-api:v8.0.48
+    image: eceasy/cli-proxy-api:v8.0.51
     container_name: ${CONTAINER_NAME}
     restart: always
     networks:
