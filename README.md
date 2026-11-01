@@ -540,7 +540,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🧭 Hermes Agent 的全功能 Web 管理面板
 
-<kbd>1.0.8</kbd> • [官网链接](https://github.com/EKKOLearnAI/hermes-web-ui)
+<kbd>1.0.9</kbd> • [官网链接](https://github.com/EKKOLearnAI/hermes-web-ui)
 
 </td>
 <td width="33%" align="center">
