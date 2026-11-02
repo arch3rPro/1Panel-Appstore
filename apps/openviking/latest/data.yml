@@ -18,116 +18,100 @@ additionalProperties:
       edit: true
       envKey: ROOT_API_KEY
       labelEn: Root API Key
-      labelZh: 根 API 密钥
+      labelZh: root 密钥
       random: true
       required: true
       type: password
       label:
         en: Root API Key
-        zh: 根 API 密钥
-        zh-Hant: 根 API 金鑰
-        ja: ルート API キー
-        ko: 루트 API 키
+        zh: root 密钥
+        zh-Hant: root 金鑰
+        ja: root キー
+        ko: root 키
     - default: openai
       edit: true
-      envKey: MODEL_PROVIDER
-      labelEn: Model Provider
-      labelZh: 模型提供商
+      envKey: MODEL_PRESET
+      labelEn: Model Preset
+      labelZh: 模型预设
       required: true
       type: select
       values:
-        - label: OpenAI Compatible
+        - label: OpenAI（含兼容代理）
           value: openai
-        - label: Volcengine (Doubao)
+        - label: 火山方舟 / Doubao
           value: volcengine
-        - label: Ollama
+        - label: Ollama 本地模型
           value: ollama
+        - label: 自定义（OpenAI 兼容）
+          value: custom
       label:
-        en: Model Provider
-        zh: 模型提供商
-        zh-Hant: 模型供應商
-        ja: モデルプロバイダー
-        ko: 모델 공급자
-    - default: https://api.openai.com/v1
-      edit: true
-      envKey: MODEL_API_BASE
-      labelEn: Model API Base URL
-      labelZh: 模型 API 地址
-      required: true
-      type: text
-      label:
-        en: Model API Base URL
-        zh: 模型 API 地址
-        zh-Hant: 模型 API 位址
-        ja: モデル API ベース URL
-        ko: 모델 API 기본 URL
+        en: Model Preset
+        zh: 模型预设
+        zh-Hant: 模型預設
+        ja: モデルプリセット
+        ko: 모델 프리셋
     - default: ""
       edit: true
       envKey: MODEL_API_KEY
-      labelEn: Model API Key
-      labelZh: 模型 API 密钥
-      required: true
+      labelEn: Model API Key (empty = configure later in Studio)
+      labelZh: 模型 API 密钥（留空表示稍后在 Web Studio 配置）
+      required: false
       type: password
       label:
-        en: Model API Key
-        zh: 模型 API 密钥
-        zh-Hant: 模型 API 金鑰
-        ja: モデル API キー
-        ko: 모델 API 키
-    - default: text-embedding-3-small
+        en: Model API Key (empty = configure later in Studio)
+        zh: 模型 API 密钥（留空表示稍后在 Web Studio 配置）
+        zh-Hant: 模型 API 金鑰（留空表示稍後於 Web Studio 設定）
+        ja: モデル API キー（空欄なら後で Studio で設定）
+        ko: 모델 API 키 (비워두면 나중에 Studio에서 설정)
+    - default: ""
+      edit: true
+      envKey: MODEL_API_BASE
+      labelEn: Advanced - override API base URL
+      labelZh: 高级 - 覆写模型 API 地址
+      required: false
+      type: text
+      label:
+        en: Advanced - override API base URL
+        zh: 高级 - 覆写模型 API 地址
+        zh-Hant: 進階 - 覆寫模型 API 位址
+        ja: 詳細 - モデル API ベース URL を上書き
+        ko: 고급 - 모델 API 기본 URL 재정의
+    - default: ""
       edit: true
       envKey: EMBEDDING_MODEL
-      labelEn: Embedding Model
-      labelZh: 向量嵌入模型
-      required: true
+      labelEn: Advanced - override embedding model
+      labelZh: 高级 - 覆写向量嵌入模型
+      required: false
       type: text
       label:
-        en: Embedding Model
-        zh: 向量嵌入模型
-        zh-Hant: 向量嵌入模型
-        ja: 埋め込みモデル
-        ko: 임베딩 모델
-    - default: 1536
+        en: Advanced - override embedding model
+        zh: 高级 - 覆写向量嵌入模型
+        zh-Hant: 進階 - 覆寫向量嵌入模型
+        ja: 詳細 - 埋め込みモデルを上書き
+        ko: 고급 - 임베딩 모델 재정의
+    - default: ""
       edit: true
       envKey: EMBEDDING_DIMENSION
-      labelEn: Embedding Dimension
-      labelZh: 向量维度
-      required: true
-      type: number
-      label:
-        en: Embedding Dimension
-        zh: 向量维度
-        zh-Hant: 向量維度
-        ja: 埋め込み次元数
-        ko: 임베딩 차원
-    - default: text
-      edit: true
-      envKey: EMBEDDING_INPUT
-      labelEn: Embedding Input Type
-      labelZh: 嵌入输入类型
-      required: true
-      type: select
-      values:
-        - label: text
-          value: text
-        - label: multimodal
-          value: multimodal
-      label:
-        en: Embedding Input Type
-        zh: 嵌入输入类型
-        zh-Hant: 嵌入輸入類型
-        ja: 埋め込み入力タイプ
-        ko: 임베딩 입력 유형
-    - default: gpt-5.4
-      edit: true
-      envKey: VLM_MODEL
-      labelEn: VLM Model
-      labelZh: 视觉语言模型 (VLM)
-      required: true
+      labelEn: Advanced - override embedding dimension
+      labelZh: 高级 - 覆写向量维度
+      required: false
       type: text
       label:
-        en: VLM Model
-        zh: 视觉语言模型 (VLM)
-        zh-Hant: 視覺語言模型 (VLM)
-        ja: VLM モデル
-        ko: VLM 모델
+        en: Advanced - override embedding dimension
+        zh: 高级 - 覆写向量维度
+        zh-Hant: 進階 - 覆寫向量維度
+        ja: 詳細 - 埋め込み次元数を上書き
+        ko: 고급 - 임베딩 차원 재정의
+    - default: ""
+      edit: true
+      envKey: VLM_MODEL
+      labelEn: Advanced - override VLM model
+      labelZh: 高级 - 覆写视觉语言模型 (VLM)
+      required: false
+      type: text
+      label:
+        en: Advanced - override VLM model
+        zh: 高级 - 覆写视觉语言模型 (VLM)
+        zh-Hant: 進階 - 覆寫視覺語言模型 (VLM)
+        ja: 詳細 - VLM モデルを上書き
+        ko: 고급 - VLM 모델 재정의

@@ -27,7 +27,7 @@ This app packages the official image `ghcr.io/volcengine/openviking` and include
 
 ## Usage
 
-1. Prepare working model APIs and enter their settings during installation. Then open `http://<your-ip>:<configured-http-port>/studio` (default port: `1933`).
+1. Pick a **model preset** (OpenAI by default) and paste its **API key**, or leave everything empty and configure later. Then open `http://<your-ip>:<configured-http-port>/studio` (default port: `1933`).
 2. In Web Studio settings, enter the **Root API Key** generated during installation.
 3. Create an account and a user on the **Users** page. The user's **User API Key** is shown immediately. Use User/Admin keys for data access; the root key is for administration only.
 4. You can also connect with the CLI, SDKs or `curl`:
@@ -39,29 +39,35 @@ This app packages the official image `ghcr.io/volcengine/openviking` and include
 
 ## Model Configuration (important)
 
-OpenViking requires an **embedding model** and a **VLM (vision-language model)**. The official Docker image does **not** bundle local embedding dependencies, so models must be provided over an API.
+OpenViking needs an **embedding model** and a **VLM** to ingest and retrieve content. The official Docker image does **not** bundle local embedding dependencies, so models must come from an API.
 
-The install form values are written to `ov.conf` on **first start**:
+The install form asks for two things; the rest is derived from the preset:
 
-| Field | Description | Default |
+| Field | Required | Notes |
 | --- | --- | --- |
-| Model Provider | `openai` (OpenAI-compatible) / `volcengine` / `ollama` | `openai` |
-| Model API Base URL | Model endpoint | `https://api.openai.com/v1` |
-| Model API Key | Provider API key | empty (required) |
-| Embedding Model | Embedding model name | `text-embedding-3-small` |
-| Embedding Dimension | Must match the model output | `1536` |
-| Embedding Input Type | `text` or `multimodal` | `text` |
-| VLM Model | Model used for summaries and memory extraction | `gpt-5.4` |
+| HTTP Port | yes | `1933` by default; usually unchanged |
+| Root API Key | yes | Randomly generated; just keep it |
+| Model Preset | yes | Dropdown, defaults to OpenAI; no model names to type |
+| Model API Key | no | **The only field you normally type into** |
+| Advanced overrides (base URL / embedding model / dimension / VLM) | no | Only for proxies or different models |
 
-Reference setups:
+What each preset resolves to:
 
-- **OpenAI**: provider `openai`, base `https://api.openai.com/v1`, embedding `text-embedding-3-small` (dim 1536), VLM e.g. `gpt-5.4`.
-- **Volcengine Ark (Doubao)**: provider `volcengine`, base `https://ark.cn-beijing.volces.com/api/v3`, embedding `doubao-embedding-vision-251215` (dim 1024, input `multimodal`), VLM e.g. `doubao-seed-2-0-lite-260428`.
-- **Ollama / other OpenAI-compatible gateways**: provider `openai` or `ollama`, base pointing at your `/v1` endpoint. Versions `0.5.2.1` and `latest` include a Linux host mapping for `http://host.docker.internal:11434/v1`. Ollama must listen on a container-reachable address and allow the Docker subnet; do not expose it publicly. If no key is required, enter `ollama` in the required key field. Choose appropriate embedding and vision-language models.
+| Preset | provider | API base | Embedding (dimension, input) | VLM |
+| --- | --- | --- | --- | --- |
+| OpenAI | `openai` | `https://api.openai.com/v1` | `text-embedding-3-small` (1536, `text`) | `gpt-4o` |
+| Volcengine Ark | `volcengine` | `https://ark.cn-beijing.volces.com/api/v3` | `doubao-embedding-vision-251215` (1024, `multimodal`) | `doubao-seed-2-0-lite-260428` |
+| Ollama | `ollama` | `http://host.docker.internal:11434/v1` | `nomic-embed-text` (768, `text`) | `qwen2.5:7b` |
+| Custom | `openai` | fill the base-URL override | fill model and dimension overrides | fill the VLM override |
 
-The form initially shares the provider, endpoint and key between Embedding and VLM. To use different services, edit `embedding.dense` and `vlm` separately in `ov.conf` after initialization. Third-party model APIs may incur charges.
+Key points:
 
-> Note: changing the embedding model or dimension makes existing vector collections incompatible and requires reindexing.
+- **Empty API key = install first, configure later.** The server starts and reports healthy (`/health` only checks the process), while `/ready` shows `embedding: not_initialized` and ingest/retrieval fail until models are configured. Afterwards use Web Studio **Settings → Server configuration** to enter models and press **Save and restart**, or switch to **File mode** to edit the whole `ov.conf`. This is upstream's supported path; no reinstall needed.
+- **Ollama needs no key at all**; the preset supplies a placeholder. Ollama must listen on a container-reachable address and allow the Docker subnet; do not expose it publicly.
+- **Proxy or a different model**: keep the preset and fill only the relevant advanced override. Overrides win over the preset.
+- **Custom (OpenAI-compatible)** needs base URL, embedding model, dimension and VLM together; if one is missing the server starts without models and the container log (`[ov-init]`) names what is missing.
+- The startup helper writes only the required `server` and `storage` sections, adding models only when the values are complete. The generated `ov.conf` is mode `600` and is **never overwritten when it already exists** (Studio edits survive reinstalls).
+- Third-party model APIs may incur charges. Changing the embedding model or dimension makes existing vector collections incompatible and requires reindexing.
 
 ## Data Directory
 
@@ -74,14 +80,11 @@ Stop the app and back up the entire `./data` directory before upgrading, not jus
 
 ## Changing Configuration
 
-`ov.conf` is generated from the install form only on first start (when it does not exist) and is persisted at `./data/ov.conf`. **Changing the form later does not regenerate it**; edit the file directly and restart:
+`ov.conf` is generated from the preset only on first start (when it does not exist), written with mode `600` and persisted at `./data/ov.conf`. **Changing the form later does not regenerate it.** Any of these works:
 
-```bash
-docker exec -it <container-name> openviking-server doctor   # validate config
-docker restart <container-name>
-```
-
-Or re-run the setup wizard inside the container:
+1. **Web Studio (recommended)**: log in as ROOT, open Settings → Server configuration, edit `embedding` / `vlm` in form mode, or switch to File mode to edit the whole `ov.conf` (port, `root_api_key`, `storage`, ...) and press Save and restart.
+2. Edit `./data/ov.conf` on the host, then restart the container.
+3. Re-run the wizard inside the container:
 
 ```bash
 docker exec -it <container-name> openviking-server init

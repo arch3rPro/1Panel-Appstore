@@ -2,53 +2,33 @@ services:
   openviking:
     image: ghcr.io/volcengine/openviking:v0.5.2
     # Mainland China mirror (uncomment if ghcr.io is slow/unreachable):
-    # Verify that the mirror publishes v0.5.2 before switching registries.
     # image: openviking-cn-beijing.cr.volces.com/volcengine/openviking:v0.5.2
     container_name: ${CONTAINER_NAME}
     restart: always
+    # Writes ov.conf on first start only (preset + overrides), then defers to the
+    # official entrypoint. Later edits belong in data/ov.conf or Web Studio.
+    entrypoint: ["python3", "/opt/1panel/init-config.py"]
     ports:
       - "${PANEL_APP_PORT_HTTP}:1933"
     volumes:
       - ./data:/app/.openviking
+      - ./data/scripts/init-config.py:/opt/1panel/init-config.py:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       # The bundled VikingBot is disabled by default: in API-key mode it needs a
       # User/Admin key (a root key cannot be used). See the README to enable it.
       OPENVIKING_WITH_BOT: "0"
       OPENVIKING_SERVER_HOST: "0.0.0.0"
+      OPENVIKING_SERVER_PORT: "1933"
       OPENVIKING_CONFIG_FILE: /app/.openviking/ov.conf
-      # On first start (no ov.conf yet) the entrypoint writes this JSON to
-      # /app/.openviking/ov.conf. Later changes must be made in that file.
-      OPENVIKING_CONF_CONTENT: |
-        {
-          "embedding": {
-            "dense": {
-              "provider": "${MODEL_PROVIDER}",
-              "model": "${EMBEDDING_MODEL}",
-              "api_base": "${MODEL_API_BASE}",
-              "api_key": "${MODEL_API_KEY}",
-              "dimension": ${EMBEDDING_DIMENSION},
-              "input": "${EMBEDDING_INPUT}"
-            }
-          },
-          "vlm": {
-            "provider": "${MODEL_PROVIDER}",
-            "model": "${VLM_MODEL}",
-            "api_base": "${MODEL_API_BASE}",
-            "api_key": "${MODEL_API_KEY}",
-            "thinking": false
-          },
-          "storage": {
-            "workspace": "./data",
-            "agfs": { "backend": "local" },
-            "vectordb": { "backend": "local" }
-          },
-          "server": {
-            "host": "0.0.0.0",
-            "port": 1933,
-            "root_api_key": "${ROOT_API_KEY}",
-            "cors_origins": ["*"]
-          }
-        }
+      ROOT_API_KEY: ${ROOT_API_KEY}
+      MODEL_PRESET: ${MODEL_PRESET}
+      MODEL_API_KEY: ${MODEL_API_KEY}
+      MODEL_API_BASE: ${MODEL_API_BASE}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION}
+      VLM_MODEL: ${VLM_MODEL}
     healthcheck:
       test: ["CMD", "openviking-entrypoint", "--healthcheck"]
       interval: 30s
