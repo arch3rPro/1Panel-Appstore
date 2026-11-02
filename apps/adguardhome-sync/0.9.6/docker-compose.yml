@@ -12,7 +12,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Asia/Shanghai
-    image: linuxserver/adguardhome-sync:0.9.5
+    image: linuxserver/adguardhome-sync:0.9.6
     labels:
       createdBy: Apps
 networks:

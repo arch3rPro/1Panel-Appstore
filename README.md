@@ -1425,7 +1425,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 多AdGuardHome实例间配置同步工具
 
-<kbd>0.9.5</kbd> • [官网链接](https://github.com/bakito/adguardhome-sync)
+<kbd>0.9.6</kbd> • [官网链接](https://github.com/bakito/adguardhome-sync)
 
 </td>
 <td width="33%" align="center">
