@@ -253,7 +253,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🔍 开源无广告元搜索引擎，保护隐私无追踪，支持自建部署
 
-<kbd>2026.11.2-d138f443b</kbd> • [官网链接](https://docs.searxng.org/)
+<kbd>2026.11.2-cccbc9e15</kbd> • [官网链接](https://docs.searxng.org/)
 
 </td>
 <td width="33%" align="center">
