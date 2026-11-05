@@ -1,26 +1,27 @@
 name: Nitter
 tags:
   - Website
-title: 免费开源的 Twitter/X 前端
-description: Nitter 是一个注重隐私、免费开源的 Twitter/X 前端，无需登录即可浏览推文
+  - AI
+title: 免费开源的 Twitter/X 前端（含 Agent API）
+description: Nitter 是一个注重隐私、免费开源的 Twitter/X 前端，内置只读的 Agent API 与 MCP，让 AI Agent 读取公开推文数据
 additionalProperties:
   key: nitter
   name: Nitter
   tags:
     - Website
-  shortDescZh: 免费开源的 Twitter/X 前端，注重隐私
-  shortDescEn: A privacy-friendly, free and open-source alternative Twitter/X front-end
+    - AI
+  shortDescZh: 免费开源的 Twitter/X 前端，内置 Agent API 与 MCP
+  shortDescEn: A privacy-friendly, open-source Twitter/X front-end with a built-in Agent API and MCP
   description:
-    en: Nitter is a free and open-source alternative Twitter/X front-end focused on privacy and performance. No JavaScript, no ads, no tracking, and no paywalls.
-    zh-Hant: Nitter 是一個注重隱私、免費開源的 Twitter/X 前端，無需登入即可瀏覽推文
-    zh: Nitter 是一个注重隐私、免费开源的 Twitter/X 前端，无需登录即可浏览推文
+    en: Nitter is a privacy-focused, free and open-source Twitter/X front-end with a built-in read-only Agent API, served over REST and MCP so AI agents can read public X data. No JavaScript, no ads, no tracking.
+    zh-Hant: Nitter 是一個注重隱私、免費開源的 Twitter/X 前端，內建唯讀的 Agent API 與 MCP，讓 AI Agent 讀取公開推文資料
+    zh: Nitter 是一个注重隐私、免费开源的 Twitter/X 前端，内置只读的 Agent API 与 MCP，让 AI Agent 读取公开推文数据
   type: website
   crossVersionUpdate: true
   limit: 0
   recommend: 0
-  website: https://github.com/zedeus/nitter
-  github: https://github.com/zedeus/nitter
-  document: https://github.com/zedeus/nitter
+  website: https://github.com/xiaoY233/nitter
+  github: https://github.com/xiaoY233/nitter
+  document: https://github.com/xiaoY233/nitter/tree/master/docs
   architectures:
     - amd64
-    - arm64

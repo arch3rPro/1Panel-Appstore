@@ -8,3 +8,11 @@ additionalProperties:
       required: true
       rule: paramPort
       type: number
+    - default: ""
+      edit: true
+      envKey: NITTER_API_TOKENS
+      labelEn: Agent API Token
+      labelZh: Agent API 令牌
+      random: true
+      required: true
+      type: password

@@ -1,17 +1,31 @@
 services:
   nitter:
-    image: zedeus/nitter:latest
+    image: vuldocker/nitter:latest
     container_name: ${CONTAINER_NAME}
     restart: always
     networks:
       - 1panel-network
     ports:
       - "${PANEL_APP_PORT_HTTP}:8080"
+    environment:
+      NITTER_API_TOKENS: "${NITTER_API_TOKENS}"
     volumes:
-      - ./data/nitter.conf:/src/nitter.conf
-      - ./data/sessions.jsonl:/src/sessions.jsonl
+      - ./data/nitter.conf:/src/nitter.conf:ro
+      - ./data/sessions.jsonl:/src/sessions.jsonl:ro
     depends_on:
-      - nitter-redis
+      nitter-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -nv --tries=1 --spider http://127.0.0.1:8080/.health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     labels:
       createdBy: "Apps"
 
@@ -24,6 +38,11 @@ services:
       - ./data/redis:/data
     networks:
       - 1panel-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     labels:
       createdBy: "Apps"
 
