@@ -282,7 +282,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🔮 强大的AI应用构建平台，可视化设计AI驱动的工作流和代理
 
-<kbd>1.13.0</kbd> • [官网链接](https://langflow.org/)
+<kbd>1.13.1</kbd> • [官网链接](https://langflow.org/)
 
 </td>
 <td width="33%" align="center">
