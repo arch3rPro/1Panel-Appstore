@@ -135,6 +135,12 @@
       "matchPackageNames": ["ghcr.io/umami-software/umami"],
       "versionCompatibility": "^(?<compatibility>.*)-(?<version>.*)$",
       "versioning": "semver"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/yetone/magpie"],
+      "groupName": "magpie",
+      "schedule": ["* 2 * * *"]
     }
   ],
   "prCreation": "immediate"
