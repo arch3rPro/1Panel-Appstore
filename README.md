@@ -934,7 +934,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 开源自托管个人笔记工具，支持AI增强笔记检索
 
-<kbd>1.8.8</kbd> • [官网链接](https://github.com/blinko-space/blinko)
+<kbd>1.8.9</kbd> • [官网链接](https://github.com/blinko-space/blinko)
 
 </td>
 <td width="33%" align="center">
