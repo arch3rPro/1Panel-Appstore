@@ -357,6 +357,23 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 <tr>
 <td width="33%" align="center">
 
+<a href="./apps/magpie/README.md">
+<img src="./apps/magpie/logo.png" width="60" height="60" alt="magpie">
+<br><b>magpie</b>
+</a>
+
+🚀 多 Agent 统一 AI 网关，任意模型给任意 AI 编程工具，支持复用订阅账号
+
+<kbd>0.1.3150</kbd> • [官网链接](https://usemagpie.ai)
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
 <a href="./apps/deeptutor/README.md">
 <img src="./apps/deeptutor/logo.png" width="60" height="60" alt="DeepTutor">
 <br><b>DeepTutor</b>

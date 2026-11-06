@@ -1,0 +1,52 @@
+additionalProperties:
+  formFields:
+    - default: 3430
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web UI Port
+      labelZh: Web 管理端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 3425
+      edit: true
+      envKey: PANEL_APP_PORT_API
+      labelEn: Gateway Port
+      labelZh: 网关（API）端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: magpie-web-key-change-me
+      edit: true
+      envKey: MAGPIE_WEB_KEY
+      labelEn: Web UI Access Key
+      labelZh: Web 界面访问密钥
+      required: true
+      random: true
+      type: password
+    - default: ""
+      edit: true
+      envKey: MAGPIE_PUBLIC_URL
+      labelEn: Public Gateway URL (optional)
+      labelZh: 网关对外访问地址（可选）
+      required: false
+      type: text
+    - default: ""
+      edit: true
+      envKey: MAGPIE_ALLOW_IPS
+      labelEn: Allowed Client IPs (optional)
+      labelZh: 允许访问的客户端 IP（可选）
+      required: false
+      type: text
+    - default: "1"
+      edit: true
+      envKey: DO_NOT_TRACK
+      labelEn: Disable Anonymous Usage Report
+      labelZh: 关闭匿名使用上报
+      required: true
+      type: select
+      values:
+        - label: "开启（不上报）"
+          value: "1"
+        - label: "关闭（跟随上游默认上报）"
+          value: "0"

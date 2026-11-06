@@ -1,0 +1,28 @@
+name: magpie
+tags:
+  - AI / 大模型
+  - 开发工具
+title: magpie - 多 Agent 统一 AI 网关
+description: magpie 是一个开源的多 Agent 统一 AI 网关。用一个本地/服务端网关给 Claude Code、Codex、Gemini CLI、OpenCode、Cursor 等几十种 AI 编程工具统一提供模型，支持 API Key、ChatGPT/Claude/Copilot/Gemini/Grok 订阅账号、路由组与额度耗尽自动切换，并带 Web 管理界面、用量与成本统计、隐私脱敏。
+additionalProperties:
+  key: magpie
+  name: magpie
+  tags:
+    - AI
+    - DevTool
+  shortDescZh: 多 Agent 统一 AI 网关，任意模型给任意 AI 编程工具，支持订阅账号与额度自动切换
+  shortDescEn: One gateway for every AI coding agent — any model for any agent, with subscription accounts and quota failover
+  description:
+    zh: magpie 是一个开源的多 Agent 统一 AI 网关。每个 AI 编程工具原本各存一份模型配置，magpie 把它们统一到一处：Claude Code 用 Kimi、Codex 用 DeepSeek、Gemini CLI 用 GLM，所有工具都指向同一个网关。它可以直接复用你已登录的 ChatGPT、Claude、GitHub Copilot、Gemini、Grok 订阅账号，也能添加 API Key、中转站或本地模型；额度用完时自动切换到下一个账号或下一个模型，不把报错抛给 Agent。自带路由组（smart/order/rotate/usage/pace）、用量与成本统计、会话记录、隐私脱敏、Web 搜索与图像生成 MCP 工具、插件系统，并提供 Web 管理界面、终端 CLI 与自签 HTTPS。适合部署在 NAS 或服务器上，让家里/公司的多台机器共用订阅额度。
+    en: magpie is an open-source gateway for AI coding agents. Instead of each agent keeping its own model config, magpie keeps one place for all of them — Claude Code on Kimi, Codex on DeepSeek, Gemini CLI on GLM — and every agent points at the same gateway. It reuses the ChatGPT, Claude, GitHub Copilot, Gemini and Grok subscriptions you are already signed in to, and also takes API keys, relays and local models. When a quota runs out it moves on to the next account or model, so the agent never sees the error. It also has routing groups (smart/order/rotate/usage/pace), usage and cost accounting, session history, privacy masking, web-search and image-generation tools over MCP, a plugin system, a browser UI, a CLI and self-served HTTPS. Built to sit on a NAS or a server and share one subscription across all your machines.
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://usemagpie.ai
+  github: https://github.com/yetone/magpie
+  document: https://usemagpie.ai/docs/docker
+  memoryRequired: 512
+  architectures:
+    - amd64
+    - arm64
