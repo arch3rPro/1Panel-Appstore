@@ -335,7 +335,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 📝 私有的、多模型的Google Notebook LM替代方案，支持多模态内容和AI播客生成
 
-<kbd>1.15.0</kbd> • [官网链接](https://www.open-notebook.ai/)
+<kbd>1.15.1</kbd> • [官网链接](https://www.open-notebook.ai/)
 
 </td>
 <td width="33%" align="center">

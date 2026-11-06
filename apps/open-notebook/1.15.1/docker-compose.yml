@@ -1,6 +1,6 @@
 services:
   open_notebook:
-    image: lfnovo/open_notebook:1.15.0
+    image: lfnovo/open_notebook:1.15.1
     ports:
       - ${PANEL_APP_PORT_HTTP}:8502
       - ${PANEL_APP_PORT_API}:5055
