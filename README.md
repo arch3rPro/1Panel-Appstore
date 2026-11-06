@@ -130,7 +130,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🤖 开源LLM应用开发平台，支持AI工作流和RAG管道
 
-<kbd>1.18.0</kbd> • [官网链接](https://github.com/langgenius/dify)
+<kbd>1.19.0</kbd> • [官网链接](https://github.com/langgenius/dify)
 
 </td>
 <td width="33%" align="center">

@@ -510,7 +510,7 @@ x-shared-env:
   QUEUE_MONITOR_INTERVAL: ${QUEUE_MONITOR_INTERVAL:-30}
 services:
   api:
-    image: langgenius/dify-api:1.18.0
+    image: langgenius/dify-api:1.19.0
     env_file:
       - dify.env
     restart: always
@@ -1043,7 +1043,7 @@ services:
       - ssrf_proxy_network
       - default
   worker:
-    image: langgenius/dify-api:1.18.0
+    image: langgenius/dify-api:1.19.0
     env_file:
       - dify.env
     restart: always
@@ -1574,7 +1574,7 @@ services:
       - ssrf_proxy_network
       - default
   web:
-    image: langgenius/dify-web:1.18.0
+    image: langgenius/dify-web:1.19.0
     container_name: ${CONTAINER_NAME}
     env_file:
       - dify.env
