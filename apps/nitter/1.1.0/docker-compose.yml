@@ -1,6 +1,6 @@
 services:
   nitter:
-    image: vuldocker/nitter:v1.0.0
+    image: vuldocker/nitter:v1.1.0
     container_name: ${CONTAINER_NAME}
     restart: always
     networks:

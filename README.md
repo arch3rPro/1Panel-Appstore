@@ -1269,7 +1269,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🕊️ 免费开源的 Twitter/X 前端，注重隐私
 
-<kbd>latest</kbd> • [官网链接](https://github.com/zedeus/nitter)
+<kbd>1.1.0</kbd> • [官网链接](https://github.com/zedeus/nitter)
 
 </td>
 </tr>
