@@ -1726,7 +1726,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🧙‍♂️ 现代化开源Docker管理Web面板
 
-<kbd>2.17.2</kbd> • [官网链接](https://arcane.ofkm.dev/)
+<kbd>2.17.3</kbd> • [官网链接](https://arcane.ofkm.dev/)
 
 </td>
 </tr>
