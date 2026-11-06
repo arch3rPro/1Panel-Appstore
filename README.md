@@ -1329,7 +1329,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📈 Linux性能实时监测工具，全方位性能监控
 
-<kbd>2.12.2</kbd> • [官网链接](https://github.com/netdata/netdata)
+<kbd>2.12.3</kbd> • [官网链接](https://github.com/netdata/netdata)
 
 </td>
 <td width="33%" align="center">
