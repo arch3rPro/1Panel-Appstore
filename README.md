@@ -1702,7 +1702,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 监控Docker基础镜像自动更新
 
-<kbd>9.7.0</kbd> • [官网链接](https://github.com/sergi0g/cup/)
+<kbd>9.8.0</kbd> • [官网链接](https://github.com/sergi0g/cup/)
 
 </td>
 </tr>
