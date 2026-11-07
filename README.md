@@ -347,7 +347,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🚀 免费 AI 网关，接入 237 个 AI 提供商（90+ 免费），兼容 OpenAI/Claude/Gemini API
 
-<kbd>3.8.52</kbd> • [官网链接](https://omniroute.online)
+<kbd>3.8.53</kbd> • [官网链接](https://omniroute.online)
 
 </td>
 </tr>

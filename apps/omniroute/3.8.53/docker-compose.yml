@@ -1,6 +1,6 @@
 services:
   omniroute:
-    image: diegosouzapw/omniroute:3.8.52
+    image: diegosouzapw/omniroute:3.8.53
     container_name: ${CONTAINER_NAME}
     restart: always
     stop_grace_period: 40s
