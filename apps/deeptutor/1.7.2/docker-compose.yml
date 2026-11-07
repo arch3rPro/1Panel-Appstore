@@ -1,6 +1,6 @@
 services:
   deeptutor:
-    image: ghcr.io/hkuds/deeptutor:1.7.1
+    image: ghcr.io/hkuds/deeptutor:1.7.2
     container_name: ${CONTAINER_NAME}
     restart: always
     ports:
