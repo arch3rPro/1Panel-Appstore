@@ -1173,7 +1173,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🌐 开源 IP 与网络检测工具箱，支持 IP 信息、DNS 泄露、测速、延迟、MTR、Whois 等检测
 
-<kbd>8.0.0</kbd> • [官网链接](https://ipcheck.ing)
+<kbd>8.1.0</kbd> • [官网链接](https://ipcheck.ing)
 
 </td>
 </tr>

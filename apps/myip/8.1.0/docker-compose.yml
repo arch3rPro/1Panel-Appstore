@@ -1,6 +1,6 @@
 services:
   myip:
-    image: jason5ng32/myip:v8.0.0
+    image: jason5ng32/myip:v8.1.0
     container_name: ${CONTAINER_NAME}
     restart: always
     stdin_open: true
