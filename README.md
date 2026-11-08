@@ -1471,7 +1471,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔄 Docker 镜像加速与私有部署服务，支持多平台和多架构
 
-<kbd>0.8.9</kbd> • [官网链接](https://kspeeder.istoreos.com/)
+<kbd>0.9.0</kbd> • [官网链接](https://kspeeder.istoreos.com/)
 
 </td>
 <td width="33%" align="center">
