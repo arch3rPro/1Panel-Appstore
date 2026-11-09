@@ -13,7 +13,7 @@ services:
       - DATA_DIR=/app/data
       - PORT=20128
       - HOSTNAME=0.0.0.0
-    image: decolua/9router:0.5.112
+    image: decolua/9router:0.5.116
     labels:
       createdBy: "Apps"
 networks:

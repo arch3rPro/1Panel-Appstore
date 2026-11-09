@@ -463,7 +463,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🚀 免费 AI 路由器和 Token 节省工具
 
-<kbd>0.5.112</kbd> • [官网链接](https://9router.com)
+<kbd>0.5.116</kbd> • [官网链接](https://9router.com)
 
 </td>
 <td width="33%" align="center">
