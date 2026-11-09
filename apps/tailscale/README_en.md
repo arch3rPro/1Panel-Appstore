@@ -48,6 +48,7 @@ Tailscale supports two authentication methods:
   - `true`: Use userspace networking mode for better compatibility
 - **Subnet Routes** (Optional): Subnets to advertise, e.g., `192.168.1.0/24,10.0.0.0/8`
 - **Accept DNS**: Whether to accept Tailscale DNS configuration
+- **Advertise as Exit Node**: Whether this node acts as an exit node (always passes `--advertise-exit-node` explicitly)
 - **Extra Args** (Optional): Additional arguments for tailscale up command, e.g., `--accept-routes`
 
 ### Post-Deployment Steps
@@ -70,9 +71,14 @@ If you want to route your local network to Tailscale:
 
 Configure Tailscale as an exit node to allow other devices to access the internet through it:
 
-1. Add `--advertise-exit-node` to `Extra Args` parameter
+1. Set `Advertise as Exit Node` to `true`
 2. Approve the exit node in admin console after deployment
 3. Other devices can choose to use this exit node
+
+To stop being an exit node, set `Advertise as Exit Node` back to `false`. The flag is
+always passed explicitly, so both enabling and disabling survive restarts without errors.
+
+**Note**: Do not put `--advertise-exit-node` in `Extra Args` manually.
 
 #### First-Time Authentication Only
 
@@ -93,8 +99,25 @@ Application data is stored in `./data/state` directory, containing Tailscale sta
 - `TS_STATE_DIR`: State file storage directory (fixed to /var/lib)
 - `TS_ROUTES`: Subnet routes to advertise
 - `TS_ACCEPT_DNS`: Whether to accept Tailscale DNS configuration
+- `TS_ADVERTISE_EXIT_NODE`: Whether to act as an exit node (always passed explicitly)
 - `TS_EXTRA_ARGS`: Additional arguments for tailscale up command
 - `TS_AUTH_ONCE`: Whether to authenticate only on first start (default false)
+
+## Troubleshooting
+
+### Container restart-loops after changing parameters, with `failed to auth tailscale` / `exit status 1`
+
+`tailscale up` requires every non-default flag to be mentioned explicitly on each start,
+otherwise it refuses to run. This app always passes `--advertise-exit-node` explicitly to
+avoid the issue. If you previously added `--advertise-exit-node` to `Extra Args` and then
+removed it, you may hit this error.
+
+To recover, either:
+
+1. Temporarily set `Extra Args` to `--advertise-exit-node=false`, restart once, then clear it
+2. Run `tailscale set --advertise-exit-node=false` in the container terminal
+
+**Do not** delete the `./data/state` directory, or you will lose the auth state and have to log in again.
 
 ## Notes
 

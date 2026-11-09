@@ -49,6 +49,21 @@ additionalProperties:
           value: "true"
         - label: "false"
           value: "false"
+    - default: "false"
+      edit: true
+      envKey: TS_ADVERTISE_EXIT_NODE
+      labelEn: Advertise as Exit Node
+      labelZh: 作为出口节点
+      required: false
+      type: select
+      values:
+        - label: "false"
+          value: "false"
+        - label: "true"
+          value: "true"
+      description:
+        zh: 开启后该节点可作为出口节点，其他设备可通过它访问互联网；需在管理控制台批准。开关始终显式传入 --advertise-exit-node，关闭后重启不会报错
+        en: Allow this node to act as an exit node; approve it in the admin console. The flag is always passed explicitly, so turning it off will not break restarts
     - default: ""
       edit: true
       envKey: TS_EXTRA_ARGS
@@ -58,5 +73,5 @@ additionalProperties:
       rule: paramCommon
       type: text
       description:
-        zh: tailscale up 命令的额外参数，如 --accept-routes
-        en: Extra arguments for tailscale up command, e.g. --accept-routes
+        zh: 'tailscale up 命令的额外参数，如 --accept-routes。注意：不要在此处填写 --advertise-exit-node，请使用上面的「作为出口节点」开关'
+        en: 'Extra arguments for tailscale up command, e.g. --accept-routes. Do not put --advertise-exit-node here, use the "Advertise as Exit Node" switch instead'

@@ -18,7 +18,7 @@ services:
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_ROUTES=${TS_ROUTES:-}
       - TS_ACCEPT_DNS=${TS_ACCEPT_DNS:-true}
-      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS:-}
+      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS:-} --advertise-exit-node=${TS_ADVERTISE_EXIT_NODE:-false}
       - TS_AUTH_ONCE=${TS_AUTH_ONCE:-false}
     command: containerboot
     labels:

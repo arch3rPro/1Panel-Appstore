@@ -48,6 +48,7 @@ Tailscale 支持两种认证方式：
   - `true`: 使用用户空间网络模式，兼容性更好
 - **子网路由** (可选): 要广播的子网，如 `192.168.1.0/24,10.0.0.0/8`
 - **接受 DNS**: 是否接受 Tailscale 的 DNS 配置
+- **作为出口节点**: 是否将该节点作为出口节点（始终显式传递 `--advertise-exit-node`）
 - **额外参数** (可选): tailscale up 命令的额外参数，如 `--accept-routes`
 
 ### 部署后操作
@@ -70,9 +71,14 @@ Tailscale 支持两种认证方式：
 
 将 Tailscale 配置为出口节点，让其他设备通过此设备访问互联网：
 
-1. 在 `额外参数` 中添加 `--advertise-exit-node`
+1. 将 `作为出口节点` 设为 `true`
 2. 部署后在管理控制台批准出口节点
 3. 其他设备可以选择使用此出口节点
+
+关闭出口节点时，把 `作为出口节点` 改回 `false` 即可。该开关始终显式传入
+`--advertise-exit-node`，因此开启和关闭后重启都不会报错。
+
+**注意**：请不要在 `额外参数` 中手动填写 `--advertise-exit-node`。
 
 #### 仅首次认证
 
@@ -93,8 +99,24 @@ Tailscale 支持两种认证方式：
 - `TS_STATE_DIR`: 状态文件存储目录（固定为 /var/lib）
 - `TS_ROUTES`: 要广播的子网路由
 - `TS_ACCEPT_DNS`: 是否接受 Tailscale DNS 配置
+- `TS_ADVERTISE_EXIT_NODE`: 是否作为出口节点（始终显式传参）
 - `TS_EXTRA_ARGS`: tailscale up 命令的额外参数
 - `TS_AUTH_ONCE`: 是否仅在首次启动时认证（默认 false）
+
+## 常见问题
+
+### 修改参数后容器反复重启，日志出现 `failed to auth tailscale` / `exit status 1`
+
+`tailscale up` 要求每次启动都显式声明所有非默认参数，否则会拒绝执行。本应用已将
+`--advertise-exit-node` 做成始终显式传递的开关，避免该问题；若你在 `额外参数` 中手动
+填写过 `--advertise-exit-node` 后又删除，可能出现此错误。
+
+恢复方法（任选其一）：
+
+1. 在 `额外参数` 中临时填写 `--advertise-exit-node=false`，重启一次，之后清空即可
+2. 进入容器终端执行 `tailscale set --advertise-exit-node=false`
+
+**不要**删除 `./data/state` 目录，否则会丢失认证状态、需要重新登录。
 
 ## 注意事项
 
