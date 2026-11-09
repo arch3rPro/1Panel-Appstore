@@ -1,6 +1,6 @@
 services:
   prompt-optimizer:
-    image: linshen/prompt-optimizer:2.15.1
+    image: linshen/prompt-optimizer:2.15.2
     container_name: ${CONTAINER_NAME}
     restart: always
     ports:
