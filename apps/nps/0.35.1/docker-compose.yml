@@ -1,6 +1,6 @@
 services:
   nps:
-    image: ghcr.io/djylb/nps:v0.35.0
+    image: ghcr.io/djylb/nps:v0.35.1
     container_name: ${CONTAINER_NAME}
     ports:
       - ${PANEL_APP_PORT_HTTP}:${PANEL_APP_PORT_HTTP}
