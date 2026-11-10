@@ -1,6 +1,6 @@
 services:
   magpie:
-    image: ghcr.io/yetone/magpie:0.1.3471
+    image: ghcr.io/yetone/magpie:0.1.3644
     container_name: ${CONTAINER_NAME}
     restart: always
     # 上游镜像默认以 uid 65532 运行，1Panel 创建的 ./data 目录属主为 root，
