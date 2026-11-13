@@ -306,7 +306,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🔄 n8n汉化版，具有原生AI能力的Fair-code工作流自动化平台
 
-<kbd>3.2.0</kbd> • [官网链接](https://n8n.io/)
+<kbd>3.2.2</kbd> • [官网链接](https://n8n.io/)
 
 </td>
 </tr>
