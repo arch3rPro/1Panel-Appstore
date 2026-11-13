@@ -405,7 +405,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🧠 DeepSeek 开源智能体开发环境
 
-<kbd>0.2.2-rc.2</kbd> • [官网链接](https://github.com/deepseek-ai/deepseek-harness)
+<kbd>0.2.2-rc.3</kbd> • [官网链接](https://github.com/deepseek-ai/deepseek-harness)
 
 </td>
 </tr>
