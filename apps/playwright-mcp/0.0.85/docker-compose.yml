@@ -1,6 +1,6 @@
 services:
   playwright-mcp:
-    image: mcr.microsoft.com/playwright/mcp:v0.0.83
+    image: mcr.microsoft.com/playwright/mcp:v0.0.85
     container_name: ${CONTAINER_NAME}
     restart: always
     networks:
