@@ -364,7 +364,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🚀 多 Agent 统一 AI 网关，任意模型给任意 AI 编程工具，支持复用订阅账号
 
-<kbd>0.1.4095</kbd> • [官网链接](https://usemagpie.ai)
+<kbd>0.1.4176</kbd> • [官网链接](https://usemagpie.ai)
 
 </td>
 </tr>
