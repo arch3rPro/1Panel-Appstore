@@ -1274,7 +1274,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🎵 LX Music 数据同步服务器与 Web 播放器
 
-<kbd>2.1.4</kbd> • [官网链接](https://xcq0607.github.io/lxserver/)
+<kbd>2.2.0</kbd> • [官网链接](https://xcq0607.github.io/lxserver/)
 
 </td>
 <td width="33%" align="center">
