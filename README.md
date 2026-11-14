@@ -212,7 +212,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 🔍 模型上下文协议调试工具，支持MCP服务器测试与开发
 
-<kbd>2.14.0</kbd> • [官网链接](https://github.com/modelcontextprotocol/inspector)
+<kbd>2.15.0</kbd> • [官网链接](https://github.com/modelcontextprotocol/inspector)
 
 </td>
 <td width="33%" align="center">
