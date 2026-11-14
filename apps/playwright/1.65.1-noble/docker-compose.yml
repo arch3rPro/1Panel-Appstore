@@ -1,6 +1,6 @@
 services:
   playwright-init:
-    image: mcr.microsoft.com/playwright:v1.65.0-noble
+    image: mcr.microsoft.com/playwright:v1.65.1-noble
     user: "root"
     volumes:
       - ./data:/home/pwuser/app
@@ -18,7 +18,7 @@ services:
     networks:
       - 1panel-network
   playwright:
-    image: mcr.microsoft.com/playwright:v1.65.0-noble
+    image: mcr.microsoft.com/playwright:v1.65.1-noble
     container_name: ${CONTAINER_NAME}
     restart: always
     networks:

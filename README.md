@@ -1618,7 +1618,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🎭 专业的 Web 应用自动化测试环境，支持多浏览器
 
-<kbd>1.65.0-noble</kbd> • [官网链接](https://playwright.dev/)
+<kbd>1.65.1-noble</kbd> • [官网链接](https://playwright.dev/)
 
 </td>
 </tr>
