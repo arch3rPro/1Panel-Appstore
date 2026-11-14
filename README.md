@@ -1077,7 +1077,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🔗 NPS客户端，轻量级高性能内网穿透代理工具
 
-<kbd>0.35.1</kbd> • [官网链接](https://github.com/djylb/nps)
+<kbd>0.35.2</kbd> • [官网链接](https://github.com/djylb/nps)
 
 </td>
 <td width="33%" align="center">
