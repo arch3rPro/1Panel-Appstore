@@ -910,7 +910,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 自托管全能书签管理工具，支持AI自动标签功能
 
-<kbd>0.34.1</kbd> • [官网链接](https://github.com/karakeep-app/karakeep)
+<kbd>0.35.0</kbd> • [官网链接](https://github.com/karakeep-app/karakeep)
 
 </td>
 <td width="33%" align="center">
