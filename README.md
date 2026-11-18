@@ -1305,7 +1305,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📊 开源轻量易用的服务器监控运维工具
 
-<kbd>2.6.1</kbd> • [官网链接](https://github.com/naiba/nezha/)
+<kbd>2.6.2</kbd> • [官网链接](https://github.com/naiba/nezha/)
 
 </td>
 <td width="33%" align="center">
