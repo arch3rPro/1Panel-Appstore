@@ -1,6 +1,6 @@
 services:
   socket-proxy:
-    image: ghcr.io/linuxserver/socket-proxy:3.4.7
+    image: ghcr.io/linuxserver/socket-proxy:3.4.8
     container_name: ${CONTAINER_NAME}
     environment:
       - ALLOW_START=${ALLOW_START}
