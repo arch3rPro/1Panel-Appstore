@@ -992,7 +992,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 开源Airtable替代品，将任何数据库转换为智能电子表格
 
-<kbd>2026.10.1</kbd> • [官网链接](https://github.com/nocodb/nocodb)
+<kbd>2026.10.2</kbd> • [官网链接](https://github.com/nocodb/nocodb)
 
 </td>
 <td width="33%" align="center">
