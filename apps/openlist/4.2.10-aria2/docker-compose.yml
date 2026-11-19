@@ -14,7 +14,7 @@ services:
       - PUID=0
       - PGID=0
       - UMASK=022
-    image: openlistteam/openlist:v4.2.9
+    image: openlistteam/openlist:v4.2.10-aria2
     labels:
       createdBy: "Apps"
 networks:
