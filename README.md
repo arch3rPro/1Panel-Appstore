@@ -112,13 +112,13 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 <td width="33%" align="center">
 
 <a href="./apps/lobe-chat-data/README.md">
-<img src="./apps/lobe-chat-data/logo.png" width="60" height="60" alt="LobeChat-Data">
-<br><b>LobeChat-Data</b>
+<img src="./apps/lobe-chat-data/logo.png" width="60" height="60" alt="LobeHub">
+<br><b>LobeHub</b>
 </a>
 
-💬 开源现代设计的 ChatGPT/LLMs UI/框架
+💬 开源 AI 智能体协作平台（服务端数据库版）
 
-<kbd>1.143.3</kbd> • [官网链接](https://github.com/lobehub/lobe-chat)
+<kbd>2.3.4</kbd> • [官网链接](https://github.com/lobehub/lobehub)
 
 </td>
 <td width="33%" align="center">

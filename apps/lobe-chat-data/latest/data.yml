@@ -1,6 +1,5 @@
 additionalProperties:
   formFields:
-# Default config
     - default: 3210
       edit: true
       envKey: PANEL_APP_PORT_HTTP
@@ -9,129 +8,140 @@ additionalProperties:
       required: true
       rule: paramPort
       type: number
-    - default: 8000
+    - default: 9000
       edit: true
-      envKey: CASDOOR_PORT
-      labelEn: CASDOOR Port
-      labelZh: CASDOOR 端口
+      envKey: PANEL_APP_PORT_S3
+      labelEn: S3 API Port
+      labelZh: S3 API 端口
       required: true
       rule: paramPort
       type: number
-    - default: 9000
+    - default: 9001
       edit: true
-      envKey: MINIO_PORT
-      labelEn: MinIO Port
-      labelZh: MinIO端口
+      envKey: PANEL_APP_PORT_ADMIN
+      labelEn: RustFS Console Port
+      labelZh: RustFS 管理端口（勿直接暴露公网）
+      required: true
+      rule: paramPort
+      type: number
+    - default: 8787
+      edit: true
+      envKey: PANEL_APP_PORT_API
+      labelEn: Agent Gateway Port
+      labelZh: Agent 网关端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 8788
+      edit: true
+      envKey: PANEL_APP_PORT_PROXY
+      labelEn: Device Gateway Port
+      labelZh: 设备网关端口
       required: true
       rule: paramPort
       type: number
     - default: http://Your-IP:3210
       edit: true
       envKey: APP_URL
-      labelEn: Application URL
-      labelZh: 应用地址
+      labelEn: Public Application URL (no trailing slash)
+      labelZh: 应用外部地址（不要以 / 结尾）
       required: true
       rule: paramExtUrl
       type: text
-    - default: http://Your-IP:3210/api/auth
-      edit: true
-      envKey: AUTH_URL
-      labelEn: Auth Service URL
-      labelZh: 认证服务地址
-      required: true
-      rule: paramExtUrl
-      type: text
-# Postgres related
-    - default: lobechat
-      edit: true
-      envKey: LOBE_DB_NAME
-      labelEn: Database Name
-      labelZh: 数据库名称
-      random: true
-      required: true
-      rule: paramCommon
-      type: text
-    - default: uWNZugjBqixf8dxC
-      edit: true
-      envKey: POSTGRES_PASSWORD
-      labelEn: Database Password
-      labelZh: 数据库密码
-      required: true
-      rule: paramCommon
-      type: password
-    - default: http://Your-IP:8000
-      edit: true
-      envKey: AUTH_CASDOOR_ISSUER
-      labelEn: AUTH CASDOOR ISSUER
-      labelZh: AUTH CASDOOR ISSUER
-      required: true
-      rule: paramExtUrl
-      type: text
-# Casdoor secret
-    - default: a387a4892ee19b1a2249
-      edit: true
-      envKey: AUTH_CASDOOR_ID
-      labelEn: AUTH CASDOOR ID
-      labelZh: AUTH CASDOOR ID
-      required: true
-      rule: paramCommon
-      type: text
-    - default: dbf205949d704de81b0b5b3603174e23fbecc354
-      edit: true
-      envKey: AUTH_CASDOOR_SECRET
-      labelEn: AUTH CASDOOR SECRET
-      labelZh: AUTH CASDOOR SECRET
-      required: true
-      rule: paramCommon
-      type: password
-# MinIO S3 configuration
-    - default: admin
-      edit: true
-      envKey: MINIO_ROOT_USER
-      labelEn: MinIO ROOT User
-      labelZh: MinIO ROOT User
-      required: true
-      rule: paramCommon
-      type: text
-    - default: e07a87a0
-      edit: true
-      envKey: MINIO_ROOT_PASSWORD
-      labelEn: MinIO ROOT Password
-      labelZh: MinIO ROOT Password
-      required: true
-      rule: paramCommon
-      type: password
-# Configure the bucket information of MinIO
     - default: http://Your-IP:9000
       edit: true
       envKey: S3_ENDPOINT
-      labelEn: S3 Endpoint
-      labelZh: S3 Endpoint
+      labelEn: Browser-accessible S3 Endpoint
+      labelZh: 浏览器可访问的 S3 地址
       required: true
       rule: paramExtUrl
       type: text
-    - default: http://Your-IP:9000
+    - default: http://Your-IP:8787
       edit: true
-      envKey: S3_PUBLIC_DOMAIN
-      labelEn: S3 PUBLIC DOMAIN
-      labelZh: S3 PUBLIC DOMAIN
+      envKey: AGENT_GATEWAY_URL
+      labelEn: Browser-accessible Agent Gateway URL
+      labelZh: 浏览器可访问的 Agent 网关地址（HTTP/HTTPS）
       required: true
       rule: paramExtUrl
       type: text
-    - default: lobe
+    - default: ''
       edit: true
-      envKey: MINIO_LOBE_BUCKET
-      labelEn: MINIO LOBE BUCKET
-      labelZh: MINIO LOBE BUCKET
+      envKey: DEVICE_GATEWAY_PUBLIC_URL
+      labelEn: Public Device Gateway URL (optional)
+      labelZh: 设备网关外部地址（可选）
+      required: false
+      type: text
+    - default: lobehub
+      edit: false
+      envKey: LOBE_DB_NAME
+      labelEn: Database Name
+      labelZh: 数据库名称
       required: true
       rule: paramCommon
       type: text
-# Configure for casdoor
-    - default: http://Your-IP:8000
-      edit: true
-      envKey: origin
-      labelEn: origin
-      labelZh: origin
+    - default: ''
+      edit: false
+      envKey: POSTGRES_PASSWORD
+      labelEn: Database Password (hex recommended)
+      labelZh: 数据库密码（使用生成器输出的十六进制值）
       required: true
-      rule: paramExtUrl
+      rule: paramCommon
+      type: password
+    - default: admin
+      edit: false
+      envKey: RUSTFS_ACCESS_KEY
+      labelEn: RustFS Access Key
+      labelZh: RustFS 访问密钥 ID
+      required: true
+      rule: paramCommon
+      type: text
+    - default: ''
+      edit: false
+      envKey: RUSTFS_SECRET_KEY
+      labelEn: RustFS Secret Key
+      labelZh: RustFS 密钥（使用生成器输出值）
+      required: true
+      rule: paramCommon
+      type: password
+    - default: ''
+      edit: false
+      envKey: KEY_VAULTS_SECRET
+      labelEn: Key Vault Secret (32-byte base64)
+      labelZh: 数据加密密钥（生成器输出，务必备份）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: AUTH_SECRET
+      labelEn: Better Auth Secret
+      labelZh: Better Auth 会话密钥（生成器输出）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: GATEWAY_SERVICE_TOKEN
+      labelEn: Gateway Service Token
+      labelZh: 网关共享 Token（生成器输出）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: JWKS_KEY
+      labelEn: Private JWKS JSON (single line)
+      labelZh: JWKS 私钥 JSON（生成器输出，单行，不含外层引号）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: JWKS_PUBLIC_KEY
+      labelEn: Public JWKS JSON (single line)
+      labelZh: JWKS 公钥 JSON（须与私钥配对）
+      required: true
+      type: text
+    - default: ''
+      edit: true
+      envKey: AUTH_ALLOWED_EMAILS
+      labelEn: Allowed Emails (comma-separated; empty allows everyone)
+      labelZh: 允许登录的邮箱（英文逗号分隔，留空允许所有人）
+      required: false
       type: text

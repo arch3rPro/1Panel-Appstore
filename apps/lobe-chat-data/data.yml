@@ -1,22 +1,21 @@
-name: LobeChat-Data
+name: LobeHub
 tags:
   - AI / 大模型
-title: LobeChat服务端数据库版 - 开源、现代设计的 ChatGPT/LLMs UI/框架
-description: LobeChat服务端数据库版 - 开源、现代设计的 ChatGPT/LLMs UI/框架
+title: LobeHub - 开源 AI 智能体协作平台（服务端数据库版）
+description: LobeHub 服务端部署，内置 Better Auth，支持多模型、知识库和智能体协作
 additionalProperties:
   key: lobe-chat-data
-  name: LobeChat-Data
+  name: LobeHub
   tags:
     - AI
-  shortDescZh: LobeChat服务端数据库版 - 现代化设计的开源 ChatGPT/LLMs 聊天应用与开发框架
-  shortDescEn: LobeChat-Data - An open-source, modern-design ChatGPT/LLMs
-    UI/Framework
+  shortDescZh: 开源 AI 智能体协作平台，支持多模型、知识库与服务端数据同步
+  shortDescEn: Open-source AI agent platform with multi-model support and server-side storage
   type: website
-  crossVersionUpdate: true
+  crossVersionUpdate: false
   limit: 0
   recommend: 0
   website: https://lobehub.com
-  github: https://github.com/lobehub/lobe-chat
+  github: https://github.com/lobehub/lobehub
   document: https://lobehub.com/docs
   architectures:
     - amd64

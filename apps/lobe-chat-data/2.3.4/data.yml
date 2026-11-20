@@ -1,0 +1,147 @@
+additionalProperties:
+  formFields:
+    - default: 3210
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Application Port
+      labelZh: 应用端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 9000
+      edit: true
+      envKey: PANEL_APP_PORT_S3
+      labelEn: S3 API Port
+      labelZh: S3 API 端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 9001
+      edit: true
+      envKey: PANEL_APP_PORT_ADMIN
+      labelEn: RustFS Console Port
+      labelZh: RustFS 管理端口（勿直接暴露公网）
+      required: true
+      rule: paramPort
+      type: number
+    - default: 8787
+      edit: true
+      envKey: PANEL_APP_PORT_API
+      labelEn: Agent Gateway Port
+      labelZh: Agent 网关端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: 8788
+      edit: true
+      envKey: PANEL_APP_PORT_PROXY
+      labelEn: Device Gateway Port
+      labelZh: 设备网关端口
+      required: true
+      rule: paramPort
+      type: number
+    - default: http://Your-IP:3210
+      edit: true
+      envKey: APP_URL
+      labelEn: Public Application URL (no trailing slash)
+      labelZh: 应用外部地址（不要以 / 结尾）
+      required: true
+      rule: paramExtUrl
+      type: text
+    - default: http://Your-IP:9000
+      edit: true
+      envKey: S3_ENDPOINT
+      labelEn: Browser-accessible S3 Endpoint
+      labelZh: 浏览器可访问的 S3 地址
+      required: true
+      rule: paramExtUrl
+      type: text
+    - default: http://Your-IP:8787
+      edit: true
+      envKey: AGENT_GATEWAY_URL
+      labelEn: Browser-accessible Agent Gateway URL
+      labelZh: 浏览器可访问的 Agent 网关地址（HTTP/HTTPS）
+      required: true
+      rule: paramExtUrl
+      type: text
+    - default: ''
+      edit: true
+      envKey: DEVICE_GATEWAY_PUBLIC_URL
+      labelEn: Public Device Gateway URL (optional)
+      labelZh: 设备网关外部地址（可选）
+      required: false
+      type: text
+    - default: lobehub
+      edit: false
+      envKey: LOBE_DB_NAME
+      labelEn: Database Name
+      labelZh: 数据库名称
+      required: true
+      rule: paramCommon
+      type: text
+    - default: ''
+      edit: false
+      envKey: POSTGRES_PASSWORD
+      labelEn: Database Password (hex recommended)
+      labelZh: 数据库密码（使用生成器输出的十六进制值）
+      required: true
+      rule: paramCommon
+      type: password
+    - default: admin
+      edit: false
+      envKey: RUSTFS_ACCESS_KEY
+      labelEn: RustFS Access Key
+      labelZh: RustFS 访问密钥 ID
+      required: true
+      rule: paramCommon
+      type: text
+    - default: ''
+      edit: false
+      envKey: RUSTFS_SECRET_KEY
+      labelEn: RustFS Secret Key
+      labelZh: RustFS 密钥（使用生成器输出值）
+      required: true
+      rule: paramCommon
+      type: password
+    - default: ''
+      edit: false
+      envKey: KEY_VAULTS_SECRET
+      labelEn: Key Vault Secret (32-byte base64)
+      labelZh: 数据加密密钥（生成器输出，务必备份）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: AUTH_SECRET
+      labelEn: Better Auth Secret
+      labelZh: Better Auth 会话密钥（生成器输出）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: GATEWAY_SERVICE_TOKEN
+      labelEn: Gateway Service Token
+      labelZh: 网关共享 Token（生成器输出）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: JWKS_KEY
+      labelEn: Private JWKS JSON (single line)
+      labelZh: JWKS 私钥 JSON（生成器输出，单行，不含外层引号）
+      required: true
+      type: password
+    - default: ''
+      edit: false
+      envKey: JWKS_PUBLIC_KEY
+      labelEn: Public JWKS JSON (single line)
+      labelZh: JWKS 公钥 JSON（须与私钥配对）
+      required: true
+      type: text
+    - default: ''
+      edit: true
+      envKey: AUTH_ALLOWED_EMAILS
+      labelEn: Allowed Emails (comma-separated; empty allows everyone)
+      labelZh: 允许登录的邮箱（英文逗号分隔，留空允许所有人）
+      required: false
+      type: text
