@@ -75,7 +75,7 @@ additionalProperties:
     - default: ''
       edit: true
       envKey: AUTH_ALLOWED_EMAILS
-      labelEn: Allowed Emails (comma-separated; empty allows everyone)
-      labelZh: 允许登录的邮箱（英文逗号分隔，留空允许所有人）
+      labelEn: Registration Email/Domain Allowlist (optional, comma-separated)
+      labelZh: 注册邮箱或域名白名单（可选，英文逗号分隔）
       required: false
       type: text

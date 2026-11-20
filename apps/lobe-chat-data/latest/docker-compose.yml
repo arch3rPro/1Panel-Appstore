@@ -22,21 +22,26 @@ services:
     environment:
       APP_URL: ${APP_URL}
       INTERNAL_APP_URL: http://localhost:3210
+      # Default email/password registration works without an SMTP service.
+      AUTH_DISABLE_EMAIL_PASSWORD: '0'
+      AUTH_EMAIL_VERIFICATION: '0'
+      AUTH_ENABLE_MAGIC_LINK: '0'
       AUTH_ALLOWED_EMAILS: ${AUTH_ALLOWED_EMAILS:-}
       S3_ENDPOINT: ${S3_ENDPOINT}
-      S3_INTERNAL_ENDPOINT: http://rustfs:9000
+      S3_INTERNAL_ENDPOINT: http://${CONTAINER_NAME}-rustfs:9000
       S3_BUCKET: lobe
       S3_ENABLE_PATH_STYLE: '1'
       S3_SET_ACL: '0'
       LLM_VISION_IMAGE_USE_BASE64: '1'
-      SEARXNG_URL: http://searxng:8080
-      REDIS_URL: redis://redis:6379
+      SEARXNG_URL: http://${CONTAINER_NAME}-searxng:8080
+      # Avoid generic aliases on the shared 1panel-network (e.g. another app's redis).
+      REDIS_URL: redis://${CONTAINER_NAME}-redis:6379
       REDIS_PREFIX: lobechat
       REDIS_TLS: '0'
       ENABLE_AGENT_GATEWAY: '1'
       AGENT_GATEWAY_URL: ${AGENT_GATEWAY_URL}
-      AGENT_GATEWAY_INTERNAL_URL: http://gateway:8787
-      DEVICE_GATEWAY_URL: http://gateway:8788
+      AGENT_GATEWAY_INTERNAL_URL: http://${CONTAINER_NAME}-gateway:8787
+      DEVICE_GATEWAY_URL: http://${CONTAINER_NAME}-gateway:8788
       DEVICE_GATEWAY_PUBLIC_URL: ${DEVICE_GATEWAY_PUBLIC_URL}
     networks:
       - lobe-network
@@ -56,7 +61,7 @@ services:
     env_file:
       - ./data/secrets/gateway.env
     environment:
-      LOBE_API_BASE_URL: http://lobe:3210
+      LOBE_API_BASE_URL: http://${CONTAINER_NAME}:3210
     networks:
       - lobe-network
     labels:
@@ -123,7 +128,7 @@ services:
     labels:
       createdBy: "Apps"
 
-  # One-shot bucket/CORS provisioning; must exit successfully, not restart forever.
+  # One-shot bucket/CORS provisioning: exit successfully and skip 1Panel's running-status check.
   rustfs-init:
     image: rustfs/rc:latest
     container_name: ${CONTAINER_NAME}-rustfs-init
@@ -135,12 +140,13 @@ services:
       - ./data/secrets/rustfs.env
     environment:
       APP_URL: ${APP_URL}
+      RUSTFS_ENDPOINT: http://${CONTAINER_NAME}-rustfs:9000
     volumes:
       - './data/bucket.config.json:/bucket.config.json:ro'
     entrypoint: ['/bin/sh', '-ec']
     command:
       - |
-        rc alias set rustfs http://rustfs:9000 "$${RUSTFS_ACCESS_KEY}" "$${RUSTFS_SECRET_KEY}"
+        rc alias set rustfs "$${RUSTFS_ENDPOINT}" "$${RUSTFS_ACCESS_KEY}" "$${RUSTFS_SECRET_KEY}"
         rc mb rustfs/lobe --ignore-existing
         rc anonymous set-json /bucket.config.json rustfs/lobe
         printf '%s' "<CORSConfiguration><CORSRule><AllowedOrigin>$${APP_URL}</AllowedOrigin><AllowedMethod>GET</AllowedMethod><AllowedMethod>PUT</AllowedMethod><AllowedMethod>HEAD</AllowedMethod><AllowedHeader>*</AllowedHeader><ExposeHeader>ETag</ExposeHeader><MaxAgeSeconds>3600</MaxAgeSeconds></CORSRule></CORSConfiguration>" | rc bucket cors set rustfs/lobe -
@@ -148,6 +154,7 @@ services:
       - lobe-network
     labels:
       createdBy: "Apps"
+      skipStatusCheck: "true"
 
   searxng:
     image: searxng/searxng:latest

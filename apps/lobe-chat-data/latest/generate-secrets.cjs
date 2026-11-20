@@ -31,7 +31,7 @@ function generateSecrets() {
 function readLegacyEnv(file) {
   if (!fs.existsSync(file)) return {};
   const result = {};
-  const known = new Set([...REQUIRED, 'LOBE_DB_NAME', 'RUSTFS_ACCESS_KEY']);
+  const known = new Set([...REQUIRED, 'LOBE_DB_NAME', 'RUSTFS_ACCESS_KEY', 'CONTAINER_NAME']);
   for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
     const match = line.match(/^\s*(?:export\s+)?([A-Z_]+)\s*=\s*(.*?)\s*$/);
     if (!match || !known.has(match[1])) continue;
@@ -83,20 +83,20 @@ function envFile(values) {
   return Object.entries(values).map(([key, value]) => `${key}='${value.replace(/'/g, "\\'")}'`).join('\n') + '\n';
 }
 
-function initialize(appDir) {
+function initialize(appDir, containerName = process.env.CONTAINER_NAME) {
   const dataDir = path.join(appDir, 'data');
   if (fs.existsSync(path.join(dataDir, 'PG_VERSION'))) {
     throw new Error('LobeChat 1.x database detected; migrate in a separate instance first.');
   }
   const secretsDir = path.join(dataDir, 'secrets');
   const stateFile = path.join(secretsDir, 'state.json');
+  const { CONTAINER_NAME: configuredName, ...legacy } = readLegacyEnv(path.join(appDir, '.env'));
   let values;
   let source;
   if (fs.existsSync(stateFile)) {
     values = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
     source = 'existing';
   } else {
-    const legacy = readLegacyEnv(path.join(appDir, '.env'));
     const provided = REQUIRED.filter(key => legacy[key]);
     if (provided.length && provided.length !== REQUIRED.length) {
       throw new Error('Incomplete previous 2.x secrets in .env; restore all seven fields before continuing.');
@@ -119,13 +119,18 @@ function initialize(appDir) {
       source = 'generated';
     }
   }
+  containerName = containerName || configuredName;
+  if (!containerName || !/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(containerName)) {
+    throw new Error('Set a valid CONTAINER_NAME in .env before initializing credentials.');
+  }
   validate(values);
   fs.mkdirSync(secretsDir, { recursive: true, mode: 0o700 });
   fs.chmodSync(secretsDir, 0o700);
   // Save the source of truth before producing derived env files. Interrupted runs can safely retry.
   if (source !== 'existing') writePrivate(stateFile, JSON.stringify(values, null, 2) + '\n');
   fs.chmodSync(stateFile, 0o600);
-  const databaseUrl = `postgresql://postgres:${encodeURIComponent(values.POSTGRES_PASSWORD)}@postgresql:5432/${encodeURIComponent(values.LOBE_DB_NAME)}`;
+  // Match the dependency container, not a generic alias on the shared 1Panel network.
+  const databaseUrl = `postgresql://postgres:${encodeURIComponent(values.POSTGRES_PASSWORD)}@${containerName}-postgresql:5432/${encodeURIComponent(values.LOBE_DB_NAME)}`;
   const files = {
     'lobe.env': {
       KEY_VAULTS_SECRET: values.KEY_VAULTS_SECRET,

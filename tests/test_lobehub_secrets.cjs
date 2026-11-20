@@ -13,11 +13,13 @@ const { test } = require('node:test');
 const base = path.resolve(__dirname, '../apps/lobe-chat-data');
 for (const version of ['latest', '2.3.4']) {
   const source = path.join(base, version);
-  const { generateSecrets, initialize } = require(path.join(source, 'generate-secrets.cjs'));
+  const { generateSecrets, initialize: initializeSecrets } = require(path.join(source, 'generate-secrets.cjs'));
+  const initialize = dir => initializeSecrets(dir, 'lobehub-test');
   function fixture(t) {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lobehub-secrets-'));
     t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
     fs.cpSync(source, dir, { recursive: true });
+    fs.appendFileSync(path.join(dir, '.env'), '\nCONTAINER_NAME=lobehub-test\n');
     return dir;
   }
   const statePath = dir => path.join(dir, 'data/secrets/state.json');
@@ -58,6 +60,23 @@ for (const version of ['latest', '2.3.4']) {
     fs.writeFileSync(path.join(dir, '.env'), legacyEnv(generateSecrets()));
     initialize(dir);
     assert.equal(fs.readFileSync(statePath(dir), 'utf8'), before);
+  });
+
+  test(`${version}: dependency hostname changes repair derived files without rotating saved credentials`, t => {
+    const dir = fixture(t);
+    initializeSecrets(dir);
+    const stateBefore = fs.readFileSync(statePath(dir), 'utf8');
+    const oldEnv = fs.readFileSync(path.join(dir, 'data/secrets/lobe.env'), 'utf8');
+    assert(oldEnv.includes('@lobehub-test-postgresql:5432/'));
+    fs.writeFileSync(path.join(dir, 'data/secrets/lobe.env'), oldEnv.replace('@lobehub-test-postgresql:', '@postgresql:'));
+    initializeSecrets(dir);
+    assert.equal(fs.readFileSync(path.join(dir, 'data/secrets/lobe.env'), 'utf8'), oldEnv);
+    assert.equal(fs.readFileSync(statePath(dir), 'utf8'), stateBefore);
+    fs.writeFileSync(path.join(dir, '.env'), 'CONTAINER_NAME=second-lobehub\n');
+    initializeSecrets(dir);
+    assert.equal(fs.readFileSync(statePath(dir), 'utf8'), stateBefore);
+    const newEnv = fs.readFileSync(path.join(dir, 'data/secrets/lobe.env'), 'utf8');
+    assert(newEnv.includes('@second-lobehub-postgresql:5432/'));
   });
 
   test(`${version}: imports previous 2.x secrets without rotating passwords or vault key`, t => {
@@ -185,11 +204,23 @@ for (const version of ['latest', '2.3.4']) {
       }
     }
     assert.equal(services.lobe.image, `lobehub/lobehub:${version}`);
+    assert.equal(services.lobe.environment.AUTH_DISABLE_EMAIL_PASSWORD, '0');
+    assert.equal(services.lobe.environment.AUTH_EMAIL_VERIFICATION, '0');
+    assert.equal(services.lobe.environment.AUTH_ENABLE_MAGIC_LINK, '0');
+    assert.equal(services.lobe.environment.AUTH_ALLOWED_EMAILS, env.AUTH_ALLOWED_EMAILS);
     assert.equal(services.lobe.environment.JWKS_KEY, values.JWKS_KEY);
     assert.equal(services.lobe.environment.S3_SECRET_ACCESS_KEY, values.RUSTFS_SECRET_KEY);
     assert.equal(services.rustfs.environment.RUSTFS_SECRET_KEY, values.RUSTFS_SECRET_KEY);
     assert.equal(services.postgresql.environment.POSTGRES_PASSWORD, values.POSTGRES_PASSWORD);
     assert(services.lobe.environment.DATABASE_URL.includes(encodeURIComponent(values.POSTGRES_PASSWORD)));
+    assert.equal(new URL(services.lobe.environment.DATABASE_URL).hostname, services.postgresql.container_name);
+    assert.equal(new URL(services.lobe.environment.REDIS_URL).hostname, services.redis.container_name);
+    assert.equal(new URL(services.lobe.environment.S3_INTERNAL_ENDPOINT).hostname, services.rustfs.container_name);
+    assert.equal(new URL(services.lobe.environment.SEARXNG_URL).hostname, services.searxng.container_name);
+    assert.equal(new URL(services.lobe.environment.AGENT_GATEWAY_INTERNAL_URL).hostname, services.gateway.container_name);
+    assert.equal(new URL(services.lobe.environment.DEVICE_GATEWAY_URL).hostname, services.gateway.container_name);
+    assert.equal(new URL(services.gateway.environment.LOBE_API_BASE_URL).hostname, services.lobe.container_name);
+    assert.equal(new URL(services['rustfs-init'].environment.RUSTFS_ENDPOINT).hostname, services.rustfs.container_name);
     assert.equal(services.lobe.environment.DEVICE_GATEWAY_PUBLIC_URL, env.DEVICE_GATEWAY_PUBLIC_URL);
     assert.equal(services.lobe.environment.DEVICE_GATEWAY_SERVICE_TOKEN, services.gateway.environment.SERVICE_TOKEN);
     assert.equal(services.lobe.environment.AGENT_GATEWAY_SERVICE_TOKEN, services.gateway.environment.SERVICE_TOKEN);
@@ -198,6 +229,15 @@ for (const version of ['latest', '2.3.4']) {
     assert.deepEqual(services.gateway.ports.map(port => port.target).sort(), [8787, 8788]);
     for (const name of ['postgresql', 'redis', 'searxng']) assert(!services[name].ports);
     assert.equal(services['rustfs-init'].restart, 'no');
+    assert.equal(services['rustfs-init'].labels.skipStatusCheck, 'true');
+    for (const [name, service] of Object.entries(services)) {
+      if (name !== 'rustfs-init') assert.equal(service.labels.skipStatusCheck, undefined);
+    }
     assert.equal(services.lobe.depends_on['rustfs-init'].condition, 'service_completed_successfully');
+    const defaultEnv = { ...env };
+    delete defaultEnv.AUTH_ALLOWED_EMAILS;
+    const defaultConfig = spawnSync('docker', ['compose', '-f', path.join(dir, 'docker-compose.yml'), 'config', '--format', 'json'], { env: defaultEnv, encoding: 'utf8' });
+    assert.equal(defaultConfig.status, 0, defaultConfig.stderr);
+    assert.equal(JSON.parse(defaultConfig.stdout).services.lobe.environment.AUTH_ALLOWED_EMAILS, '');
   });
 }

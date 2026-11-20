@@ -1,92 +1,126 @@
-# LobeHub（原 LobeChat 服务端数据库版）
+# LobeHub
 
-[LobeHub](https://github.com/lobehub/lobehub) 是开源 AI 智能体协作平台，支持多模型对话、知识库、多模态与服务端数据同步。本应用保留键名 `lobe-chat-data`，新版配置按上游 **v2.3.4** 的部署文件核对。
+[LobeHub](https://github.com/lobehub/lobehub) 是开源 AI 智能体协作平台，支持多模型对话、知识库、多模态交互和工具调用，数据保存在服务端，便于跨设备使用。
 
-## 版本与升级警告
+## 主要功能
 
-| 目录 | 用途 |
-| --- | --- |
-| `2.3.4` | 推荐用于新安装，主镜像固定为 `lobehub/lobehub:2.3.4` |
-| `latest` | 主镜像为 `lobehub/lobehub:latest`，可能随上游出现破坏性变化 |
-| `1.143.3` | 原 LobeChat + Casdoor + MinIO 配置，保留供旧部署参考，不代表仍受维护 |
+- 支持 OpenAI、Claude、Gemini、Ollama 等模型服务。
+- 支持文件上传、知识库检索及图片、语音等多模态功能。
+- 支持联网搜索、MCP 工具和智能体协作。
+- 通过 Agent 网关执行服务端任务，通过设备网关连接桌面端和 CLI 设备。
+- 内置邮箱密码注册与登录，可配置邮箱白名单和第三方登录。
 
-**1.x 不能通过“重建”直接无损升级到本包的 2.x。** 新版不再使用 `lobe-chat-database`、NextAuth 或内置 Casdoor，且 PostgreSQL 镜像、存储布局、认证模型均有变化。已关闭商店的跨版本升级标记；旧 `latest` 用户也必须先完成下方迁移，不要直接拉取并重建新版配置。初始化/升级脚本检测到旧 `./data/PG_VERSION` 会拒绝继续。
+## 部署要求
 
-## 新安装
+- 支持 `amd64`、`arm64` 架构。
+- 建议至少 2 核 CPU、4 GB 内存、20 GB 可用磁盘；日常使用建议 4 核、8 GB 内存。
+- 需要浏览器和接入设备能够访问应用、S3、Agent 网关及设备网关地址。
 
-建议至少 2 核 / 4 GB 内存 / 20 GB 磁盘；生产环境建议 4 核 / 8 GB 以上。
+本应用包含 LobeHub、PostgreSQL、Redis、RustFS、SearXNG 和网关服务。数据库、Redis 和搜索服务不对外开放端口。
 
-### 1. 设置地址和端口
+## 安装配置
 
-表单精简为 **4 个外部地址 + 5 个带默认值的端口 + 1 个可选邮箱白名单**。Agent 网关和设备网关均保留并启用，不需要再手填数据库密码、存储密钥或 JWKS JSON。
+在 1Panel 应用商店安装时填写以下地址，将 `Your-IP` 替换为服务器的实际 IP 或域名。端口可以保留默认值；修改端口后应同步修改对应地址。
 
-将四个地址中的 `Your-IP` 改为浏览器/设备实际可访问的 IP/域名，不要填容器名或 `localhost`（除非客户端就在服务器上）。更改端口后必须同步更改对应地址。
-
-| 字段 | 默认端口 | 说明 |
+| 配置 | 默认值 | 说明 |
 | --- | --- | --- |
-| `PANEL_APP_PORT_HTTP` / `APP_URL` | 3210 | 应用地址，不要以 `/` 结尾 |
-| `PANEL_APP_PORT_S3` / `S3_ENDPOINT` | 9000 | 浏览器直传和下载使用的 S3 地址 |
-| `PANEL_APP_PORT_ADMIN` | 9001 | RustFS 控制台，仅允许可信网络访问 |
-| `PANEL_APP_PORT_API` / `AGENT_GATEWAY_URL` | 8787 | Agent 网关，填写 HTTP/HTTPS 地址，代理必须支持 WebSocket |
-| `PANEL_APP_PORT_PROXY` / `DEVICE_GATEWAY_PUBLIC_URL` | 8788 | 设备网关，供桌面端/CLI 发现和接入设备 |
+| 应用地址 | `http://Your-IP:3210` | 必须与浏览器实际访问的协议、主机和端口一致，不要填写路径或结尾的 `/` |
+| S3 地址 | `http://Your-IP:9000` | 浏览器上传、下载文件使用的对象存储地址 |
+| Agent 网关地址 | `http://Your-IP:8787` | 服务端智能体执行与消息推送 |
+| 设备网关地址 | `http://Your-IP:8788` | 桌面端和 CLI 设备接入 |
+| RustFS 管理端口 | `9001` | 对象存储控制台，仅向可信网络开放 |
+| 注册邮箱白名单 | 留空 | 留空允许所有邮箱注册；支持完整邮箱或域名，多个条目使用英文逗号分隔 |
 
-域名部署应同时反代应用、S3、Agent 网关和设备网关；应用使用 HTTPS 时，S3/网关也应使用 HTTPS，避免混合内容拦截。两个网关反代均需开启 WebSocket 升级和长读取超时。设备使用 `lh connect --gateway <DEVICE_GATEWAY_PUBLIC_URL>` 接入。
+数据库密码、存储密码和认证密钥由安装脚本自动生成，无需手动填写。初始化结束后，`rustfs-init` 容器显示“已退出（0）”属于正常现象。
 
-`INTERNAL_APP_URL=http://localhost:3210` 和 `S3_INTERNAL_ENDPOINT=http://rustfs:9000` 已配置，应用自身及服务端存储请求不绕行公网。PostgreSQL、Redis 和 SearXNG 不发布宿主机端口，应用接入外部 `1panel-network`，依赖服务位于本实例的独立网络。
+### 域名与 HTTPS
 
-### 2. 自动初始化密钥
+生产环境建议使用 HTTPS，并为以下四个服务分别配置反向代理：
 
-1Panel 安装/升级脚本会自动生成本实例专用的数据库密码、RustFS 密钥、数据加密密钥、Better Auth 密钥、网关 Token、RSA JWKS 密钥对及搜索密钥。内部数据库名默认 `lobehub`，RustFS 账号默认 `admin`，不再占用表单。
+| 服务 | 示例地址 | 默认目标端口 |
+| --- | --- | --- |
+| LobeHub | `https://lobe.example.com` | `3210` |
+| S3 | `https://s3.example.com` | `9000` |
+| Agent 网关 | `https://agent.example.com` | `8787` |
+| 设备网关 | `https://device.example.com` | `8788` |
 
-- 原始凭据持久保存在 `./data/secrets/state.json`，按服务生成独立的 `.env` 文件；目录权限 `700`、文件权限 `600`，安装日志不打印密钥。
-- 重建直接读取已有文件；重复安装脚本/升级只复用原密钥并修复派生文件，不重新生成密钥。
-- 主机有 Node.js 16+ 时直接初始化，否则临时使用主应用镜像中的 Node.js，无需额外安装 Node.js；首次可能先拉取主镜像。
-- **必须备份整个 `./data/secrets/`。** 数据加密密钥丢失后无法解密旧数据；检测到已有数据但凭据丢失、残缺或密钥不配对时，脚本会报错停止，而非生成新密钥覆盖。
+- 将安装参数中的地址改为对应的 HTTPS 地址。
+- 应用反向代理应正确传递 `Host`、`X-Forwarded-Host` 和 `X-Forwarded-Proto`。
+- 两个网关均需开启 WebSocket 升级，并适当延长读取超时。
+- HTTPS 应用应配套使用 HTTPS 的 S3 和网关地址，避免浏览器拦截混合内容。
 
-从上一版“手填密钥”的 2.x 包更新时，先备份原 `.env`，首次运行升级脚本会导入其中完整的七项原有密钥及数据库名/存储账号。若 1Panel 已移除这些旧字段，应先恢复旧 `.env` 再执行 `bash scripts/upgrade.sh`，**不要重新生成密钥**。导入成功后，以 `data/secrets/state.json` 为准。
+## 首次使用
 
-### 3. 登录与访问控制
+1. 等待应用完成数据库初始化并启动。
+2. 使用安装时配置的**应用地址**打开页面，选择注册。
+3. 输入有效邮箱，设置 **8～64 位密码**，按页面提示完成注册。
+4. 登录后在设置中添加模型服务及 API Key。
 
-新版默认使用 **Better Auth 邮箱密码注册/登录，没有预置账号或默认密码，也不需要进入 Casdoor 设置回调**。建议安装时填写 `AUTH_ALLOWED_EMAILS`（英文逗号分隔）；留空允许所有人注册/登录，该白名单不是关闭注册的开关。公网部署前务必配置访问控制。
+应用没有预置账号。默认启用邮箱密码注册，不要求邮箱验证，也不需要配置 SMTP。启用邮箱验证、邮件找回密码等功能时，再按[认证文档](https://lobehub.com/zh/docs/self-hosting/environment-variables/auth)配置邮件服务。
 
-RustFS 控制台地址为 `http://服务器IP:9001`，默认账号 `admin`。自动生成的密码在安装目录的 `./data/secrets/state.json` 中，字段为 `RUSTFS_SECRET_KEY`（导入已有 2.x 时保留原账号密码）。仅在可信的主机文件终端查看，不要粘贴到公开日志。不要向公网开放管理端口，注意 Docker 发布端口的实际防火墙规则。
+如果填写了白名单，注册邮箱必须与其中的邮箱或域名匹配。例如 `owner@example.com,company.com` 允许指定邮箱和 `company.com` 域名的邮箱注册。
 
-需要邮箱验证、找回密码、SSO 或服务端模型密钥时，按[认证配置](https://lobehub.com/zh/docs/self-hosting/environment-variables/auth)与[环境变量文档](https://lobehub.com/zh/docs/self-hosting/environment-variables)在应用 Compose 的 `lobe.environment` 中显式补充。邮箱验证/重置密码需要配置邮件服务。本包不将整份 `.env` 注入依赖服务，尤其不会向网关传递 JWKS 私钥。
+### 连接设备
 
-## 组件、数据与备份
+在设备上安装 LobeHub CLI 后，使用配置的设备网关地址连接：
 
-- PostgreSQL：`paradedb/paradedb:latest-pg17`，提供 `pgvector` / `pg_search`，数据在 `./data/postgresql`。
-- Redis 7：缓存及服务端状态，开启 AOF，数据在 `./data/redis`。
-- RustFS：S3 对象存储，数据在 `./data/rustfs`，初始化脚本设置 UID/GID `10001` 的目录权限。
-- `rustfs-init`：一次性创建固定桶 `lobe`、设置匿名对象读取策略与仅允许 `APP_URL` 的浏览器上传 CORS。成功后显示“已退出”是正常行为，故使用 `restart: no`。**桶内对象允许持有 URL 的人读取，切勿当作私密文件库。**
-- SearXNG：提供联网搜索；配置在 `./data/searxng-settings.yml`。
-- Gateway `0.5.0`：提供 Agent 和设备网关；运行中状态在内存，重启会中断任务。
+```bash
+lh connect --gateway https://device.example.com
+```
 
-固定版本目录只固定主应用镜像；数据库、RustFS、SearXNG 等辅助镜像仍遵循上游滚动标签，拉取更新前也应备份。未默认附加 Elasticsearch，使用 PostgreSQL `pg_search` 全文搜索。
+### RustFS 控制台
 
-在已安装应用的 Compose 目录备份数据库：
+默认通过 `http://服务器IP:9001` 访问，账号为 `admin`。密码保存在已安装应用目录的 `data/secrets/state.json` 文件中，对应 `RUSTFS_SECRET_KEY` 字段。请仅在可信终端查看，勿公开凭据或将管理端口暴露到公网。
+
+## 数据与备份
+
+| 路径 | 内容 |
+| --- | --- |
+| `data/postgresql/` | 用户、对话、知识库等数据库数据 |
+| `data/rustfs/` | 上传的文件及对象存储数据 |
+| `data/redis/` | Redis 持久化数据 |
+| `data/secrets/` | 数据库密码、认证与加密密钥及各服务凭据 |
+| `data/searxng-settings.yml` | 联网搜索配置 |
+
+**务必将 `data/secrets/` 与业务数据一起备份。** 重建和升级会复用已有密钥；丢失或更换数据加密密钥后，原有加密数据将无法读取。
+
+在已安装应用目录执行数据库备份：
 
 ```bash
 docker compose exec -T postgresql sh -c 'pg_dump -U postgres "$POSTGRES_DB"' > lobehub.sql
 ```
 
-同时备份安装参数/`.env`、Compose 和整个 `./data/`，**特别是包含全部内部凭据的 `./data/secrets/`**。对 PostgreSQL/Redis 数据目录做文件级备份应先停止服务或使用一致性快照。恢复数据库、文件和密钥必须配套；不要通过删除数据库目录来解决迁移错误。
+同时保存 Compose、`.env` 和整个 `data/` 目录。直接复制数据库文件前，应先停止服务或使用一致性快照。更新镜像前先备份，恢复时使用配套的数据库、文件和密钥。
 
-修改 `APP_URL` 后，在应用目录重新执行 `docker compose run --rm rustfs-init` 以刷新存储桶 CORS。手动使用 Compose 安装时，先填写 `.env` 中的地址/端口，再执行 `bash scripts/init.sh` 生成凭据并准备 RustFS 目录权限，最后执行 `docker compose up -d`；1Panel 安装时自动执行初始化脚本。
+对象存储桶允许通过对象 URL 读取文件，不应作为私密文件库使用。网关的运行中状态保存在内存中，重启网关会中断正在执行的任务。
 
-## 从旧 1.x 迁移
+## 常见问题
 
-1. 暂停旧实例写入，备份旧 `.env`、Compose、完整 PostgreSQL（包括 Casdoor）、`./data` 和 `./s3_data`。保留原 `KEY_VAULTS_SECRET`；仓库旧包中该值是公开固定值，不要照搬到新安装。
-2. **在独立目录/端口部署 2.x 测试实例**。不要将旧 `./data` 直接挂载到新 `./data/postgresql`，也不要让两个实例同时读写同一个 PostgreSQL 数据目录。新库需要 `pg_search`，先在测试环境验证逻辑备份恢复和启动迁移。
-3. 按官方 [2.0 破坏性变更](https://lobehub.com/zh/docs/self-hosting/migration/v2/breaking-changes) 和 [NextAuth → Better Auth](https://lobehub.com/zh/docs/self-hosting/migration/v2/auth/nextauth-to-betterauth) 指南迁移认证。恢复旧数据时必须保留原数据加密密钥。若需保留原用户与聊天归属，不能只开启新邮箱注册：需按官方流程迁移 SSO 关联，并显式配置原 Casdoor 提供商。
-4. 原 Casdoor **不要直接删除**。先确保用户都有有效邮箱；Better Auth 的 Casdoor 配置和回调与旧 NextAuth 不同，按[新版 Casdoor 文档](https://lobehub.com/zh/docs/self-hosting/auth/providers/casdoor)配置并验证。新版包本身不再打包 Casdoor。
-5. MinIO 文件不会自动出现在 RustFS。使用 S3 客户端同步原桶对象并保留对象键，检查文件引用/公开地址；**不要直接复制 MinIO 底层存储目录给 RustFS**。必要时先沿用原 MinIO，手动调整新版 Compose 的 S3 环境变量和依赖关系。
-6. 验证用户、历史聊天、知识库、文件上传/下载和网关后再切换流量。回滚需要恢复配套的旧数据库备份与原配置，不能仅切回旧镜像。
+### 无法注册或登录
 
-本包不自动执行破坏性数据库、认证或对象存储迁移。
+- 确认浏览器访问地址与安装参数 `APP_URL` 完全一致，包括 HTTP/HTTPS、域名/IP 和端口；不要保留 `Your-IP`。
+- 检查注册邮箱白名单是否包含当前邮箱或所属域名，分隔符应为英文逗号。
+- 密码应为 8～64 位。
+- 使用反向代理时，检查转发的主机名和协议是否正确。修改地址后，重新创建应用容器，并清除该站点旧 Cookie 后重试。
+- 如仍失败，查看浏览器开发者工具中 `/api/auth/sign-up/email` 请求的状态码和响应，以及 `docker compose logs --tail=100 lobe`。分享日志前请删除密码、Token、Cookie 等敏感信息。
 
-## 上游参考
+### 日志提示 Redis `NOAUTH Authentication required`
 
-- [v2.3.4 部署 Compose](https://github.com/lobehub/lobehub/blob/v2.3.4/docker-compose/deploy/docker-compose.yml)
-- [Docker Compose 部署说明](https://lobehub.com/zh/docs/self-hosting/platform/docker-compose)
-- [LobeHub 项目](https://github.com/lobehub/lobehub)
+这表示当前 Redis 连接需要认证，但应用没有提供匹配的凭据。本包使用私有网络内的专用 Redis，不应连接共享网络上其他应用的 Redis。`REDIS_URL` 应为 `redis://${CONTAINER_NAME}-redis:6379`，不要使用容易重名的 `redis://redis:6379`。
+
+在已安装应用目录执行 `docker compose exec redis redis-cli ping`，本包默认应返回 `PONG`。如果专用 Redis 也返回 `NOAUTH`，应检查该服务是否被额外配置了密码，并为应用配置对应的 `REDIS_PASSWORD`；不要关闭其他 Redis 实例的认证。
+
+### 文件上传失败
+
+确认浏览器能够访问 `S3_ENDPOINT`，且与应用使用相容的 HTTP/HTTPS 协议。修改应用地址后，在已安装应用目录重新配置上传 CORS：
+
+```bash
+docker compose run --rm rustfs-init
+```
+
+## 相关链接
+
+- [项目仓库](https://github.com/lobehub/lobehub)
+- [官方文档](https://lobehub.com/zh/docs)
+- [Docker Compose 部署](https://lobehub.com/zh/docs/self-hosting/platform/docker-compose)
+- [认证配置](https://lobehub.com/zh/docs/self-hosting/environment-variables/auth)
