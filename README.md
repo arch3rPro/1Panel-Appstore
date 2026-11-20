@@ -671,6 +671,18 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 <kbd>0.5.2</kbd> • [官网链接](https://github.com/volcengine/OpenViking)
 
 </td>
+<td width="33%" align="center">
+
+<a href="./apps/tencentdb-agent-memory/README.md">
+<img src="./apps/tencentdb-agent-memory/logo.png" width="60" height="60" alt="TencentDB Agent Memory">
+<br><b>TencentDB Agent Memory</b>
+</a>
+
+🧠 腾讯云开源的 AI Agent 长期记忆服务，L0 对话到 L3 画像的渐进式记忆
+
+<kbd>1.0.3</kbd> • [官网链接](https://github.com/TencentCloud/TencentDB-Agent-Memory)
+
+</td>
 </tr>
 </table>
 
