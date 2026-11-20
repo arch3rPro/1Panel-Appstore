@@ -1,7 +1,7 @@
 services:
   diun:
     container_name: ${CONTAINER_NAME}
-    image: crazymax/diun:4.33.1
+    image: crazymax/diun:4.34.0
     command: serve
     restart: always
     networks:
