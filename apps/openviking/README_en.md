@@ -10,9 +10,9 @@ This app packages the official image `ghcr.io/volcengine/openviking` and include
 
 ## Versions and Deployment
 
-- Pinned version: `0.5.2.1`, using `ghcr.io/volcengine/openviking:v0.5.2.1`. The older `0.5.2` package has been removed; installations on `0.5.2` can upgrade across the patch version to this package.
+- Pinned version: `0.5.5`, using `ghcr.io/volcengine/openviking:v0.5.5`. The older `0.5.2` package has been removed; installations on older versions can upgrade across patch versions to this package.
 - Rolling version: `latest`, using the official `:latest` tag. Back up before upgrading.
-- The official `v0.5.2.1` image manifest has been verified for `linux/amd64` and `linux/arm64`.
+- The official `v0.5.5` image manifest has been verified for `linux/amd64` and `linux/arm64`.
 - Uses embedded local filesystem and vector storage; no separate Redis, vector database or Caddy is required. Use 1Panel for HTTPS reverse proxying.
 - The logo is from the upstream repository's `docs/images/ov-logo-square.png`.
 

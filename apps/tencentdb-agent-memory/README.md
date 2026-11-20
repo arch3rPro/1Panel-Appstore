@@ -8,7 +8,7 @@
 | Memory Hub | `agentmemory/memory-hub` | 8125 / 8424 | Web 管理面板 / Knowledge API |
 | Memory Proxy | `agentmemory/memory-proxy` | 8096 | LLM 转发、会话初始化与记忆注入 |
 
-提供固定版本 `1.0.3` 和滚动版本 `latest`，三个镜像均支持 amd64 / arm64。默认使用本地 SQLite 和 BM25，不依赖 Redis、MongoDB、腾讯云向量数据库或 COS；需要另外提供模型 API。建议为三件套预留至少 4 GB 内存，实际用量请按工作负载评估。
+提供固定版本 `1.0.4` 和滚动版本 `latest`，三个镜像均支持 amd64 / arm64。默认使用本地 SQLite 和 BM25，不依赖 Redis、MongoDB、腾讯云向量数据库或 COS；需要另外提供模型 API。建议为三件套预留至少 4 GB 内存，实际用量请按工作负载评估。
 
 ## 安装配置
 
@@ -62,7 +62,7 @@ data/
 - Core 与 Proxy 的临时配置由脚本在每次启动时从表单环境变量安全序列化生成，不在 YAML 中直接拼接密钥。修改模型参数后，在 1Panel 保存并重建/更新容器以应用新环境变量，仅普通重启不能更新环境变量。
 - Proxy 挂载目录由启动脚本准备，再降权到 uid/gid `10001` 运行应用；无需手工执行 `chmod 777`。
 - 升级前停止整套应用，备份整个 `data/`、Compose 与安装环境变量。数据库和 `.admin-key` 必须匹配恢复。
-- 推荐生产固定 `1.0.3`；`latest` 为滚动标签，可能发生不兼容变更。不要并发启动多个实例共享 SQLite 数据目录。
+- 推荐生产固定 `1.0.4`；`latest` 为滚动标签，可能发生不兼容变更。不要并发启动多个实例共享 SQLite 数据目录。
 
 ## 安全与上游限制
 

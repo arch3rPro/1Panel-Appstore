@@ -8,7 +8,7 @@ Tencent Cloud's agent long-term memory service builds progressive context from L
 | Memory Hub | `agentmemory/memory-hub` | 8125 / 8424 | Web panel / Knowledge API |
 | Memory Proxy | `agentmemory/memory-proxy` | 8096 | LLM forwarding, session initialization and context injection |
 
-Pinned `1.0.3` and rolling `latest` packages are provided. All three images support amd64 and arm64. The package uses local SQLite and BM25, without Redis, MongoDB, Tencent Cloud VectorDB or COS. Model APIs are required separately. Allow at least 4 GB RAM as a starting point and measure your actual workload.
+Pinned `1.0.4` and rolling `latest` packages are provided. All three images support amd64 and arm64. The package uses local SQLite and BM25, without Redis, MongoDB, Tencent Cloud VectorDB or COS. Model APIs are required separately. Allow at least 4 GB RAM as a starting point and measure your actual workload.
 
 ## Installation
 

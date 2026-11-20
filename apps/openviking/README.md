@@ -10,9 +10,9 @@ OpenViking 是火山引擎（Volcengine）开源的**面向 AI Agent 的自进�
 
 ## 版本与部署方式
 
-- 固定版本：`0.5.2.1`，使用官方镜像 `ghcr.io/volcengine/openviking:v0.5.2.1`。旧版 `0.5.2` 包已移除，已安装 `0.5.2` 的用户可跨小版本升级到本包。
+- 固定版本：`0.5.5`，使用官方镜像 `ghcr.io/volcengine/openviking:v0.5.5`。旧版 `0.5.2` 包已移除，已安装旧版的用户可跨小版本升级到本包。
 - 滚动版本：`latest`，使用官方 `:latest` 标签，升级前请先备份。
-- 官方 `v0.5.2.1` 镜像已核实支持 `linux/amd64` 和 `linux/arm64`。
+- 官方 `v0.5.5` 镜像已核实支持 `linux/amd64` 和 `linux/arm64`。
 - 使用内嵌本地文件与向量存储，不需要额外部署 Redis、外部向量数据库或 Caddy。HTTPS 可由 1Panel 反向代理提供。
 - 图标来自官方仓库 `docs/images/ov-logo-square.png`。
 
