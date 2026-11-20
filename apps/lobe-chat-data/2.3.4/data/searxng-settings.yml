@@ -2,7 +2,7 @@ use_default_settings: true
 server:
   bind_address: 0.0.0.0
   port: 8080
-  # Overridden by SEARXNG_SECRET from the deployment's AUTH_SECRET.
+  # Overridden by the auto-generated SEARXNG_SECRET in data/secrets/searxng.env.
   secret_key: overridden-by-environment
   limiter: false
   image_proxy: true

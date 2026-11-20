@@ -1,0 +1,3 @@
+# Generated credentials must never be committed.
+/data/secrets/
+/.secrets-init.lock/

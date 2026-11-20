@@ -16,24 +16,11 @@
 
 建议至少 2 核 / 4 GB 内存 / 20 GB 磁盘；生产环境建议 4 核 / 8 GB 以上。
 
-### 1. 生成本实例专用密钥
+### 1. 设置地址和端口
 
-在安装前，从所选版本目录运行（需要 Docker，可在另一台可信设备运行）：
+表单精简为 **4 个外部地址 + 5 个带默认值的端口 + 1 个可选邮箱白名单**。Agent 网关和设备网关均保留并启用，不需要再手填数据库密码、存储密钥或 JWKS JSON。
 
-```bash
-cd apps/lobe-chat-data/2.3.4
-# 仅运行密钥生成器，不启动应用、不连接数据库。
-docker run --rm -i --entrypoint /bin/node lobehub/lobehub:2.3.4 - < generate-secrets.cjs
-# 本机有 Node.js 时也可以：node generate-secrets.cjs
-```
-
-将输出的七项值分别填入 1Panel 安装表单的同名字段：数据库密码、RustFS 密钥、`KEY_VAULTS_SECRET`、`AUTH_SECRET`、`GATEWAY_SERVICE_TOKEN`、`JWKS_KEY` 和 `JWKS_PUBLIC_KEY`。只粘贴等号右侧的值；两个 JWKS 字段必须是配对的单行 JSON，不加外层引号。
-
-每个实例都应重新生成。生成器不会修改已有配置。**妥善备份这些值，不要把密钥输出提交到 Git、发送到公共日志或在重建时重新生成。** 丢失/更换 `KEY_VAULTS_SECRET` 会使已有加密数据不可读。数据库密码建议使用生成器提供的十六进制值，避免连接 URI 中的特殊字符问题。
-
-### 2. 设置地址和端口
-
-将所有 `Your-IP` 改为浏览器实际可访问的 IP/域名，不要填容器名或 `localhost`（除非浏览器就在服务器上）。更改端口后必须同步更改对应地址。
+将四个地址中的 `Your-IP` 改为浏览器/设备实际可访问的 IP/域名，不要填容器名或 `localhost`（除非客户端就在服务器上）。更改端口后必须同步更改对应地址。
 
 | 字段 | 默认端口 | 说明 |
 | --- | --- | --- |
@@ -41,17 +28,28 @@ docker run --rm -i --entrypoint /bin/node lobehub/lobehub:2.3.4 - < generate-sec
 | `PANEL_APP_PORT_S3` / `S3_ENDPOINT` | 9000 | 浏览器直传和下载使用的 S3 地址 |
 | `PANEL_APP_PORT_ADMIN` | 9001 | RustFS 控制台，仅允许可信网络访问 |
 | `PANEL_APP_PORT_API` / `AGENT_GATEWAY_URL` | 8787 | Agent 网关，填写 HTTP/HTTPS 地址，代理必须支持 WebSocket |
-| `PANEL_APP_PORT_PROXY` / `DEVICE_GATEWAY_PUBLIC_URL` | 8788 | 设备网关；外部地址可留空，由 CLI 显式指定 |
+| `PANEL_APP_PORT_PROXY` / `DEVICE_GATEWAY_PUBLIC_URL` | 8788 | 设备网关，供桌面端/CLI 发现和接入设备 |
 
-域名部署应同时反代应用、S3 和 Agent 网关；应用使用 HTTPS 时，S3/网关也应使用 HTTPS，避免混合内容拦截。Agent 网关反代开启 WebSocket 升级和长读取超时。设备网关供 `lh connect --gateway <地址>` 使用，需要时单独反代并允许 WebSocket。
+域名部署应同时反代应用、S3、Agent 网关和设备网关；应用使用 HTTPS 时，S3/网关也应使用 HTTPS，避免混合内容拦截。两个网关反代均需开启 WebSocket 升级和长读取超时。设备使用 `lh connect --gateway <DEVICE_GATEWAY_PUBLIC_URL>` 接入。
 
 `INTERNAL_APP_URL=http://localhost:3210` 和 `S3_INTERNAL_ENDPOINT=http://rustfs:9000` 已配置，应用自身及服务端存储请求不绕行公网。PostgreSQL、Redis 和 SearXNG 不发布宿主机端口，应用接入外部 `1panel-network`，依赖服务位于本实例的独立网络。
+
+### 2. 自动初始化密钥
+
+1Panel 安装/升级脚本会自动生成本实例专用的数据库密码、RustFS 密钥、数据加密密钥、Better Auth 密钥、网关 Token、RSA JWKS 密钥对及搜索密钥。内部数据库名默认 `lobehub`，RustFS 账号默认 `admin`，不再占用表单。
+
+- 原始凭据持久保存在 `./data/secrets/state.json`，按服务生成独立的 `.env` 文件；目录权限 `700`、文件权限 `600`，安装日志不打印密钥。
+- 重建直接读取已有文件；重复安装脚本/升级只复用原密钥并修复派生文件，不重新生成密钥。
+- 主机有 Node.js 16+ 时直接初始化，否则临时使用主应用镜像中的 Node.js，无需额外安装 Node.js；首次可能先拉取主镜像。
+- **必须备份整个 `./data/secrets/`。** 数据加密密钥丢失后无法解密旧数据；检测到已有数据但凭据丢失、残缺或密钥不配对时，脚本会报错停止，而非生成新密钥覆盖。
+
+从上一版“手填密钥”的 2.x 包更新时，先备份原 `.env`，首次运行升级脚本会导入其中完整的七项原有密钥及数据库名/存储账号。若 1Panel 已移除这些旧字段，应先恢复旧 `.env` 再执行 `bash scripts/upgrade.sh`，**不要重新生成密钥**。导入成功后，以 `data/secrets/state.json` 为准。
 
 ### 3. 登录与访问控制
 
 新版默认使用 **Better Auth 邮箱密码注册/登录，没有预置账号或默认密码，也不需要进入 Casdoor 设置回调**。建议安装时填写 `AUTH_ALLOWED_EMAILS`（英文逗号分隔）；留空允许所有人注册/登录，该白名单不是关闭注册的开关。公网部署前务必配置访问控制。
 
-RustFS 控制台地址为 `http://服务器IP:9001`，账号为安装时填写的 `RUSTFS_ACCESS_KEY`（默认 `admin`），密码为 `RUSTFS_SECRET_KEY`。不要向公网开放管理端口，注意 Docker 发布端口的实际防火墙规则。
+RustFS 控制台地址为 `http://服务器IP:9001`，默认账号 `admin`。自动生成的密码在安装目录的 `./data/secrets/state.json` 中，字段为 `RUSTFS_SECRET_KEY`（导入已有 2.x 时保留原账号密码）。仅在可信的主机文件终端查看，不要粘贴到公开日志。不要向公网开放管理端口，注意 Docker 发布端口的实际防火墙规则。
 
 需要邮箱验证、找回密码、SSO 或服务端模型密钥时，按[认证配置](https://lobehub.com/zh/docs/self-hosting/environment-variables/auth)与[环境变量文档](https://lobehub.com/zh/docs/self-hosting/environment-variables)在应用 Compose 的 `lobe.environment` 中显式补充。邮箱验证/重置密码需要配置邮件服务。本包不将整份 `.env` 注入依赖服务，尤其不会向网关传递 JWKS 私钥。
 
@@ -72,9 +70,9 @@ RustFS 控制台地址为 `http://服务器IP:9001`，账号为安装时填写�
 docker compose exec -T postgresql sh -c 'pg_dump -U postgres "$POSTGRES_DB"' > lobehub.sql
 ```
 
-同时备份安装参数/`.env`（含全部密钥）、Compose 和整个 `./data/`。对 PostgreSQL/Redis 数据目录做文件级备份应先停止服务或使用一致性快照。恢复数据库、文件和密钥必须配套；不要通过删除数据库目录来解决迁移错误。
+同时备份安装参数/`.env`、Compose 和整个 `./data/`，**特别是包含全部内部凭据的 `./data/secrets/`**。对 PostgreSQL/Redis 数据目录做文件级备份应先停止服务或使用一致性快照。恢复数据库、文件和密钥必须配套；不要通过删除数据库目录来解决迁移错误。
 
-修改 `APP_URL` 后，在应用目录重新执行 `docker compose run --rm rustfs-init` 以刷新存储桶 CORS。手动使用 Compose 安装时，先执行 `bash scripts/init.sh` 准备 RustFS 目录权限；1Panel 安装时自动执行该脚本。
+修改 `APP_URL` 后，在应用目录重新执行 `docker compose run --rm rustfs-init` 以刷新存储桶 CORS。手动使用 Compose 安装时，先填写 `.env` 中的地址/端口，再执行 `bash scripts/init.sh` 生成凭据并准备 RustFS 目录权限，最后执行 `docker compose up -d`；1Panel 安装时自动执行初始化脚本。
 
 ## 从旧 1.x 迁移
 

@@ -14,24 +14,11 @@
 
 Allow at least 2 CPU cores, 4 GB RAM and 20 GB disk; 4 cores and 8 GB RAM are recommended for production.
 
-### Generate unique secrets
-
-Before installation, run from the selected version directory on a trusted machine:
-
-```bash
-cd apps/lobe-chat-data/2.3.4
-docker run --rm -i --entrypoint /bin/node lobehub/lobehub:2.3.4 - < generate-secrets.cjs
-# Or, with local Node.js:
-# node generate-secrets.cjs
-```
-
-Copy the seven generated values into the matching 1Panel fields: `POSTGRES_PASSWORD`, `RUSTFS_SECRET_KEY`, `KEY_VAULTS_SECRET`, `AUTH_SECRET`, `GATEWAY_SERVICE_TOKEN`, `JWKS_KEY` and `JWKS_PUBLIC_KEY`. Paste only the part after `=`. Both JWKS values must be matching single-line JSON, without surrounding quotes.
-
-The generator only prints secrets; it does not change existing deployments. Use unique values for each instance and back them up securely. Never publish them or regenerate them during a rebuild. Losing/replacing `KEY_VAULTS_SECRET` makes existing encrypted data unreadable. Generated hexadecimal database passwords avoid URI-escaping problems.
-
 ### Configure addresses
 
-Replace every `Your-IP` with the address reachable by the browser. Update both port and URL fields when changing ports. Do not use container names or `localhost` as public addresses.
+The form now contains **4 public URLs, 5 ports with defaults, and 1 optional email allowlist**. Both Agent and device gateways remain enabled. Database passwords, storage credentials and JWKS JSON no longer require manual input.
+
+Replace `Your-IP` in all four URLs with an address reachable by your browser/devices. Update both port and URL fields when changing ports. Do not use container names or `localhost` as public addresses.
 
 | Port field | Default | Public URL field / purpose |
 | --- | --- | --- |
@@ -39,17 +26,28 @@ Replace every `Your-IP` with the address reachable by the browser. Update both p
 | `PANEL_APP_PORT_S3` | 9000 | `S3_ENDPOINT`, browser-accessible S3 API |
 | `PANEL_APP_PORT_ADMIN` | 9001 | RustFS console, restrict to trusted networks |
 | `PANEL_APP_PORT_API` | 8787 | `AGENT_GATEWAY_URL`, HTTP/HTTPS with WebSocket proxying |
-| `PANEL_APP_PORT_PROXY` | 8788 | Optional `DEVICE_GATEWAY_PUBLIC_URL` for connected devices |
+| `PANEL_APP_PORT_PROXY` | 8788 | `DEVICE_GATEWAY_PUBLIC_URL` for device discovery and connections |
 
-For HTTPS deployments, use HTTPS for S3 and the Agent gateway too. Enable WebSocket upgrades and long read timeouts on the gateway proxy. Devices can connect using `lh connect --gateway <device-gateway-url>`; proxy this endpoint with WebSocket support if needed.
+Proxy all four endpoints for domain deployments. When the application uses HTTPS, use HTTPS for S3 and both gateways too. Enable WebSocket upgrades and long read timeouts on both gateway proxies. Devices connect using `lh connect --gateway <DEVICE_GATEWAY_PUBLIC_URL>`.
 
 Internal application callbacks use `http://localhost:3210`, and server-side S3 traffic uses `http://rustfs:9000`. PostgreSQL, Redis and SearXNG have no published host ports. Only the application joins `1panel-network`; dependencies communicate over the instance-specific bridge network.
+
+### Automatic credentials
+
+The install/upgrade hook generates unique database/storage passwords, vault/authentication secrets, gateway token, matching RSA JWKS keys and a separate search secret. The internal database defaults to `lobehub`, and the RustFS username defaults to `admin`.
+
+- Credentials persist in `./data/secrets/state.json`. Separate per-service env files are generated with directory mode `700` and file mode `600`. Secret values are not logged.
+- Rebuilds use existing files. Re-running initialization/upgrading reuses saved credentials and repairs derived files without rotating keys.
+- Uses host Node.js 16+ if available, otherwise the main image's Node.js in a temporary container. No extra host runtime installation is required; the main image may need downloading first.
+- **Back up all of `./data/secrets/`.** Losing the vault key makes existing encrypted data unreadable. Existing data with missing/incomplete credentials or mismatched keys causes initialization to stop, not generate replacements.
+
+When upgrading from the previous manual-secrets 2.x package, back up its `.env` first. The upgrade hook imports all seven existing secrets, database name and storage username. If 1Panel has already removed those old form fields, restore the old `.env` before running `bash scripts/upgrade.sh`. Never generate replacements. Once imported, `data/secrets/state.json` is authoritative.
 
 ### Sign in
 
 Better Auth provides email/password registration and login. **There are no predefined application credentials and no bundled Casdoor.** Set `AUTH_ALLOWED_EMAILS` to a comma-separated allowlist before public exposure. Leaving it blank allows everyone to register/log in; it does not disable registration.
 
-The RustFS console uses `RUSTFS_ACCESS_KEY` (default `admin`) and `RUSTFS_SECRET_KEY`. Restrict its published port, accounting for Docker's actual firewall rules.
+The RustFS console defaults to username `admin`; its generated password is `RUSTFS_SECRET_KEY` in `./data/secrets/state.json`. Imported 2.x installations keep their original credentials. View the file only through a trusted host file terminal and never paste it into public logs. Restrict the console's published port, accounting for Docker's actual firewall rules.
 
 For SMTP, email verification, password resets, SSO or server-side model credentials, explicitly add upstream variables to `lobe.environment`. Email verification and password reset require an email service. The full `.env` is deliberately not passed to dependency containers; the gateway receives only the public JWKS, never its private counterpart.
 
@@ -70,9 +68,9 @@ From the installed Compose directory, back up the database:
 docker compose exec -T postgresql sh -c 'pg_dump -U postgres "$POSTGRES_DB"' > lobehub.sql
 ```
 
-Also back up configuration/`.env`, all secrets, Compose and `./data/`. Stop services or use consistent snapshots for filesystem-level database backups. Restore matching database, files and secrets together. Never delete the database to fix migration errors.
+Also back up configuration/`.env`, Compose and all of `./data/`, **especially `./data/secrets/` containing the internal credentials**. Stop services or use consistent snapshots for filesystem-level database backups. Restore matching database, files and secrets together. Never delete the database to fix migration errors.
 
-After changing `APP_URL`, run `docker compose run --rm rustfs-init` to refresh bucket CORS. For manual Compose installations, run `bash scripts/init.sh` first; 1Panel runs it during installation.
+After changing `APP_URL`, run `docker compose run --rm rustfs-init` to refresh bucket CORS. For manual Compose installations, configure public addresses/ports in `.env`, run `bash scripts/init.sh` to generate credentials and prepare directory ownership, then `docker compose up -d`. 1Panel runs initialization automatically.
 
 ## Migrating from 1.x
 
