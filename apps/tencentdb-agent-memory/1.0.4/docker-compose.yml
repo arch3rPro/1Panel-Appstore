@@ -1,6 +1,6 @@
 services:
   memory-core:
-    image: agentmemory/memory-core:1.0.3
+    image: agentmemory/memory-core:1.0.4
     container_name: ${CONTAINER_NAME}-core
     restart: always
     command: ["node", "/opt/1panel/core.cjs"]
@@ -37,7 +37,7 @@ services:
       createdBy: "Apps"
 
   memory-hub:
-    image: agentmemory/memory-hub:1.0.3
+    image: agentmemory/memory-hub:1.0.4
     container_name: ${CONTAINER_NAME}
     restart: always
     depends_on:
@@ -80,7 +80,7 @@ services:
       createdBy: "Apps"
 
   memory-proxy:
-    image: agentmemory/memory-proxy:1.0.3
+    image: agentmemory/memory-proxy:1.0.4
     container_name: ${CONTAINER_NAME}-proxy
     restart: always
     # Prepare the bind mount as root; proxy.cjs drops to uid/gid 10001.
