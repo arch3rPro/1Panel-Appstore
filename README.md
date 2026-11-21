@@ -1647,7 +1647,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 📡 多平台热点推送
 
-<kbd>6.11.0</kbd> • [官网链接](https://github.com/sansan0/TrendRadar)
+<kbd>6.12.0</kbd> • [官网链接](https://github.com/sansan0/TrendRadar)
 
 </td>
 <td width="33%" align="center">
