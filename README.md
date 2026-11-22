@@ -118,7 +118,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 💬 开源 AI 智能体协作平台（服务端数据库版）
 
-<kbd>2.3.4</kbd> • [官网链接](https://github.com/lobehub/lobehub)
+<kbd>1.143.3</kbd> • [官网链接](https://github.com/lobehub/lobehub)
 
 </td>
 <td width="33%" align="center">
