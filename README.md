@@ -893,7 +893,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 美观强大的在线静态博客管理器，支持多种平台
 
-<kbd>4.3.0</kbd> • [官网链接](https://github.com/Qexo/Qexo)
+<kbd>4.3.1</kbd> • [官网链接](https://github.com/Qexo/Qexo)
 
 </td>
 </tr>

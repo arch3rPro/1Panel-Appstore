@@ -15,7 +15,7 @@ services:
       - TZ=Asia/Shanghai
       - WORKERS=4
       - THREADS=4
-    image: abudulin/qexo:4.3.0
+    image: abudulin/qexo:4.3.1
     labels:
       createdBy: Apps
 volumes:
