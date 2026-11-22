@@ -20,7 +20,7 @@ services:
     depends_on:
       - api
     restart: always
-    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-nginx:v3.87.5
+    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-nginx:v3.87.7
     ports:
       - "${PANEL_APP_PORT_HTTPS}:8080"
     volumes:
@@ -36,7 +36,7 @@ services:
   app:
     container_name: ${CONTAINER_NAME}-app
     restart: always
-    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-app:v3.87.5
+    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-app:v3.87.7
     networks:
       panda-wiki:
         ipv4_address: "${SUBNET_PREFIX:-169.254.15}.112"
@@ -53,7 +53,7 @@ services:
       - caddy
       - raglite
     restart: always
-    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-api:v3.87.5
+    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-api:v3.87.7
     volumes:
       - ./data/caddy/run:/app/run
       - ./data/nginx/ssl:/app/etc/nginx/ssl
@@ -81,7 +81,7 @@ services:
       - api
       - raglite
     restart: always
-    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-consumer:v3.87.5
+    image: chaitin-registry.cn-hangzhou.cr.aliyuncs.com/chaitin/panda-wiki-consumer:v3.87.7
     environment:
       - NATS_PASSWORD=${NATS_PASSWORD}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
