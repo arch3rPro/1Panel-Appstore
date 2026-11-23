@@ -1,0 +1,143 @@
+additionalProperties:
+  formFields:
+    - default: 3000
+      edit: true
+      envKey: PANEL_APP_PORT_HTTP
+      labelZh: Web 端口
+      labelEn: Web Port
+      required: true
+      type: number
+      label:
+        zh: Web 端口
+        en: Web Port
+      rule: paramPort
+    - default: 8080
+      edit: true
+      envKey: PANEL_APP_PORT_API
+      labelZh: API 端口
+      labelEn: API Port
+      required: true
+      type: number
+      label:
+        zh: API 端口
+        en: API Port
+      rule: paramPort
+    - default: ''
+      edit: true
+      envKey: APP_URL
+      labelZh: 访问地址（如 http://192.168.1.10:3000，登录与实时连接依赖此项）
+      labelEn: Public URL (e.g. http://192.168.1.10:3000; login and realtime depend on it)
+      required: true
+      type: text
+      label:
+        zh: 访问地址（如 http://192.168.1.10:3000，登录与实时连接依赖此项）
+        en: Public URL (e.g. http://192.168.1.10:3000; login and realtime depend on it)
+    - default: multica
+      edit: true
+      envKey: DB_DATABASE
+      labelZh: 数据库名
+      labelEn: Database
+      required: true
+      type: text
+      label:
+        zh: 数据库名
+        en: Database
+      rule: paramCommon
+    - default: multica
+      edit: true
+      envKey: DB_USERNAME
+      labelZh: 数据库用户
+      labelEn: Database User
+      required: true
+      type: text
+      label:
+        zh: 数据库用户
+        en: Database User
+      rule: paramCommon
+    - default: ''
+      edit: false
+      envKey: DB_PASSWORD
+      labelZh: 数据库密码（请保存）
+      labelEn: Database Password (save it)
+      required: true
+      type: password
+      label:
+        zh: 数据库密码（请保存）
+        en: Database Password (save it)
+      random: true
+    - default: ''
+      edit: false
+      envKey: JWT_SECRET
+      labelZh: 会话签名密钥（请保存，生产环境必填）
+      labelEn: Session Signing Secret (save it; required in production)
+      required: true
+      type: password
+      label:
+        zh: 会话签名密钥（请保存，生产环境必填）
+        en: Session Signing Secret (save it; required in production)
+      random: true
+    - default: ''
+      edit: true
+      envKey: SMTP_HOST
+      labelZh: SMTP 服务器（留空则登录验证码打印到后端日志）
+      labelEn: SMTP Host (leave empty to print login codes to backend logs)
+      required: false
+      type: text
+      label:
+        zh: SMTP 服务器（留空则登录验证码打印到后端日志）
+        en: SMTP Host (leave empty to print login codes to backend logs)
+    - default: 465
+      edit: true
+      envKey: SMTP_PORT
+      labelZh: SMTP 端口
+      labelEn: SMTP Port
+      required: false
+      type: number
+      label:
+        zh: SMTP 端口
+        en: SMTP Port
+    - default: ''
+      edit: true
+      envKey: SMTP_USERNAME
+      labelZh: SMTP 用户名
+      labelEn: SMTP Username
+      required: false
+      type: text
+      label:
+        zh: SMTP 用户名
+        en: SMTP Username
+    - default: ''
+      edit: true
+      envKey: SMTP_PASSWORD
+      labelZh: SMTP 密码
+      labelEn: SMTP Password
+      required: false
+      type: password
+      label:
+        zh: SMTP 密码
+        en: SMTP Password
+    - default: ''
+      edit: true
+      envKey: SMTP_FROM_EMAIL
+      labelZh: 发件人邮箱
+      labelEn: From Email
+      required: false
+      type: text
+      label:
+        zh: 发件人邮箱
+        en: From Email
+    - default: 'true'
+      edit: true
+      envKey: ALLOW_SIGNUP
+      labelZh: 允许注册
+      labelEn: Allow Signup
+      required: true
+      type: select
+      values:
+        - label: 允许 / Allow
+          value: 'true'
+        - label: 禁止 / Deny
+          value: 'false'
+      label:
+        zh: 允许注册
+        en: Allow Signup

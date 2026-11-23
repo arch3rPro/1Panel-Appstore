@@ -1,0 +1,30 @@
+name: Multica
+tags:
+  - AI
+  - Tool
+  - DevTool
+title: 像分配任务给同事一样把工作派给 AI Agent 的协作工作台
+description: Multica 是一个自托管工作空间，把 issue 指派给 Claude Code、Codex、Copilot CLI 等 AI 编码 Agent，Agent 领任务、汇报进度、抛出阻塞再交回评审。前端 Next.js、后端 Go，需自备 PostgreSQL 与可选的 AI Agent CLI。
+additionalProperties:
+  key: multica
+  name: Multica
+  tags:
+    - AI
+    - Tool
+    - DevTool
+  shortDescZh: 把 issue 指派给 AI Agent，Agent 领任务、报进度、交回评审
+  shortDescEn: A self-hosted board where you assign issues to AI coding agents like teammates
+  description:
+    zh: Multica 让人类和 AI Agent 像一支团队一样协作。你在看板上把 issue 指派给 Agent（Claude Code、Codex、Copilot CLI、OpenCode、Pi 等），Agent 通过运行在你自己机器上的 daemon 领取任务、在 issue 里汇报进度、抛出阻塞，完成后交回给你评审。本应用打包服务端三件套（Go 后端 API/WebSocket、Next.js 前端、PostgreSQL 17 + pgvector），每个要跑 Agent 的人再各自安装 multica CLI 并启动 daemon。
+    en: Multica is a self-hosted workspace where you assign issues to AI coding agents the way you would to a teammate. Agents pick up the task through a daemon running on your own machine, report progress in the issue, raise blockers and hand it back for review. This package bundles the server side — the Go API/WebSocket backend, the Next.js web app and PostgreSQL 17 with pgvector — while each person running agents installs the multica CLI and starts a daemon locally.
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://multica.ai
+  github: https://github.com/multica-ai/multica
+  document: https://github.com/multica-ai/multica/blob/main/SELF_HOSTING.md
+  architectures:
+    - amd64
+    - arm64
+  memoryRequired: 2048

@@ -1,0 +1,77 @@
+services:
+  multica:
+    image: ghcr.io/multica-ai/multica-web:latest
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    ports:
+      - "${PANEL_APP_PORT_HTTP}:3000"
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      HOSTNAME: "0.0.0.0"
+      # 同容器网络内的后端地址，浏览器侧走 Next.js 反代，不暴露后端端口给前端使用
+      REMOTE_API_URL: http://${CONTAINER_NAME}-backend:8080
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+
+  backend:
+    image: ghcr.io/multica-ai/multica-backend:latest
+    container_name: ${CONTAINER_NAME}-backend
+    restart: always
+    ports:
+      - "${PANEL_APP_PORT_API}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./data/uploads:/app/data/uploads
+    environment:
+      PORT: "8080"
+      APP_ENV: production
+      DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@${CONTAINER_NAME}-postgres:5432/${DB_DATABASE}?sslmode=disable
+      # 生产环境下为空或弱值会直接拒绝启动，必须由 data.yml 随机生成
+      JWT_SECRET: ${JWT_SECRET}
+      # 决定 cookie 的 Secure 标志与 WebSocket Origin 白名单，必须与用户实际访问地址一致
+      FRONTEND_ORIGIN: ${APP_URL}
+      MULTICA_APP_URL: ${APP_URL}
+      # 允许经反代访问时按 X-Forwarded-Host 判断同源，否则换 IP / 域名访问时 WebSocket 会被 403
+      MULTICA_TRUSTED_PROXIES: 172.16.0.0/12
+      # 自托管部署关闭官方遥测（默认开启，每天上报一次部署级匿名快照）
+      DO_NOT_TRACK: "1"
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP}
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: ${CONTAINER_NAME}-postgres
+    restart: always
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true
