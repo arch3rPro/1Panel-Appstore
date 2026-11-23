@@ -1,6 +1,6 @@
 services:
   craft-agents:
-    image: ghcr.io/craft-ai-agents/craft-agents-server:0.15.11
+    image: ghcr.io/craft-ai-agents/craft-agents-server:0.16.0
     container_name: ${CONTAINER_NAME}
     restart: always
     networks:
