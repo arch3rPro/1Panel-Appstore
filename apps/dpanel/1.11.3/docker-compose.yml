@@ -1,6 +1,6 @@
 services:
   dpanel:
-    image: dpanel/dpanel:1.11.2
+    image: dpanel/dpanel:1.11.3
     container_name: ${CONTAINER_NAME}
     labels:
       createdBy: "Apps"
