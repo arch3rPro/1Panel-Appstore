@@ -651,7 +651,7 @@ docker run -d --name=nginx -p 80:80 nginx:latest
 
 📚 腾讯开源的 LLM 知识平台，支持 RAG 问答、智能体与知识图谱
 
-<kbd>0.9.0</kbd> • [官网链接](https://github.com/Tencent/WeKnora)
+<kbd>0.9.1</kbd> • [官网链接](https://github.com/Tencent/WeKnora)
 
 </td>
 </tr>

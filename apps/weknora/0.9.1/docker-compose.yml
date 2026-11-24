@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: wechatopenai/weknora-ui:v0.9.0
+    image: wechatopenai/weknora-ui:v0.9.1
     container_name: ${CONTAINER_NAME}
     ports:
       - "${PANEL_APP_PORT_HTTP}:80"
@@ -21,7 +21,7 @@ services:
       createdBy: "Apps"
 
   app:
-    image: wechatopenai/weknora-app:v0.9.0
+    image: wechatopenai/weknora-app:v0.9.1
     container_name: ${CONTAINER_NAME}-app
     ports:
       - "${PANEL_APP_PORT_API}:8080"
@@ -348,7 +348,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   docreader:
-    image: wechatopenai/weknora-docreader:v0.9.0
+    image: wechatopenai/weknora-docreader:v0.9.1
     container_name: ${CONTAINER_NAME}-docreader
     expose:
       - "50051"
