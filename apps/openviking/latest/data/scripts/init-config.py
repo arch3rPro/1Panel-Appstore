@@ -45,6 +45,28 @@ def log(message):
     print(f"[ov-init] {message}", flush=True)
 
 
+def fail_without_models():
+    """Refuse to start half-configured.
+
+    Upstream needs an embedding model and a VLM before the server can ingest or
+    retrieve anything, and the official image ships no local embedding support.
+    Writing a config without models only produces a container that looks healthy
+    while every write fails, so stop here with a message that names the fix.
+    """
+    log("refusing to start: no embedding/VLM model configured")
+    log("a model API key is required (except for the ollama preset, which the script fills in)")
+    log("1Panel install form fields:")
+    log("  model preset       openai | volcengine | ollama | custom")
+    log("  model API key      key for that preset; a model API key is required unless the preset is ollama")
+    log("  override API base  custom preset only: OpenAI-compatible base URL, ends with /v1")
+    log("  override embedding custom preset only: embedding model name")
+    log("  override dimension custom preset only: that model's real vector dimension")
+    log("  override VLM       custom preset only: vision model name")
+    log("fill the form and start again, or put the values in data/ov.conf before the first start")
+    log("already have a broken ov.conf? delete data/ov.conf and restart to regenerate it")
+    sys.exit(1)
+
+
 def hand_over():
     """Replace this process with the official entrypoint; never returns."""
     try:
@@ -105,12 +127,12 @@ def resolve_models():
     ]
     if missing:
         if preset == "custom":
-            log("preset custom needs " + ", ".join(missing) + "; starting without models")
+            log("preset custom needs " + ", ".join(missing))
         else:
-            log("no model API key yet; starting without models for later setup in Studio")
+            log("preset " + preset + " needs " + ", ".join(missing))
         return None, None
     if not 0 < dimension <= 65536:
-        log(f"ignoring out-of-range embedding dimension {dimension}; starting without models")
+        log(f"ignoring out-of-range embedding dimension {dimension}")
         return None, None
 
     embedding = {
@@ -162,9 +184,12 @@ def main():
         },
     }
     embedding, vlm = resolve_models()
-    if embedding:
-        config["embedding"] = embedding
-        config["vlm"] = vlm
+    if not embedding or not vlm:
+        # Upstream's own deployment path configures both models before the first
+        # start; a config without them cannot ingest or retrieve anything.
+        fail_without_models()
+    config["embedding"] = embedding
+    config["vlm"] = vlm
 
     os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
     os.makedirs(os.path.join(os.path.dirname(CONFIG_PATH), "data"), exist_ok=True)
@@ -173,8 +198,6 @@ def main():
         handle.write("\n")
     os.chmod(CONFIG_PATH, 0o600)
     log(f"wrote {CONFIG_PATH}")
-    if not embedding:
-        log("configure models later at /studio > 设置 > 服务端配置, or rerun after removing ov.conf")
     return hand_over()
 
 

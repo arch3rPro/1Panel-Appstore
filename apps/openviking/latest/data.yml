@@ -53,16 +53,16 @@ additionalProperties:
     - default: ""
       edit: true
       envKey: MODEL_API_KEY
-      labelEn: Model API Key (required, not needed for Ollama)
-      labelZh: 模型 API 密钥（必填，选 Ollama 不需要）
+      labelEn: Model API Key (required; only the Ollama preset may leave it empty)
+      labelZh: 模型 API 密钥（必填，仅 Ollama 预设可留空）
       required: false
       type: password
       label:
-        en: Model API Key (required, not needed for Ollama)
-        zh: 模型 API 密钥（必填，选 Ollama 不需要）
-        zh-Hant: 模型 API 金鑰（必填，選 Ollama 不需要）
-        ja: モデル API キー（必須、Ollama 選択時は不要）
-        ko: 모델 API 키 (필수, Ollama 선택 시 불필요)
+        en: Model API Key (required; only the Ollama preset may leave it empty)
+        zh: 模型 API 密钥（必填，仅 Ollama 预设可留空）
+        zh-Hant: 模型 API 金鑰（必填，僅 Ollama 預設可留空）
+        ja: モデル API キー（必須、Ollama プリセットのみ空欄可）
+        ko: 모델 API 키 (필수, Ollama 프리셋만 비워둘 수 있음)
     - default: ""
       edit: true
       envKey: MODEL_API_BASE

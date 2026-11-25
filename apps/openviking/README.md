@@ -2,7 +2,7 @@
 
 OpenViking 是火山引擎开源的自进化上下文数据库：Agent 的记忆、知识库和技能都放在同一个 `viking://` 文件系统里，像读写文件一样浏览、搜索、管理。
 
-装之前要先准备一样东西：一个能用的模型 API Key（OpenAI、火山方舟，或你自己的 OpenAI 兼容服务），或者一台装好模型的 Ollama。这个 Key 是必填的——不填也能装上、也会显示"正常"，但导入和检索会全部失败，原因见下面第 4 节。
+装之前必须先备好模型：一个能用的模型 API Key（OpenAI、火山方舟，或你自己的 OpenAI 兼容服务），或者一台已经装好模型的 Ollama。安装时必须把模型配好——不配就装不上：容器会在启动阶段直接退出（compose 里的 `restart: always` 会让它反复重启，1Panel 里一直起不来），日志里写清楚缺了哪个字段，不会给你一个看起来正常、实际用不了的服务。
 
 本应用封装官方镜像 `ghcr.io/volcengine/openviking`，包含 HTTP 服务（默认端口 `1933`）、Web Studio 控制台和 VikingBot（默认关闭）。固定版本 `0.5.6`，官方镜像已核实支持 `linux/amd64` 和 `linux/arm64`；另提供 `latest` 滚动版本，升级前请先备份。
 
@@ -33,13 +33,13 @@ OpenViking 是火山引擎开源的自进化上下文数据库：Agent 的记忆
 
 想接自己的 OpenAI 兼容服务（自建中转、One-API、其他厂商的兼容接口）时，预设选「自定义（OpenAI 兼容）」，然后填满这 5 项：模型 API 密钥（在上方）、高级 - 覆写模型 API 地址、高级 - 覆写向量嵌入模型、高级 - 覆写向量维度、高级 - 覆写视觉语言模型 (VLM)。
 
-地址要写到 `/v1` 为止，例如 `https://your-proxy.example.com/v1`；向量维度必须和该向量模型真实输出维度一致（不填或填错都启动不了模型）；缺任一项时服务会按「无模型」启动，容器日志 `[ov-init]` 里会写明缺了什么。
+地址要写到 `/v1` 为止，例如 `https://your-proxy.example.com/v1`；向量维度必须和该向量模型真实输出维度一致。五项缺任一项，容器启动时会直接退出，`[ov-init]` 日志会列出缺的字段名。
 
 ### 用 Ollama 本地模型
 
 1. 在宿主机装好 Ollama，拉两个模型：`ollama pull nomic-embed-text`、`ollama pull qwen2.5:7b`。
 2. Ollama 默认只监听 `127.0.0.1`，容器访问不到。启动时设 `OLLAMA_HOST=0.0.0.0`，并允许 Docker 网段访问。
-3. 安装时预设选「Ollama 本地模型」，模型 API 密钥留空即可。容器里已经把 `host.docker.internal` 指向宿主机，预设默认连 `11434`。
+3. 安装时预设选「Ollama 本地模型」，模型 API 密钥留空（脚本会自动填一个占位值）。容器里已经把 `host.docker.internal` 指向宿主机，预设默认连 `11434`。Ollama 没装好或模型没拉，服务能起来但用不了，装完先跑一次第 3 节的 doctor。
 4. 想换别的 Ollama 模型：可以选预设「自定义」并把 API 地址填成 Ollama 的 `http://host.docker.internal:11434/v1`、向量模型和 VLM 分别填对应模型；也可以装完后去 Studio 的「文件模式」改 `ov.conf`（见第 4 节）。
 
 Ollama 端口不要暴露到公网。
@@ -57,12 +57,12 @@ curl "http://<你的IP>:1933/api/v1/fs/ls?uri=viking://" -H "X-API-Key: <User AP
 
 ## 3. 怎么确认真的能用
 
-三个检查入口，只管到各自那一段，别看错：
+安装阶段没配好模型是起不来的（见第 1 节），所以这里要查的是「配了但不通」。三个检查入口，只管到各自那一段，别看错：
 
 | 入口 | 查什么 | 可信度 |
 | --- | --- | --- |
 | `GET /health` | 进程还活着 | 只能说明没崩，模型对不对完全看不出 |
-| `GET /ready` | 各组件就绪状态 | **模型这项不可信，永远显示 ok**。它只看配置里有没有 embedding 这一节，不会真去调用。Key 写错了、本地向量模型加载失败，它照样一片绿。只有 Ollama 连不上时它会有反应（那项显示 `unreachable`） |
+| `GET /ready` | 各组件就绪状态 | **模型这项不可信，永远显示 ok**。它只看配置里有没有 embedding 这一节，不会真去调用。Key 写错了、模型名写错了，它照样一片绿。只有 Ollama 连不上时它会有反应（那项显示 `unreachable`） |
 | `openviking-server doctor` | 真的去访问模型 | 唯一能查出模型不可用的办法，但**输出的视觉模型（VLM）那一项也不真测**，显示 PASS 别全信 |
 
 所以装完请跑一次 doctor：
@@ -76,10 +76,13 @@ docker exec -it <容器名> openviking-server doctor
 ## 4. 常见问题
 
 **改了安装参数没生效。**
-`ov.conf` 只在第一次启动时生成，之后改表单不会再碰它。想让表单重新生效：先备份 `./data/ov.conf`，删掉它，再重启容器——但这会丢掉你后来在 Studio 里做的所有配置。
+`ov.conf` 只在第一次启动时生成，之后改表单不会再碰它。想让表单重新生效：先备份 `./data/ov.conf`，删掉它，再重启容器——重建时会重新校验模型，表单那几项必须填对，否则容器直接退出并在日志里说明缺什么。这会丢掉你后来在 Studio 里做的所有配置。
 
-**换了向量模型，老数据搜不到了。**
-向量库和模型（以及维度）是绑定的，换模型后旧向量不兼容，需要重新导入或重建索引。
+**换了向量模型，启动失败并提示已恢复旧配置。**
+旧索引是按旧模型的维度建的，换模型后维度对不上，服务层会回滚到上一份能用的配置，前端只显示「已恢复旧配置」。真实异常在容器日志里。如果旧数据本来就没用（刚装、还没导入东西），停掉应用，清空 `./data/data`（容器内 `/app/.openviking/data/data`，账号、资源、向量都在里面），保留同级的 `ov.conf` 和 `scripts`，再重启重新配模型即可。
+
+**在 Studio 里把 embedding 改成了内置 local，重启后失败回滚。**
+官方镜像不带本地嵌入模型的依赖（`llama-cpp-python`），`local` 这个 provider 装了也用不了。要本地跑模型请用 Ollama 预设，不要选 `local`。
 
 **ghcr.io 拉不动 / 很慢。**
 把 `docker-compose.yml` 里注释掉的那行镜像启用（`openviking-cn-beijing.cr.volces.com/volcengine/openviking:v0.5.6`），替换掉 ghcr 那行。

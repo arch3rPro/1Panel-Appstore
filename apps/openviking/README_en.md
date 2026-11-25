@@ -2,7 +2,7 @@
 
 OpenViking is Volcengine's open-source self-evolving context database: agent memory, knowledge and skills all live in one `viking://` filesystem you can browse, search and manage like files.
 
-Before installing, prepare one thing: a working model API key (OpenAI, Volcengine Ark, or your own OpenAI-compatible endpoint), or an Ollama instance with the models pulled. The key is **required** — the server will install, start and look healthy without it, but every ingest and retrieval will fail. Section 4 explains why.
+Before installing you must have the models ready: a working model API key (OpenAI, Volcengine Ark, or your own OpenAI-compatible endpoint), or an Ollama instance with the models pulled. The models are configured at install time — without them the container exits during startup (with `restart: always` in the compose file it keeps restarting and never comes up) and the log names the missing field, instead of handing you something that looks healthy and does nothing.
 
 This app packages the official image `ghcr.io/volcengine/openviking`, pinned to `0.5.6` (verified for `linux/amd64` and `linux/arm64`); a `latest` channel is also available — back up before using it. It includes the HTTP service (default port `1933`), the Web Studio console, and VikingBot (disabled by default).
 
@@ -33,13 +33,13 @@ With the first three presets there are no model names, base URLs or dimensions t
 
 To point OpenViking at your own OpenAI-compatible service (a self-hosted gateway, One-API, another vendor's compatible endpoint), choose the Custom preset and fill all five: the model API key (above), Advanced - override API base URL, Advanced - override embedding model, Advanced - override embedding dimension, and Advanced - override VLM model.
 
-The base URL must include `/v1`, for example `https://your-proxy.example.com/v1`. The dimension must match what that embedding model actually outputs — an empty or wrong value leaves the server without models. If any value is missing, the server starts with no models and the container log (`[ov-init]`) names what is missing.
+The base URL must include `/v1`, for example `https://your-proxy.example.com/v1`. The dimension must match what that embedding model actually outputs. If any of the five is missing, the container exits at startup and the `[ov-init]` log lists the missing field names.
 
 ### Using local Ollama
 
 1. Install Ollama on the host and pull two models: `ollama pull nomic-embed-text` and `ollama pull qwen2.5:7b`.
 2. Ollama listens on `127.0.0.1` by default, which containers cannot reach. Start it with `OLLAMA_HOST=0.0.0.0` and allow the Docker subnet.
-3. Choose the Ollama preset and leave the model API key empty. The container already maps `host.docker.internal` to the host, and the preset points at port `11434`.
+3. Choose the Ollama preset and leave the model API key empty (the script fills in a placeholder). The container already maps `host.docker.internal` to the host, and the preset points at port `11434`. If Ollama is not running or the models are not pulled, the service starts but cannot use them — run doctor from section 3 right after installing.
 4. To use different Ollama models, either pick the Custom preset with the base URL set to `http://host.docker.internal:11434/v1` and your own embedding/VLM models, or edit `ov.conf` in Studio's file mode after installing (section 4).
 
 Do not expose the Ollama port to the internet.
@@ -57,12 +57,12 @@ curl "http://<your-ip>:1933/api/v1/fs/ls?uri=viking://" -H "X-API-Key: <User API
 
 ## 3. How to tell it actually works
 
-Three checks, each covering only its own part:
+A container that was installed without models does not start at all (see section 1), so what is left to check is "configured but not reachable". Three checks, each covering only its own part:
 
 | Endpoint | What it checks | How much to trust it |
 | --- | --- | --- |
 | `GET /health` | The process is alive | Only that it has not crashed. Says nothing about models |
-| `GET /ready` | Component readiness | **The model part is meaningless — it always shows ok.** It only checks whether an `embedding` section exists in the config, never calls the model. A wrong key or a failed local embedder still shows all green. The only thing it catches is an unreachable Ollama (`unreachable`) |
+| `GET /ready` | Component readiness | **The model part is meaningless — it always shows ok.** It only checks whether an `embedding` section exists in the config, never calls the model. A wrong key or a wrong model name still shows all green. The only thing it catches is an unreachable Ollama (`unreachable`) |
 | `openviking-server doctor` | Actually reaches the models | The only way to find out a model is broken. **Its vision (VLM) line is not a real probe either** — PASS there means little |
 
 So run doctor once after installing:
@@ -76,10 +76,13 @@ Check one line: `Embedding` must be PASS. If it says `FAIL` / `probe failed`, re
 ## 4. Troubleshooting
 
 **Changing install parameters does nothing.**
-`ov.conf` is generated once, on first start; form edits never touch it again. To make the form apply again, back up `./data/ov.conf`, delete it, and restart the container — this discards everything you configured in Studio since.
+`ov.conf` is generated once, on first start; form edits never touch it again. To make the form apply again, back up `./data/ov.conf`, delete it, and restart the container — regeneration re-checks the models, so the form values must be correct or the container exits and the log says what is missing. This discards everything you configured in Studio since.
 
-**Changed the embedding model and old data is no longer found.**
-Vectors are tied to the model (and its dimension). Switching models makes existing collections incompatible, so re-import or rebuild the index.
+**Changed the embedding model and startup fails, saying the old configuration was restored.**
+The existing index was built for the old model's dimension, so the new model does not match and the service rolls back to the last working config; the UI only says "old configuration restored" and the real exception is in the container log. If that old data does not matter (fresh install, nothing imported yet), stop the app, clear `./data/data` (inside the container `/app/.openviking/data/data` — accounts, resources and vectors live there), keep `ov.conf` and `scripts` alongside it, and restart to configure the model again.
+
+**Set embedding to the built-in `local` provider in Studio and startup failed and rolled back.**
+The official image does not ship the local embedding dependency (`llama-cpp-python`), so the `local` provider cannot work there. To run models locally, use the Ollama preset — do not pick `local`.
 
 **ghcr.io is slow or unreachable.**
 Enable the commented image line in `docker-compose.yml` (`openviking-cn-beijing.cr.volces.com/volcengine/openviking:v0.5.6`) and drop the ghcr one.

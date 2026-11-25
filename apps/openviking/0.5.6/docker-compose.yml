@@ -6,7 +6,10 @@ services:
     container_name: ${CONTAINER_NAME}
     restart: always
     # Writes ov.conf on first start only (preset + overrides), then defers to the
-    # official entrypoint. Later edits belong in data/ov.conf or Web Studio.
+    # official entrypoint. Exits instead of starting when no embedding/VLM model
+    # is configured: upstream cannot ingest or retrieve without them, and the
+    # image has no local embedding backend. Later edits belong in data/ov.conf
+    # or Web Studio.
     entrypoint: ["python3", "/opt/1panel/init-config.py"]
     ports:
       - "${PANEL_APP_PORT_HTTP}:1933"
