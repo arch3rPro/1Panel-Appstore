@@ -2,7 +2,7 @@ services:
   openviking:
     image: ghcr.io/volcengine/openviking:v0.5.6
     # Mainland China mirror (uncomment if ghcr.io is slow/unreachable):
-    # image: openviking-cn-beijing.cr.volces.com/volcengine/openviking:v0.5.2.1
+    # image: openviking-cn-beijing.cr.volces.com/volcengine/openviking:v0.5.6
     container_name: ${CONTAINER_NAME}
     restart: always
     # Writes ov.conf on first start only (preset + overrides), then defers to the
