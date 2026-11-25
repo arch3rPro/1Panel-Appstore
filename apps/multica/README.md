@@ -76,7 +76,7 @@ multica setup self-host --server-url http://<服务器IP>:8080 --app-url http://
 
 ## 没打包进来的功能
 
-**实时协作文档（collab）**：上游有一个可选的 `multica-collab` 服务，用于多人同时编辑 Workspace Docs。它的镜像 `ghcr.io/multica-ai/multica-collab` 在 GHCR 上取不到（v0.11.1、v0.11.0、latest 都返回 denied），所以本应用没有包含它。Docs 功能本身默认关闭（需要 `FF_DOCS_V1=true`），不影响看板、issue、Agent 这些主流程。
+**实时协作文档（collab）**：上游有一个可选的 `multica-collab` 服务，用于多人同时编辑 Workspace Docs。它的镜像 `ghcr.io/multica-ai/multica-collab` 自 v0.12.1 起才发布到 GHCR（v0.11.1 及更早取不到），本应用未包含该服务。需要时可按上游 compose 追加，注意它必须单副本运行（每个打开的文档常驻进程内存），且要用同一 `MULTICA_IMAGE_TAG` 与 `COLLAB_SECRET`。Docs 功能本身默认关闭（需要 `FF_DOCS_V1=true`），不影响看板、issue、Agent 这些主流程。
 
 **对外集成**：Slack、飞书/Lark、企业微信、钉钉、Telegram、微信、GitHub App、Composio、S3 存储这些都需要额外的密钥与回调地址配置，本应用没有在表单里展开。需要时按下文的方式手动补。
 
@@ -142,5 +142,5 @@ Multica 不是标准开源项目，而是 **source-available**：以 Apache Lice
 ## 来源
 
 - 项目：<https://github.com/multica-ai/multica>
-- 版本：0.11.1
+- 版本：0.12.1
 - 架构：amd64 / arm64

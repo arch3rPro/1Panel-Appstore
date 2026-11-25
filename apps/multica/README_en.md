@@ -74,7 +74,7 @@ Afterwards, **Settings → Runtimes** in the web UI should list the machine. Cre
 
 ## Not included
 
-**Live doc co-editing (collab):** upstream ships an optional `multica-collab` service for real-time collaborative editing of Workspace Docs. Its image `ghcr.io/multica-ai/multica-collab` is not retrievable from GHCR (v0.11.1, v0.11.0 and latest all return denied), so it is not bundled. Docs themselves are off by default anyway (`FF_DOCS_V1=true` to enable) and the board, issues and agents work without it.
+**Live doc co-editing (collab):** upstream ships an optional `multica-collab` service for real-time collaborative editing of Workspace Docs. Its image `ghcr.io/multica-ai/multica-collab` only started publishing to GHCR with v0.12.1 (v0.11.1 and earlier are not retrievable), and this package does not include it. Add it from upstream's compose if you need it, keeping in mind it must run exactly one replica (every open doc lives in that process's memory) and needs the same `MULTICA_IMAGE_TAG` and a `COLLAB_SECRET`. Docs themselves are off by default anyway (`FF_DOCS_V1=true` to enable) and the board, issues and agents work without it.
 
 **External integrations:** Slack, Lark/Feishu, WeCom, DingTalk, Telegram, Weixin, the GitHub App, Composio and S3 storage all need extra secrets and callback URLs. They are not exposed in the install form.
 
@@ -137,5 +137,5 @@ The images are third-party images published by upstream. This package makes no g
 ## Source
 
 - Project: <https://github.com/multica-ai/multica>
-- Version: 0.11.1
+- Version: 0.12.1
 - Architectures: amd64 / arm64
