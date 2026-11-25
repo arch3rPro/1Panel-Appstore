@@ -1784,7 +1784,7 @@ AI驱动的开源代码知识库与文档协作平台，支持多模型、多数
 
 🤖 把 issue 指派给 AI Agent 的自托管协作工作台
 
-<kbd>0.12.1</kbd> • [官网链接](https://github.com/multica-ai/multica)
+<kbd>0.13.0</kbd> • [官网链接](https://github.com/multica-ai/multica)
 
 </td>
 </tr>

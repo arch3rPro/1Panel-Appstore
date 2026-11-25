@@ -1,6 +1,6 @@
 services:
   multica:
-    image: ghcr.io/multica-ai/multica-web:v0.12.1
+    image: ghcr.io/multica-ai/multica-web:v0.13.0
     container_name: ${CONTAINER_NAME}
     restart: always
     ports:
@@ -18,7 +18,7 @@ services:
       createdBy: "Apps"
 
   backend:
-    image: ghcr.io/multica-ai/multica-backend:v0.12.1
+    image: ghcr.io/multica-ai/multica-backend:v0.13.0
     container_name: ${CONTAINER_NAME}-backend
     restart: always
     ports:
