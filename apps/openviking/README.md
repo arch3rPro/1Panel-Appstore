@@ -6,7 +6,7 @@ OpenViking 是火山引擎开源的上下文数据库，用 `viking://` 文件�
 
 Embedding 与 VLM 分别配置接口类型、地址、Key 和模型名。两组可以来自不同厂商，也可以填写相同地址和 Key；空值不会继承另一组。没有共享模型预设。
 
-先在自己的机器上生成系统管理 Key，再填入表单并妥善保存，不要发到日志或 issue：
+系统管理 Key 可自行设置，也可在自己的机器上生成随机值后填入表单：
 
 ```bash
 python3 -c 'import secrets; print(secrets.token_hex(32))'
@@ -15,21 +15,21 @@ python3 -c 'import secrets; print(secrets.token_hex(32))'
 | 字段 | 用途和条件 |
 | --- | --- |
 | HTTP 访问端口 | 宿主机访问端口，默认 `1933`；容器端口固定 `1933`，安装后可改映射 |
-| 系统管理 API Key（Root） | 自备至少 32 字符的强随机 Key；仅用于管理，不是用户访问 Key，也不是外部模型 Key |
+| 系统管理 API Key（Root） | 必填，用于服务配置、账号和用户管理 |
 | Embedding 接口类型 | `openai`（OpenAI 兼容）、`volcengine`（火山方舟）或 `ollama`（兼容 Embedding 接口）；可选“未配置” |
-| Embedding API 地址 | 此向量服务的完整 API base；启用这组时必填，按所选协议填写 |
+| Embedding API 地址 | 自定义服务填写 API base；OpenAI、方舟留空使用官方地址，Ollama 留空连接宿主机 `11434/v1` |
 | Embedding 服务 API Key | 只给向量服务使用；方舟必填，无鉴权兼容服务或 Ollama 可留空 |
 | Embedding 模型名 | 服务实际提供的模型名或 endpoint ID；启用这组时必填 |
-| Embedding 输出维度 | 模型实际输出的正整数；启用这组时必填，包接受 `1..65536`，不代表每个模型/后端都支持整个范围 |
+| Embedding 输出维度 | 启用这组时填写模型实际输出维度，使用正整数 |
 | Embedding 输入类型 | 组启用后留空按 `text`。`multimodal` 需适配器和实际模型共同支持；Ollama Embedding 仅允许 `text` |
 | VLM 接口类型（摘要/对话/视觉） | `openai`（OpenAI 兼容）或 `volcengine`（方舟）；可选“未配置” |
-| VLM API 地址 | 只给摘要/对话/视觉模型使用；启用这组时必填 |
+| VLM API 地址 | 自定义服务填写 API base；OpenAI、方舟留空使用官方地址 |
 | VLM 服务 API Key | 与 Embedding 独立；方舟必填，无鉴权兼容服务可留空 |
 | VLM 模型名（摘要/对话/视觉） | 实际模型名或 endpoint ID；启用这组时必填。纯文本摘要不强制视觉能力，视觉或工具调用能力按任务确认 |
 
 端口以外的参数仅用于**首次生成** `./data/ov.conf`，表单中设为安装后不可编辑。文件一旦存在，脚本不改字节、权限或其中的 Key、存储和其他配置。后续修改请用 Studio 的服务端配置文件模式，或编辑真实的 `./data/ov.conf` 再重启。修改安装环境变量不会覆盖已有文件。
 
-表单没有条件隐藏。要启用某组，填写该组接口类型、地址、模型名，以及 Embedding 的实际维度；凭据是否必填按接口判断。两组校验全部通过才写文件，半组、非法维度或不支持的接口类型会报出字段名，不写半成品。脚本不测试网络、真实模型能力或旧集合兼容性。
+配置 Embedding 时填写接口类型、模型名和实际维度；配置 VLM 时填写接口类型和模型名。使用 OpenAI 或方舟官方服务时填写各自的 Key，API 地址可留空。自建服务填写其地址，凭据按服务要求填写。
 
 ### 两个自定义 OpenAI 兼容服务
 
@@ -44,13 +44,13 @@ python3 -c 'import secrets; print(secrets.token_hex(32))'
 | 输出维度 | `<实际向量长度，填写整数>` | 无此字段 |
 | 输入类型 | `text`，或服务明确支持时填 `multimodal` | 无此字段 |
 
-按服务文档填写 base，脚本不统一追加 `/v1`。方舟原生适配器通常使用 `/api/v3`，不能机械套用 OpenAI 地址。这里的字段不涵盖 Azure 的 api_version、VikingDB 的 AK/SK、自定义请求头等完整上游能力，需要这些设置时使用完整 `ov.conf`。
+自定义 base 按服务文档填写，使用完整路径。OpenAI 和方舟官方服务可省略地址，由各自适配器使用默认值；方舟通常使用 `/api/v3`。Azure 的 api_version、VikingDB 的 AK/SK、自定义请求头等设置通过 `ov.conf` 配置。
 
 无鉴权服务可留空 Key，但云服务仍需自己的有效凭据。v0.5.6 的 OpenAI Embedding 适配器在有 base 时可用内部占位；VLM 配置和 OpenAI SDK 要求非空 Key，因此本包仅在 `VLM_PROVIDER=openai` 且 Key 为空时写入 `no-key`。这不是实际密钥，不会让需要鉴权的服务免于鉴权，也不来自另一模型组。
 
 ### Ollama 的协议选择
 
-若使用已准备好的 Ollama：Embedding 接口类型选 `ollama`，地址填容器可访问的 OpenAI 兼容 base，例如 `http://host.docker.internal:11434/v1`，模型名和实际维度自行核对，输入选 `text`。容器映射了 `host.docker.internal` 到宿主机；Ollama 的监听与网络访问仍需自行配置。
+若使用已准备好的 Ollama：Embedding 接口类型选 `ollama`，地址留空时连接 `http://host.docker.internal:11434/v1`；其他实例填写其 OpenAI 兼容 base。填写模型名和实际维度，输入选 `text`。容器通过 `host.docker.internal` 访问宿主机，Ollama 需允许容器连接。
 
 VLM 接口类型选 **`openai`**，地址独立填写该 Ollama 服务的 `/v1` 兼容 base，模型须支持所用的 chat/vision/tools 功能。此时走上游 OpenAIVLM 与 OpenAI 兼容协议，**不走 LiteLLM 的原生 `ollama/` 路由**。两组可连接不同 Ollama 实例；不要把原生 `/api/chat` 地址填成兼容 API base。表单不提供原生 Ollama VLM 选项。
 

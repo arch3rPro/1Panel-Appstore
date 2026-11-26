@@ -31,8 +31,8 @@ additionalProperties:
         ja: システム管理 API キー（Root）
         ko: 시스템 관리 API 키 (Root)
       description:
-        zh: 用于管理 OpenViking，填写至少 32 字符的随机密钥。
-        en: Enter a random key of at least 32 characters to manage OpenViking.
+        zh: 填写用于管理 OpenViking 的 API Key。
+        en: Enter the API key used to manage OpenViking.
     - default: ''
       edit: false
       envKey: EMBEDDING_PROVIDER
@@ -72,8 +72,8 @@ additionalProperties:
         ja: Embedding API ベース URL
         ko: Embedding API 기본 URL
       description:
-        zh: 填写向量模型服务的 API 地址。
-        en: Enter the embedding service API base URL.
+        zh: 填写自定义 API 地址；使用官方服务或宿主机 Ollama 可留空。
+        en: Enter a custom API base, or leave blank for the official service or host Ollama.
     - default: ''
       edit: false
       envKey: EMBEDDING_API_KEY
@@ -182,8 +182,8 @@ additionalProperties:
         ja: VLM API ベース URL
         ko: VLM API 기본 URL
       description:
-        zh: 填写此模型服务的 API 地址。
-        en: Enter this model service's API base URL.
+        zh: 填写自定义 API 地址；使用官方服务可留空。
+        en: Enter a custom API base, or leave blank for the official service.
     - default: ''
       edit: false
       envKey: VLM_API_KEY

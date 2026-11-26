@@ -6,7 +6,7 @@ OpenViking is Volcengine's open-source context database for agent knowledge, mem
 
 Embedding and VLM have separate provider, API base, key and model fields. They can use different vendors, or explicitly use the same base and key. Empty values never inherit from the other group. There is no shared model preset.
 
-Generate your private system management key on your own machine, enter it in the form and store it securely. Do not post it in logs or issues:
+Choose your own system management key, or generate a random value on your machine and enter it in the form:
 
 ```bash
 python3 -c 'import secrets; print(secrets.token_hex(32))'
@@ -15,21 +15,21 @@ python3 -c 'import secrets; print(secrets.token_hex(32))'
 | Field | Purpose and conditions |
 | --- | --- |
 | HTTP Host Port | Host access port, default `1933`; the container port stays `1933`. The mapping remains editable after installation |
-| System Management API Key (Root) | Supply a strong random private key of at least 32 characters; this is neither a user access key nor a model service key |
+| System Management API Key (Root) | Required for managing service configuration, accounts and users |
 | Embedding Provider | `openai` (OpenAI-compatible), `volcengine` (Ark) or `ollama` (compatible embedding API); Configure later leaves it unset |
-| Embedding API Base | This embedding service's complete API base; required when configuring the group, following its adapter protocol |
+| Embedding API Base | Enter a custom service base; leave blank for the OpenAI/Ark official endpoint or Ollama on the host at `11434/v1` |
 | Embedding Service API Key | Only for this embedding service; required for Ark, optional for unauthenticated compatible services or Ollama |
 | Embedding Model | Actual model name or endpoint ID; required for this group |
-| Embedding Output Dimension | Actual positive integer vector length; required for this group. The package accepts `1..65536`, which does not mean every model/backend supports the entire range |
+| Embedding Output Dimension | Actual model output dimension as a positive integer; required for this group |
 | Embedding Input Type | Empty means `text` when configured. `multimodal` requires both adapter and model support; Ollama embeddings are text only |
 | VLM Provider (Summary / Chat / Vision) | `openai` (OpenAI-compatible) or `volcengine` (Ark); Configure later leaves it unset |
-| VLM API Base | Only for the summary/chat/vision service; required for this group |
+| VLM API Base | Enter a custom service base, or leave blank for the OpenAI/Ark official endpoint |
 | VLM Service API Key | Independent of Embedding; required for Ark, optional for an unauthenticated compatible service |
 | VLM Chat / Vision Model | Actual model name or endpoint ID; required for this group. Text summaries do not require vision; verify vision or tool-call capability for the intended task |
 
 All parameters except the port are used only to **create** `./data/ov.conf` and are marked noneditable after installation. Once a file exists, the script preserves its bytes, permissions, keys, storage settings and all other configuration. Make subsequent changes in Studio's server configuration file mode or the actual `./data/ov.conf`, then restart. Changing installation environment variables does not overwrite an existing file.
 
-The form does not hide conditional fields. To enable a group, provide its provider, base and model, plus the actual Embedding dimension. Authentication requirements depend on the adapter. Both groups must pass validation before any file is published. Partial groups, invalid dimensions or unsupported providers produce errors naming the fields, without leaving a partial configuration. The script does not test connectivity, model capabilities or existing collection compatibility.
+For Embedding, provide the provider, model and actual output dimension. For VLM, provide the provider and model. Official OpenAI and Ark services require their respective API keys and can use an empty API base. For a self-hosted service, enter its base and any required credentials.
 
 ### Two custom OpenAI-compatible services
 
@@ -44,13 +44,13 @@ Replace every angle-bracket placeholder below. Model names come from the respect
 | Output dimension | `<actual vector length, entered as an integer>` | Not applicable |
 | Input type | `text`, or `multimodal` only when supported | Not applicable |
 
-Use the API base required by each service. The script does not append `/v1` to every provider. The native Ark adapter typically uses `/api/v3`; do not apply OpenAI paths mechanically. The form does not expose all upstream settings, such as Azure api_version, VikingDB AK/SK or custom headers. Use a complete `ov.conf` for those settings.
+Enter the complete base path specified by a custom service. Official OpenAI and Ark services can omit the base and use their adapter defaults; Ark typically uses `/api/v3`. Configure Azure api_version, VikingDB AK/SK and custom headers in `ov.conf`.
 
 Unauthenticated services may have empty keys; cloud services still need their own valid credentials. The v0.5.6 OpenAI embedding adapter uses an internal placeholder when a base is provided. VLM configuration and the OpenAI SDK require a nonempty key, so this package writes `no-key` only when `VLM_PROVIDER=openai` and its key is empty. It is an adapter placeholder, not a real credential, an authentication bypass or a key inherited from Embedding.
 
 ### Ollama protocol selection
 
-For an already prepared Ollama service, select Embedding provider `ollama` and enter its container-accessible OpenAI-compatible base, such as `http://host.docker.internal:11434/v1`. Supply the actual model and dimension, and select `text`. The container maps `host.docker.internal` to the host; Ollama listening and network access must still be configured appropriately.
+For an already prepared Ollama service, select Embedding provider `ollama`. An empty base connects to `http://host.docker.internal:11434/v1`; for another instance, enter its OpenAI-compatible base. Supply the model and actual dimension, and select `text`. The container reaches the host through `host.docker.internal`; Ollama must accept connections from the container.
 
 For VLM select **`openai`** and independently enter that Ollama service's `/v1` compatible base. Its model must support the chat/vision/tools used by your tasks. This selects upstream OpenAIVLM and the OpenAI-compatible protocol, **not LiteLLM's native `ollama/` route**. The groups can address different Ollama instances. A native `/api/chat` URL is not a compatible API base. The form does not offer a native Ollama VLM provider.
 

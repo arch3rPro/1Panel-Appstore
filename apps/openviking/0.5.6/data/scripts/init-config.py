@@ -12,8 +12,6 @@ from urllib.parse import urlsplit
 
 ENTRYPOINT = "/usr/local/bin/openviking-entrypoint"
 CONFIG_PATH = os.environ.get("OPENVIKING_CONFIG_FILE", "/app/.openviking/ov.conf")
-# Package limit, not a promise that every model/backend accepts this dimension.
-MAX_DIMENSION = 65536
 EMBEDDING_INPUTS = {
     "openai": {"text", "multimodal"},
     "volcengine": {"text", "multimodal"},
@@ -56,17 +54,13 @@ def api_base(value, field):
             parsed.scheme in {"http", "https"}
             and parsed.hostname
             and parsed.port != 0
-            and parsed.username is None
-            and parsed.password is None
-            and not parsed.query
-            and not parsed.fragment
             and not any(char.isspace() for char in value)
         )
     except ValueError:
         valid = False
     if not valid:
         raise ConfigurationError(
-            field + " must be an HTTP(S) API base without URL credentials, query or fragment"
+            field + " must be an HTTP(S) API base"
         )
     # Keep the caller's protocol path; do not append /v1 to arbitrary providers.
     return value
@@ -78,17 +72,18 @@ def model_group(prefix, providers, extra_fields=(), required_extra=()):
     values = {f"{prefix}_{field}": env(f"{prefix}_{field}") for field in fields}
     if not any(values.values()):
         return None
-    require(values, *(f"{prefix}_{field}" for field in ("PROVIDER", "API_BASE", "MODEL", *required_extra)))
+    require(values, *(f"{prefix}_{field}" for field in ("PROVIDER", "MODEL", *required_extra)))
     provider = values[f"{prefix}_PROVIDER"].lower()
     if provider not in providers:
         raise ConfigurationError(f"{prefix}_PROVIDER must be one of: " + ", ".join(sorted(providers)))
-    if provider == "volcengine":
+    base = values[f"{prefix}_API_BASE"]
+    if provider == "volcengine" or (provider == "openai" and not base):
         require(values, f"{prefix}_API_KEY")
-    config = {
-        "provider": provider,
-        "api_base": api_base(values[f"{prefix}_API_BASE"], f"{prefix}_API_BASE"),
-        "model": values[f"{prefix}_MODEL"],
-    }
+    if provider == "ollama" and not base:
+        base = "http://host.docker.internal:11434/v1"
+    config = {"provider": provider, "model": values[f"{prefix}_MODEL"]}
+    if base:
+        config["api_base"] = api_base(base, f"{prefix}_API_BASE")
     if values[f"{prefix}_API_KEY"]:
         config["api_key"] = values[f"{prefix}_API_KEY"]
     config.update((field.lower(), values[f"{prefix}_{field}"]) for field in extra_fields)
@@ -100,8 +95,6 @@ def embedding_config():
     if config is None:
         return None
     provider = config["provider"]
-    if provider == "ollama" and not urlsplit(config["api_base"]).path.rstrip("/").endswith("/v1"):
-        raise ConfigurationError("EMBEDDING_API_BASE for ollama must end in /v1 (OpenAI-compatible embeddings)")
     raw_dimension = config["dimension"]
     try:
         if not re.fullmatch(r"[0-9]+", raw_dimension):
@@ -109,8 +102,8 @@ def embedding_config():
         dimension = int(raw_dimension)
     except ValueError:
         raise ConfigurationError("EMBEDDING_DIMENSION must be an explicit positive integer") from None
-    if not 1 <= dimension <= MAX_DIMENSION:
-        raise ConfigurationError("EMBEDDING_DIMENSION must be in the package range 1..65536")
+    if dimension <= 0:
+        raise ConfigurationError("EMBEDDING_DIMENSION must be a positive integer")
     input_type = config["input"] or "text"
     if input_type not in EMBEDDING_INPUTS[provider]:
         raise ConfigurationError("EMBEDDING_INPUT is unsupported by the selected provider; ollama supports text only")
@@ -161,8 +154,8 @@ def main():
         return hand_over()
     try:
         root_key = env("ROOT_API_KEY")
-        if len(root_key) < 32:
-            raise ConfigurationError("ROOT_API_KEY must contain at least 32 characters; generate a private management key")
+        if not root_key:
+            raise ConfigurationError("ROOT_API_KEY is required")
         legacy = any(env(name) for name in LEGACY_FIELDS)
         if legacy and not (env("EMBEDDING_PROVIDER") or env("VLM_PROVIDER")):
             raise ConfigurationError(
@@ -180,11 +173,11 @@ def main():
         if embedding is not None:
             config["embedding"] = embedding
         else:
-            log("Embedding group omitted: upstream defaults to local/512; full startup and model use are not validated")
+            log("Embedding not configured; using upstream defaults")
         if vlm is not None:
             config["vlm"] = vlm
         else:
-            log("VLM group omitted: summary/chat/vision functions need a suitable model configuration")
+            log("VLM not configured")
         if create_config(config):
             log("created configuration (mode 600); later changes belong in ov.conf or Studio")
     except ConfigurationError as exc:
