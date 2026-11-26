@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Create ov.conf once from independent model groups, then use upstream's entrypoint.
 
-Only the Python standard library is needed. Existing configuration is authoritative:
-never rewrite it, even if install parameters are incomplete or invalid.
+Only the Python standard library is needed. Existing files are never rewritten.
 """
 import json
 import os
@@ -73,22 +72,37 @@ def api_base(value, field):
     return value
 
 
-def embedding_config():
-    names = (
-        "EMBEDDING_PROVIDER", "EMBEDDING_API_BASE", "EMBEDDING_API_KEY",
-        "EMBEDDING_MODEL", "EMBEDDING_DIMENSION", "EMBEDDING_INPUT",
-    )
-    values = {name: env(name) for name in names}
+def model_group(prefix, providers, extra_fields=(), required_extra=()):
+    """Read one independent form group, keeping field-level input errors local."""
+    fields = ("PROVIDER", "API_BASE", "API_KEY", "MODEL", *extra_fields)
+    values = {f"{prefix}_{field}": env(f"{prefix}_{field}") for field in fields}
     if not any(values.values()):
         return None
-    require(values, "EMBEDDING_PROVIDER", "EMBEDDING_API_BASE", "EMBEDDING_MODEL", "EMBEDDING_DIMENSION")
-    provider = values["EMBEDDING_PROVIDER"].lower()
-    if provider not in EMBEDDING_INPUTS:
-        raise ConfigurationError("EMBEDDING_PROVIDER must be openai, volcengine or ollama")
-    base = api_base(values["EMBEDDING_API_BASE"], "EMBEDDING_API_BASE")
-    if provider == "ollama" and not urlsplit(base).path.rstrip("/").endswith("/v1"):
+    require(values, *(f"{prefix}_{field}" for field in ("PROVIDER", "API_BASE", "MODEL", *required_extra)))
+    provider = values[f"{prefix}_PROVIDER"].lower()
+    if provider not in providers:
+        raise ConfigurationError(f"{prefix}_PROVIDER must be one of: " + ", ".join(sorted(providers)))
+    if provider == "volcengine":
+        require(values, f"{prefix}_API_KEY")
+    config = {
+        "provider": provider,
+        "api_base": api_base(values[f"{prefix}_API_BASE"], f"{prefix}_API_BASE"),
+        "model": values[f"{prefix}_MODEL"],
+    }
+    if values[f"{prefix}_API_KEY"]:
+        config["api_key"] = values[f"{prefix}_API_KEY"]
+    config.update((field.lower(), values[f"{prefix}_{field}"]) for field in extra_fields)
+    return config
+
+
+def embedding_config():
+    config = model_group("EMBEDDING", EMBEDDING_INPUTS, ("DIMENSION", "INPUT"), ("DIMENSION",))
+    if config is None:
+        return None
+    provider = config["provider"]
+    if provider == "ollama" and not urlsplit(config["api_base"]).path.rstrip("/").endswith("/v1"):
         raise ConfigurationError("EMBEDDING_API_BASE for ollama must end in /v1 (OpenAI-compatible embeddings)")
-    raw_dimension = values["EMBEDDING_DIMENSION"]
+    raw_dimension = config["dimension"]
     try:
         if not re.fullmatch(r"[0-9]+", raw_dimension):
             raise ValueError
@@ -97,45 +111,21 @@ def embedding_config():
         raise ConfigurationError("EMBEDDING_DIMENSION must be an explicit positive integer") from None
     if not 1 <= dimension <= MAX_DIMENSION:
         raise ConfigurationError("EMBEDDING_DIMENSION must be in the package range 1..65536")
-    input_type = values["EMBEDDING_INPUT"] or "text"
+    input_type = config["input"] or "text"
     if input_type not in EMBEDDING_INPUTS[provider]:
         raise ConfigurationError("EMBEDDING_INPUT is unsupported by the selected provider; ollama supports text only")
-    if provider == "volcengine":
-        require(values, "EMBEDDING_API_KEY")
-    config = {
-        "provider": provider,
-        "api_base": base,
-        "model": values["EMBEDDING_MODEL"],
-        "dimension": dimension,
-        "input": input_type,
-    }
-    if values["EMBEDDING_API_KEY"]:
-        config["api_key"] = values["EMBEDDING_API_KEY"]
-    # v0.5.6 OpenAIDenseEmbedder supplies its own no-key placeholder when a base
-    # is present; the ollama mapping uses that same adapter. No shared fallback.
+    config.update(dimension=dimension, input=input_type)
+    # v0.5.6 supplies the Embedding no-key placeholder inside its own adapter.
     return {"dense": config}
 
 
 def vlm_config():
-    names = ("VLM_PROVIDER", "VLM_API_BASE", "VLM_API_KEY", "VLM_MODEL")
-    values = {name: env(name) for name in names}
-    if not any(values.values()):
-        return None
-    require(values, "VLM_PROVIDER", "VLM_API_BASE", "VLM_MODEL")
-    provider = values["VLM_PROVIDER"].lower()
-    if provider not in VLM_PROVIDERS:
-        raise ConfigurationError("VLM_PROVIDER must be openai or volcengine")
-    base = api_base(values["VLM_API_BASE"], "VLM_API_BASE")
-    key = values["VLM_API_KEY"]
-    if provider == "volcengine":
-        require(values, "VLM_API_KEY")
-    elif not key:
-        # v0.5.6 VLMConfig requires non-empty api_key for provider=openai, and
-        # OpenAIVLM passes it to the OpenAI SDK. This is only an adapter placeholder
-        # for unauthenticated compatible services, never a real credential.
-        key = "no-key"
+    config = model_group("VLM", VLM_PROVIDERS)
+    if config is not None and "api_key" not in config:
+        # v0.5.6 VLMConfig and the OpenAI SDK require a non-empty placeholder.
+        config["api_key"] = "no-key"
         log("VLM_API_KEY is empty; using an OpenAI-adapter placeholder for an unauthenticated service")
-    return {"provider": provider, "api_base": base, "api_key": key, "model": values["VLM_MODEL"]}
+    return config
 
 
 def create_config(config):
