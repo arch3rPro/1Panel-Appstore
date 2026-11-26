@@ -1,6 +1,6 @@
 """File-only behavior tests: no entrypoint, container, network or model calls.
 
-Run: python3 -B -m unittest discover -s apps/openviking/tests -v
+Run: python3 -B -m unittest discover -s tests/openviking -v
 Both shipped copies are exercised independently. All keys are ephemeral test
 values generated at runtime and never sent to a model service.
 """
@@ -17,7 +17,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-APP = Path(__file__).resolve().parents[1]
+APP = Path(__file__).resolve().parents[2] / "apps" / "openviking"
 
 
 class GeneratorCases:
@@ -299,6 +299,19 @@ class GeneratorCases:
             with self.assertRaises(SystemExit):
                 self.module.hand_over()
         self.assertNotIn(self.embedding_key, output.getvalue())
+
+
+class PackageLayoutTests(unittest.TestCase):
+    def test_every_app_subdirectory_is_a_version(self):
+        # 1Panel treats every immediate directory as a version, without first
+        # filtering for manifests. Keep development tests outside the app.
+        with os.scandir(APP) as entries:
+            versions = sorted(entry.name for entry in entries if entry.is_dir(follow_symlinks=False))
+        self.assertTrue(versions)
+        for version in versions:
+            with self.subTest(version=version):
+                self.assertTrue((APP / version / "docker-compose.yml").is_file())
+                self.assertTrue((APP / version / "data.yml").is_file())
 
 
 class PinnedTests(GeneratorCases, unittest.TestCase):
