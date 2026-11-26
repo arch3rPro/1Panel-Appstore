@@ -3,115 +3,246 @@ additionalProperties:
     - default: 1933
       edit: true
       envKey: PANEL_APP_PORT_HTTP
-      labelEn: HTTP Port
-      labelZh: HTTP 端口
+      labelEn: HTTP Host Port
+      labelZh: HTTP 访问端口
       required: true
-      rule: paramPort
       type: number
       label:
-        en: HTTP Port
-        zh: HTTP 端口
-        zh-Hant: HTTP 埠
-        ja: HTTP ポート
-        ko: HTTP 포트
-    - default: ""
-      edit: true
+        en: HTTP Host Port
+        zh: HTTP 访问端口
+        zh-hant: HTTP 存取連接埠
+        ja: HTTP アクセスポート
+        ko: HTTP 접속 포트
+      description:
+        zh: 宿主机访问端口；容器内端口固定为 1933。
+        en: Host port; the container listens on 1933.
+      rule: paramPort
+    - default: ''
+      edit: false
       envKey: ROOT_API_KEY
-      labelEn: Root API Key (also the Studio login password)
-      labelZh: root 密钥（也是 Studio 登录密码）
-      random: true
+      labelEn: System Management API Key (Root)
+      labelZh: 系统管理 API Key（Root）
       required: true
       type: password
       label:
-        en: Root API Key (also the Studio login password)
-        zh: root 密钥（也是 Studio 登录密码）
-        zh-Hant: root 金鑰（也是 Studio 登入密碼）
-        ja: root キー（Studio のログインパスワードにもなる）
-        ko: root 키 (Studio 로그인 비밀번호로도 사용)
-    - default: openai
-      edit: true
-      envKey: MODEL_PRESET
-      labelEn: Model Preset
-      labelZh: 模型预设
-      required: true
+        en: System Management API Key (Root)
+        zh: 系统管理 API Key（Root）
+        zh-hant: 系統管理 API Key（Root）
+        ja: システム管理 API キー（Root）
+        ko: 시스템 관리 API 키 (Root)
+      description:
+        zh: 自备至少 32 字符的强随机管理 Key；不是用户访问 Key，也不是外部模型 Key。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf 中修改。
+        en: Provide a strong private random management key of at least 32 characters; this is neither a user access key nor
+          a model service key. Used only to create ov.conf once; install parameters never overwrite an existing file. Edit
+          Studio or the actual ov.conf afterwards.
+    - default: ''
+      edit: false
+      envKey: EMBEDDING_PROVIDER
+      labelEn: Embedding Provider
+      labelZh: Embedding 接口类型
+      required: false
       type: select
-      values:
-        - label: OpenAI（含兼容代理）
-          value: openai
-        - label: 火山方舟 / Doubao
-          value: volcengine
-        - label: Ollama 本地模型
-          value: ollama
-        - label: 自定义（OpenAI 兼容）
-          value: custom
       label:
-        en: Model Preset
-        zh: 模型预设
-        zh-Hant: 模型預設
-        ja: モデルプリセット
-        ko: 모델 프리셋
-    - default: ""
-      edit: true
-      envKey: MODEL_API_KEY
-      labelEn: Model API Key (required; only the Ollama preset may leave it empty)
-      labelZh: 模型 API 密钥（必填，仅 Ollama 预设可留空）
+        en: Embedding Provider
+        zh: Embedding 接口类型
+        zh-hant: Embedding 介面類型
+        ja: Embedding プロバイダー
+        ko: Embedding 제공자
+      description:
+        zh: 整组留空可稍后配置；填写任一项则需接口类型、地址、模型名、实际维度。省略会使用上游 local/512 默认，完整启动未验证。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实
+          ov.conf 中修改。
+        en: Leave the entire group empty to omit it (upstream local/512 default; full startup unverified). Otherwise provider,
+          base, model and actual dimension are required. Used only to create ov.conf once; install parameters never overwrite
+          an existing file. Edit Studio or the actual ov.conf afterwards.
+      values:
+        - label: 未配置 / Configure later
+          value: ''
+        - label: OpenAI 兼容 / OpenAI-compatible
+          value: openai
+        - label: 火山方舟 / Volcengine Ark
+          value: volcengine
+        - label: Ollama Embedding（OpenAI /v1）
+          value: ollama
+    - default: ''
+      edit: false
+      envKey: EMBEDDING_API_BASE
+      labelEn: Embedding API Base
+      labelZh: Embedding API 地址
+      required: false
+      type: text
+      label:
+        en: Embedding API Base
+        zh: Embedding API 地址
+        zh-hant: Embedding API 位址
+        ja: Embedding API ベース URL
+        ko: Embedding API 기본 URL
+      description:
+        zh: 仅此组使用，不从 VLM 继承。按接口文档填完整 base；Ollama Embedding 使用 /v1，方舟通常为 /api/v3。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio
+          或真实 ov.conf 中修改。
+        en: 'Only this group uses this base; no inheritance from VLM. Follow the adapter docs: Ollama embeddings use /v1;
+          Ark typically uses /api/v3. Used only to create ov.conf once; install parameters never overwrite an existing file.
+          Edit Studio or the actual ov.conf afterwards.'
+    - default: ''
+      edit: false
+      envKey: EMBEDDING_API_KEY
+      labelEn: Embedding Service API Key
+      labelZh: Embedding 服务 API Key
       required: false
       type: password
       label:
-        en: Model API Key (required; only the Ollama preset may leave it empty)
-        zh: 模型 API 密钥（必填，仅 Ollama 预设可留空）
-        zh-Hant: 模型 API 金鑰（必填，僅 Ollama 預設可留空）
-        ja: モデル API キー（必須、Ollama プリセットのみ空欄可）
-        ko: 모델 API 키 (필수, Ollama 프리셋만 비워둘 수 있음)
-    - default: ""
-      edit: true
-      envKey: MODEL_API_BASE
-      labelEn: Advanced - override API base URL (custom preset only)
-      labelZh: 高级 - 覆写模型 API 地址（仅自定义预设）
-      required: false
-      type: text
-      label:
-        en: Advanced - override API base URL (custom preset only)
-        zh: 高级 - 覆写模型 API 地址（仅自定义预设）
-        zh-Hant: 進階 - 覆寫模型 API 位址（僅自訂預設）
-        ja: 詳細 - モデル API ベース URL を上書き（カスタムプリセットのみ）
-        ko: 고급 - 모델 API 기본 URL 재정의 (사용자 정의 프리셋만)
-    - default: ""
-      edit: true
+        en: Embedding Service API Key
+        zh: Embedding 服务 API Key
+        zh-hant: Embedding 服務 API Key
+        ja: Embedding サービス API キー
+        ko: Embedding 서비스 API 키
+      description:
+        zh: 仅此模型服务的 Key，不从 VLM 继承。方舟必填；无需鉴权的 OpenAI 兼容服务或 Ollama 可空，适配器使用占位值。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio
+          或真实 ov.conf 中修改。
+        en: Key for this model service only; no VLM inheritance. Required for Ark; may be empty for unauthenticated OpenAI-compatible
+          services or Ollama (adapter placeholder). Used only to create ov.conf once; install parameters never overwrite an
+          existing file. Edit Studio or the actual ov.conf afterwards.
+    - default: ''
+      edit: false
       envKey: EMBEDDING_MODEL
-      labelEn: Advanced - override embedding model (custom preset only)
-      labelZh: 高级 - 覆写向量嵌入模型（仅自定义预设）
+      labelEn: Embedding Model
+      labelZh: Embedding 模型名
       required: false
       type: text
       label:
-        en: Advanced - override embedding model (custom preset only)
-        zh: 高级 - 覆写向量嵌入模型（仅自定义预设）
-        zh-Hant: 進階 - 覆寫向量嵌入模型（僅自訂預設）
-        ja: 詳細 - 埋め込みモデルを上書き（カスタムプリセットのみ）
-        ko: 고급 - 임베딩 모델 재정의 (사용자 정의 프리셋만)
-    - default: ""
-      edit: true
+        en: Embedding Model
+        zh: Embedding 模型名
+        zh-hant: Embedding 模型名稱
+        ja: Embedding モデル名
+        ko: Embedding 모델명
+      description:
+        zh: 填该服务的实际模型名或 endpoint ID，不预设任何模型。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf 中修改。
+        en: Actual model name or endpoint ID for this service; no model is assumed. Used only to create ov.conf once; install
+          parameters never overwrite an existing file. Edit Studio or the actual ov.conf afterwards.
+    - default: ''
+      edit: false
       envKey: EMBEDDING_DIMENSION
-      labelEn: Advanced - override embedding dimension (custom preset only)
-      labelZh: 高级 - 覆写向量维度（仅自定义预设）
+      labelEn: Embedding Output Dimension
+      labelZh: Embedding 输出维度
       required: false
       type: text
       label:
-        en: Advanced - override embedding dimension (custom preset only)
-        zh: 高级 - 覆写向量维度（仅自定义预设）
-        zh-Hant: 進階 - 覆寫向量維度（僅自訂預設）
-        ja: 詳細 - 埋め込み次元数を上書き（カスタムプリセットのみ）
-        ko: 고급 - 임베딩 차원 재정의 (사용자 정의 프리셋만)
-    - default: ""
-      edit: true
+        en: Embedding Output Dimension
+        zh: Embedding 输出维度
+        zh-hant: Embedding 輸出維度
+        ja: Embedding 出力次元数
+        ko: Embedding 출력 차원
+      description:
+        zh: 启用此组时必填真实整数，包校验范围 1..65536；查模型输出，不套用其他模型维度。更换模型需核对旧集合，不自动迁移。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf
+          中修改。
+        en: 'Required for this group: actual integer output dimension, package range 1..65536. Verify the model output and
+          existing collection; no automatic migration. Used only to create ov.conf once; install parameters never overwrite
+          an existing file. Edit Studio or the actual ov.conf afterwards.'
+    - default: ''
+      edit: false
+      envKey: EMBEDDING_INPUT
+      labelEn: Embedding Input Type
+      labelZh: Embedding 输入类型
+      required: false
+      type: select
+      label:
+        en: Embedding Input Type
+        zh: Embedding 输入类型
+        zh-hant: Embedding 輸入類型
+        ja: Embedding 入力タイプ
+        ko: Embedding 입력 유형
+      description:
+        zh: 组启用后留空按 text。multimodal 仅 OpenAI 兼容/方舟适配器允许，实际模型也须支持；Ollama 仅 text。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio
+          或真实 ov.conf 中修改。
+        en: Empty means text when the group is configured. Multimodal requires both a capable model and the OpenAI-compatible/Ark
+          adapter; Ollama is text only. Used only to create ov.conf once; install parameters never overwrite an existing file.
+          Edit Studio or the actual ov.conf afterwards.
+      values:
+        - label: 未设置（组启用后 text） / Unset (text when configured)
+          value: ''
+        - label: 文本 / Text
+          value: text
+        - label: 多模态 / Multimodal
+          value: multimodal
+    - default: ''
+      edit: false
+      envKey: VLM_PROVIDER
+      labelEn: VLM Provider (Summary / Chat / Vision)
+      labelZh: VLM 接口类型（摘要/对话/视觉）
+      required: false
+      type: select
+      label:
+        en: VLM Provider (Summary / Chat / Vision)
+        zh: VLM 接口类型（摘要/对话/视觉）
+        zh-hant: VLM 介面類型（摘要/對話/視覺）
+        ja: VLM プロバイダー（要約/会話/視覚）
+        ko: VLM 제공자 (요약/대화/시각)
+      description:
+        zh: 整组留空可稍后配置；启用需接口类型、地址、模型名。与 Embedding 独立；Ollama 使用 OpenAI 兼容选项及 /v1，不走原生路由。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在
+          Studio 或真实 ov.conf 中修改。
+        en: Leave the whole group empty to omit it. Otherwise provider, base and model are required, independently of Embedding.
+          For Ollama choose OpenAI-compatible with /v1, not a native route. Used only to create ov.conf once; install parameters
+          never overwrite an existing file. Edit Studio or the actual ov.conf afterwards.
+      values:
+        - label: 未配置 / Configure later
+          value: ''
+        - label: OpenAI 兼容 / OpenAI-compatible
+          value: openai
+        - label: 火山方舟 / Volcengine Ark
+          value: volcengine
+    - default: ''
+      edit: false
+      envKey: VLM_API_BASE
+      labelEn: VLM API Base
+      labelZh: VLM API 地址
+      required: false
+      type: text
+      label:
+        en: VLM API Base
+        zh: VLM API 地址
+        zh-hant: VLM API 位址
+        ja: VLM API ベース URL
+        ko: VLM API 기본 URL
+      description:
+        zh: 只供摘要/对话/视觉模型使用，不从 Embedding 继承。不统一追加 /v1；按所选协议和服务文档填写。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf
+          中修改。
+        en: Base for summary/chat/vision only, never inherited from Embedding. Follow this service and adapter protocol; /v1
+          is not appended automatically. Used only to create ov.conf once; install parameters never overwrite an existing
+          file. Edit Studio or the actual ov.conf afterwards.
+    - default: ''
+      edit: false
+      envKey: VLM_API_KEY
+      labelEn: VLM Service API Key
+      labelZh: VLM 服务 API Key
+      required: false
+      type: password
+      label:
+        en: VLM Service API Key
+        zh: VLM 服务 API Key
+        zh-hant: VLM 服務 API Key
+        ja: VLM サービス API キー
+        ko: VLM 서비스 API 키
+      description:
+        zh: 与 Embedding 独立。方舟必填；无鉴权 OpenAI 兼容服务可空，脚本仅为适配器填 no-key 占位，不是真实凭据。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实
+          ov.conf 中修改。
+        en: Independent of Embedding. Required for Ark; may be empty for an unauthenticated compatible service. The script
+          supplies only the adapter placeholder no-key, not a real credential. Used only to create ov.conf once; install parameters
+          never overwrite an existing file. Edit Studio or the actual ov.conf afterwards.
+    - default: ''
+      edit: false
       envKey: VLM_MODEL
-      labelEn: Advanced - override VLM model (custom preset only)
-      labelZh: 高级 - 覆写视觉语言模型 (VLM)（仅自定义预设）
+      labelEn: VLM Chat / Vision Model
+      labelZh: VLM 模型名（摘要/对话/视觉）
       required: false
       type: text
       label:
-        en: Advanced - override VLM model (custom preset only)
-        zh: 高级 - 覆写视觉语言模型 (VLM)（仅自定义预设）
-        zh-Hant: 進階 - 覆寫視覺語言模型 (VLM)（僅自訂預設）
-        ja: 詳細 - VLM モデルを上書き（カスタムプリセットのみ）
-        ko: 고급 - VLM 모델 재정의 (사용자 정의 프리셋만)
+        en: VLM Chat / Vision Model
+        zh: VLM 模型名（摘要/对话/视觉）
+        zh-hant: VLM 模型名稱（摘要/對話/視覺）
+        ja: VLM モデル名（要約/会話/視覚）
+        ko: VLM 모델명 (요약/대화/시각)
+      description:
+        zh: 填实际模型名或 endpoint ID。纯文本摘要不强制视觉；视觉/工具调用能力按任务确认，接口类型不能保证模型能力。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf
+          中修改。
+        en: Actual model name or endpoint ID. Text summaries do not require vision; verify vision or tool-call support for
+          the intended task. Used only to create ov.conf once; install parameters never overwrite an existing file. Edit Studio
+          or the actual ov.conf afterwards.

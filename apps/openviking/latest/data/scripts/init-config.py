@@ -1,203 +1,209 @@
 #!/usr/bin/env python3
-"""Generate the first-start ov.conf from a few preset values, then hand over.
+"""Create ov.conf once from independent model groups, then use upstream's entrypoint.
 
-Upstream writes ov.conf only when it is absent, so this runs once and never
-overwrites a configuration edited in Studio or in data/ov.conf.
+Only the Python standard library is needed. Existing configuration is authoritative:
+never rewrite it, even if install parameters are incomplete or invalid.
 """
 import json
 import os
+import re
 import sys
+import tempfile
+from urllib.parse import urlsplit
 
 ENTRYPOINT = "/usr/local/bin/openviking-entrypoint"
 CONFIG_PATH = os.environ.get("OPENVIKING_CONFIG_FILE", "/app/.openviking/ov.conf")
-
-# provider, base URL, embedding model, dimension, input type, VLM model
-PRESETS = {
-    "openai": (
-        "openai",
-        "https://api.openai.com/v1",
-        "text-embedding-3-small",
-        1536,
-        "text",
-        "gpt-4o",
-    ),
-    "volcengine": (
-        "volcengine",
-        "https://ark.cn-beijing.volces.com/api/v3",
-        "doubao-embedding-vision-251215",
-        1024,
-        "multimodal",
-        "doubao-seed-2-0-lite-260428",
-    ),
-    "ollama": (
-        "ollama",
-        "http://host.docker.internal:11434/v1",
-        "nomic-embed-text",
-        768,
-        "text",
-        "qwen2.5:7b",
-    ),
+# Package limit, not a promise that every model/backend accepts this dimension.
+MAX_DIMENSION = 65536
+EMBEDDING_INPUTS = {
+    "openai": {"text", "multimodal"},
+    "volcengine": {"text", "multimodal"},
+    "ollama": {"text"},
 }
-CUSTOM_PROVIDER = "openai"
+VLM_PROVIDERS = {"openai", "volcengine"}
+LEGACY_FIELDS = ("MODEL_PRESET", "MODEL_API_BASE", "MODEL_API_KEY")
+
+
+class ConfigurationError(ValueError):
+    """A safe error containing field names/instructions, never supplied values."""
 
 
 def log(message):
     print(f"[ov-init] {message}", flush=True)
 
 
-def fail_without_models():
-    """Refuse to start half-configured.
-
-    Upstream needs an embedding model and a VLM before the server can ingest or
-    retrieve anything, and the official image ships no local embedding support.
-    Writing a config without models only produces a container that looks healthy
-    while every write fails, so stop here with a message that names the fix.
-    """
-    log("refusing to start: no embedding/VLM model configured")
-    log("a model API key is required (except for the ollama preset, which the script fills in)")
-    log("1Panel install form fields:")
-    log("  model preset       openai | volcengine | ollama | custom")
-    log("  model API key      key for that preset; a model API key is required unless the preset is ollama")
-    log("  override API base  custom preset only: OpenAI-compatible base URL, ends with /v1")
-    log("  override embedding custom preset only: embedding model name")
-    log("  override dimension custom preset only: that model's real vector dimension")
-    log("  override VLM       custom preset only: vision model name")
-    log("fill the form and start again, or put the values in data/ov.conf before the first start")
-    log("already have a broken ov.conf? delete data/ov.conf and restart to regenerate it")
-    sys.exit(1)
-
-
-def hand_over():
-    """Replace this process with the official entrypoint; never returns."""
-    try:
-        os.execv(ENTRYPOINT, [ENTRYPOINT, *sys.argv[1:]])
-    except OSError as exc:
-        # Never fall through to writing config: an existing ov.conf must survive.
-        log(f"cannot start {ENTRYPOINT}: {exc}")
-        os._exit(1)
-
-
 def env(name):
     return (os.environ.get(name) or "").strip()
 
 
-def resolve_models():
-    """Return (embedding, vlm) or (None, None) when models cannot be resolved."""
-    preset = env("MODEL_PRESET").lower() or "openai"
-    base_override = env("MODEL_API_BASE")
-    model_override = env("EMBEDDING_MODEL")
-    vlm_override = env("VLM_MODEL")
-    dimension_override = env("EMBEDDING_DIMENSION")
-    api_key = env("MODEL_API_KEY")
+def hand_over():
+    try:
+        os.execv(ENTRYPOINT, [ENTRYPOINT, *sys.argv[1:]])
+    except OSError as exc:
+        log(f"cannot start the official entrypoint ({type(exc).__name__})")
+        raise SystemExit(1) from None
 
-    if preset in PRESETS:
-        provider, base, model, dimension, embedding_input, vlm = PRESETS[preset]
-    elif preset == "custom":
-        provider, base, model, dimension, embedding_input, vlm = (
-            CUSTOM_PROVIDER, "", "", 0, "text", "",
-        )
-    else:
-        log(f"unknown MODEL_PRESET={preset!r}; known: {', '.join(PRESETS)}, custom")
-        return None, None
 
-    # Explicit overrides win over the preset, so one preset can be retargeted
-    # (for example a proxy URL or a different embedding model) without extra fields.
-    base = base_override or base
-    model = model_override or model
-    vlm = vlm_override or vlm
-    if dimension_override:
-        try:
-            dimension = int(dimension_override)
-        except ValueError:
-            log(f"ignoring EMBEDDING_DIMENSION={dimension_override!r}: not an integer")
-    if preset == "ollama" and not api_key:
-        # Ollama ignores the key, but upstream still expects a non-empty value.
-        api_key = "ollama"
-
-    missing = [
-        name
-        for name, value in (
-            ("MODEL_API_BASE", base),
-            ("MODEL_API_KEY", api_key),
-            ("EMBEDDING_MODEL", model),
-            ("EMBEDDING_DIMENSION", dimension),
-            ("VLM_MODEL", vlm),
-        )
-        if not value
-    ]
+def require(values, *names):
+    missing = [name for name in names if not values[name]]
     if missing:
-        if preset == "custom":
-            log("preset custom needs " + ", ".join(missing))
-        else:
-            log("preset " + preset + " needs " + ", ".join(missing))
-        return None, None
-    if not 0 < dimension <= 65536:
-        log(f"ignoring out-of-range embedding dimension {dimension}")
-        return None, None
+        raise ConfigurationError("missing fields: " + ", ".join(missing))
 
-    embedding = {
-        "dense": {
-            "provider": provider,
-            "model": model,
-            "api_base": base,
-            "api_key": api_key,
-            "dimension": dimension,
-            "input": embedding_input,
-        }
-    }
-    vlm_config = {
+
+def api_base(value, field):
+    try:
+        parsed = urlsplit(value)
+        valid = (
+            parsed.scheme in {"http", "https"}
+            and parsed.hostname
+            and parsed.port != 0
+            and parsed.username is None
+            and parsed.password is None
+            and not parsed.query
+            and not parsed.fragment
+            and not any(char.isspace() for char in value)
+        )
+    except ValueError:
+        valid = False
+    if not valid:
+        raise ConfigurationError(
+            field + " must be an HTTP(S) API base without URL credentials, query or fragment"
+        )
+    # Keep the caller's protocol path; do not append /v1 to arbitrary providers.
+    return value
+
+
+def embedding_config():
+    names = (
+        "EMBEDDING_PROVIDER", "EMBEDDING_API_BASE", "EMBEDDING_API_KEY",
+        "EMBEDDING_MODEL", "EMBEDDING_DIMENSION", "EMBEDDING_INPUT",
+    )
+    values = {name: env(name) for name in names}
+    if not any(values.values()):
+        return None
+    require(values, "EMBEDDING_PROVIDER", "EMBEDDING_API_BASE", "EMBEDDING_MODEL", "EMBEDDING_DIMENSION")
+    provider = values["EMBEDDING_PROVIDER"].lower()
+    if provider not in EMBEDDING_INPUTS:
+        raise ConfigurationError("EMBEDDING_PROVIDER must be openai, volcengine or ollama")
+    base = api_base(values["EMBEDDING_API_BASE"], "EMBEDDING_API_BASE")
+    if provider == "ollama" and not urlsplit(base).path.rstrip("/").endswith("/v1"):
+        raise ConfigurationError("EMBEDDING_API_BASE for ollama must end in /v1 (OpenAI-compatible embeddings)")
+    raw_dimension = values["EMBEDDING_DIMENSION"]
+    try:
+        if not re.fullmatch(r"[0-9]+", raw_dimension):
+            raise ValueError
+        dimension = int(raw_dimension)
+    except ValueError:
+        raise ConfigurationError("EMBEDDING_DIMENSION must be an explicit positive integer") from None
+    if not 1 <= dimension <= MAX_DIMENSION:
+        raise ConfigurationError("EMBEDDING_DIMENSION must be in the package range 1..65536")
+    input_type = values["EMBEDDING_INPUT"] or "text"
+    if input_type not in EMBEDDING_INPUTS[provider]:
+        raise ConfigurationError("EMBEDDING_INPUT is unsupported by the selected provider; ollama supports text only")
+    if provider == "volcengine":
+        require(values, "EMBEDDING_API_KEY")
+    config = {
         "provider": provider,
-        "model": vlm,
         "api_base": base,
-        "api_key": api_key,
-        "thinking": False,
-        "temperature": 0.0,
-        "max_retries": 2,
+        "model": values["EMBEDDING_MODEL"],
+        "dimension": dimension,
+        "input": input_type,
     }
-    log(f"models from preset={preset}: embedding={model} ({dimension}d), vlm={vlm}")
-    return embedding, vlm_config
+    if values["EMBEDDING_API_KEY"]:
+        config["api_key"] = values["EMBEDDING_API_KEY"]
+    # v0.5.6 OpenAIDenseEmbedder supplies its own no-key placeholder when a base
+    # is present; the ollama mapping uses that same adapter. No shared fallback.
+    return {"dense": config}
+
+
+def vlm_config():
+    names = ("VLM_PROVIDER", "VLM_API_BASE", "VLM_API_KEY", "VLM_MODEL")
+    values = {name: env(name) for name in names}
+    if not any(values.values()):
+        return None
+    require(values, "VLM_PROVIDER", "VLM_API_BASE", "VLM_MODEL")
+    provider = values["VLM_PROVIDER"].lower()
+    if provider not in VLM_PROVIDERS:
+        raise ConfigurationError("VLM_PROVIDER must be openai or volcengine")
+    base = api_base(values["VLM_API_BASE"], "VLM_API_BASE")
+    key = values["VLM_API_KEY"]
+    if provider == "volcengine":
+        require(values, "VLM_API_KEY")
+    elif not key:
+        # v0.5.6 VLMConfig requires non-empty api_key for provider=openai, and
+        # OpenAIVLM passes it to the OpenAI SDK. This is only an adapter placeholder
+        # for unauthenticated compatible services, never a real credential.
+        key = "no-key"
+        log("VLM_API_KEY is empty; using an OpenAI-adapter placeholder for an unauthenticated service")
+    return {"provider": provider, "api_base": base, "api_key": key, "model": values["VLM_MODEL"]}
+
+
+def create_config(config):
+    """Publish a complete 0600 file atomically, without replacing a racing writer."""
+    path = os.path.abspath(CONFIG_PATH)
+    parent = os.path.dirname(path)
+    os.makedirs(parent, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".ov.conf.init-", dir=parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            os.fchmod(stream.fileno(), 0o600)
+            json.dump(config, stream, ensure_ascii=False, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            # Same-filesystem link publishes the finished file only if absent.
+            # replace/rename could overwrite a file created after our first check.
+            os.link(temporary, path)
+        except FileExistsError:
+            log("using existing configuration; install parameters do not overwrite it")
+            return False
+        return True
+    finally:
+        os.unlink(temporary)
 
 
 def main():
-    # Never touch an existing file: it may hold Studio edits or a newer format.
-    if "--healthcheck" in sys.argv[1:] or os.path.exists(CONFIG_PATH):
+    if "--healthcheck" in sys.argv[1:]:
         return hand_over()
-
-    root_api_key = env("ROOT_API_KEY")
-    if not root_api_key:
-        # Binding 0.0.0.0 in dev mode makes upstream refuse to start, so fail
-        # before the container looks healthy-but-broken.
-        log("ROOT_API_KEY is required when the server listens on 0.0.0.0")
-        sys.exit(1)
-
-    config = {
-        "server": {
-            "host": "0.0.0.0",
-            "port": 1933,
-            "root_api_key": root_api_key,
-            "cors_origins": ["*"],
-        },
-        "storage": {
-            "workspace": "./data",
-            "agfs": {"backend": "local"},
-            "vectordb": {"backend": "local"},
-        },
-    }
-    embedding, vlm = resolve_models()
-    if not embedding or not vlm:
-        # Upstream's own deployment path configures both models before the first
-        # start; a config without them cannot ingest or retrieve anything.
-        fail_without_models()
-    config["embedding"] = embedding
-    config["vlm"] = vlm
-
-    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
-    os.makedirs(os.path.join(os.path.dirname(CONFIG_PATH), "data"), exist_ok=True)
-    with open(CONFIG_PATH, "w", encoding="utf-8") as handle:
-        json.dump(config, handle, ensure_ascii=False, indent=2)
-        handle.write("\n")
-    os.chmod(CONFIG_PATH, 0o600)
-    log(f"wrote {CONFIG_PATH}")
+    if os.path.lexists(CONFIG_PATH):
+        log("using existing configuration; install parameters do not overwrite it")
+        return hand_over()
+    try:
+        root_key = env("ROOT_API_KEY")
+        if len(root_key) < 32:
+            raise ConfigurationError("ROOT_API_KEY must contain at least 32 characters; generate a private management key")
+        legacy = any(env(name) for name in LEGACY_FIELDS)
+        if legacy and not (env("EMBEDDING_PROVIDER") or env("VLM_PROVIDER")):
+            raise ConfigurationError(
+                "legacy MODEL_* parameters found without ov.conf; migrate to the separate "
+                "EMBEDDING_* and VLM_* fields or restore your existing ov.conf; nothing was written"
+            )
+        if legacy:
+            log("legacy MODEL_* parameters ignored; only the independent model groups are used")
+        embedding = embedding_config()
+        vlm = vlm_config()
+        config = {
+            "server": {"host": "0.0.0.0", "port": 1933, "root_api_key": root_key, "cors_origins": ["*"]},
+            "storage": {"workspace": "./data", "agfs": {"backend": "local"}, "vectordb": {"backend": "local"}},
+        }
+        if embedding is not None:
+            config["embedding"] = embedding
+        else:
+            log("Embedding group omitted: upstream defaults to local/512; full startup and model use are not validated")
+        if vlm is not None:
+            config["vlm"] = vlm
+        else:
+            log("VLM group omitted: summary/chat/vision functions need a suitable model configuration")
+        if create_config(config):
+            log("created configuration (mode 600); later changes belong in ov.conf or Studio")
+    except ConfigurationError as exc:
+        log(str(exc))
+        raise SystemExit(1) from None
+    except (OSError, ValueError, TypeError) as exc:
+        # Exception text can contain user input or paths. Never print it.
+        log(f"could not create configuration ({type(exc).__name__}); check filesystem access")
+        raise SystemExit(1) from None
     return hand_over()
 
 

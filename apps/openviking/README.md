@@ -1,126 +1,114 @@
 # OpenViking
 
-OpenViking 是火山引擎开源的自进化上下文数据库：Agent 的记忆、知识库和技能都放在同一个 `viking://` 文件系统里，像读写文件一样浏览、搜索、管理。
+OpenViking 是火山引擎开源的上下文数据库，用 `viking://` 文件系统管理 Agent 的知识、记忆和技能。本包使用官方镜像 `ghcr.io/volcengine/openviking`，提供 HTTP 服务、Web Studio 和 VikingBot（默认关闭）。固定版本为 `0.5.6`，另有会随上游变化的 `latest`；配置行为按上游 v0.5.6 核对。
 
-装之前必须先备好模型：一个能用的模型 API Key（OpenAI、火山方舟，或你自己的 OpenAI 兼容服务），或者一台已经装好模型的 Ollama。安装时必须把模型配好——不配就装不上：容器会在启动阶段直接退出（compose 里的 `restart: always` 会让它反复重启，1Panel 里一直起不来），日志里写清楚缺了哪个字段，不会给你一个看起来正常、实际用不了的服务。
+## 安装参数
 
-本应用封装官方镜像 `ghcr.io/volcengine/openviking`，包含 HTTP 服务（默认端口 `1933`）、Web Studio 控制台和 VikingBot（默认关闭）。固定版本 `0.5.6`，官方镜像已核实支持 `linux/amd64` 和 `linux/arm64`；另提供 `latest` 滚动版本，升级前请先备份。
+Embedding 与 VLM 分别配置接口类型、地址、Key 和模型名。两组可以来自不同厂商，也可以填写相同地址和 Key；空值不会继承另一组。没有共享模型预设。
 
-## 1. 安装
+先在自己的机器上生成系统管理 Key，再填入表单并妥善保存，不要发到日志或 issue：
 
-安装表单有 8 项，前 4 项常用，后 4 项只在预设选「自定义」时才需要填：
+```bash
+python3 -c 'import secrets; print(secrets.token_hex(32))'
+```
 
-| 参数 | 怎么填 |
+| 字段 | 用途和条件 |
 | --- | --- |
-| HTTP 端口 | 默认 `1933`，一般不用改 |
-| root 密钥 | 自动随机生成，**先保存下来**，它就是 Studio 的登录密码 |
-| 模型预设 | 四选一：OpenAI（含兼容代理）、火山方舟、Ollama、自定义（OpenAI 兼容），默认 OpenAI |
-| 模型 API 密钥 | 填预设对应的 Key。**选 OpenAI / 火山方舟 / 自定义时必填；选 Ollama 不用填** |
-| 高级 - 覆写模型 API 地址 | 仅选「自定义」时填 |
-| 高级 - 覆写向量嵌入模型 | 仅选「自定义」时填 |
-| 高级 - 覆写向量维度 | 仅选「自定义」时填 |
-| 高级 - 覆写视觉语言模型 (VLM) | 仅选「自定义」时填 |
+| HTTP 访问端口 | 宿主机访问端口，默认 `1933`；容器端口固定 `1933`，安装后可改映射 |
+| 系统管理 API Key（Root） | 自备至少 32 字符的强随机 Key；仅用于管理，不是用户访问 Key，也不是外部模型 Key |
+| Embedding 接口类型 | `openai`（OpenAI 兼容）、`volcengine`（火山方舟）或 `ollama`（兼容 Embedding 接口）；可选“未配置” |
+| Embedding API 地址 | 此向量服务的完整 API base；启用这组时必填，按所选协议填写 |
+| Embedding 服务 API Key | 只给向量服务使用；方舟必填，无鉴权兼容服务或 Ollama 可留空 |
+| Embedding 模型名 | 服务实际提供的模型名或 endpoint ID；启用这组时必填 |
+| Embedding 输出维度 | 模型实际输出的正整数；启用这组时必填，包接受 `1..65536`，不代表每个模型/后端都支持整个范围 |
+| Embedding 输入类型 | 组启用后留空按 `text`。`multimodal` 需适配器和实际模型共同支持；Ollama Embedding 仅允许 `text` |
+| VLM 接口类型（摘要/对话/视觉） | `openai`（OpenAI 兼容）或 `volcengine`（方舟）；可选“未配置” |
+| VLM API 地址 | 只给摘要/对话/视觉模型使用；启用这组时必填 |
+| VLM 服务 API Key | 与 Embedding 独立；方舟必填，无鉴权兼容服务可留空 |
+| VLM 模型名（摘要/对话/视觉） | 实际模型名或 endpoint ID；启用这组时必填。纯文本摘要不强制视觉能力，视觉或工具调用能力按任务确认 |
 
-选前三个预设时，模型名、API 地址、向量维度都不用你填，预设已经配好：
+端口以外的参数仅用于**首次生成** `./data/ov.conf`，表单中设为安装后不可编辑。文件一旦存在，脚本不改字节、权限或其中的 Key、存储和其他配置。后续修改请用 Studio 的服务端配置文件模式，或编辑真实的 `./data/ov.conf` 再重启。修改安装环境变量不会覆盖已有文件。
 
-| 预设 | 对话与视觉模型 | 向量模型（维度） |
+表单没有条件隐藏。要启用某组，填写该组接口类型、地址、模型名，以及 Embedding 的实际维度；凭据是否必填按接口判断。两组校验全部通过才写文件，半组、非法维度或不支持的接口类型会报出字段名，不写半成品。脚本不测试网络、真实模型能力或旧集合兼容性。
+
+### 两个自定义 OpenAI 兼容服务
+
+下面是填表模板，尖括号必须替换；模型名由各自的服务决定，不预置任意模型或通用维度：
+
+| 字段 | Embedding 组 | VLM 组 |
 | --- | --- | --- |
-| OpenAI | `gpt-4o` | `text-embedding-3-small`（1536） |
-| 火山方舟 | `doubao-seed-2-0-lite-260428` | `doubao-embedding-vision-251215`（1024） |
-| Ollama | `qwen2.5:7b` | `nomic-embed-text`（768） |
+| 接口类型 | `openai` | `openai` |
+| API 地址 | `<向量服务文档规定的 OpenAI 兼容 base>` | `<对话服务文档规定的 OpenAI 兼容 base>` |
+| API Key | `<向量服务 Key；无鉴权服务可空>` | `<对话服务 Key；无鉴权服务可空>` |
+| 模型名 | `<实际向量模型名>` | `<实际摘要/对话/视觉模型名>` |
+| 输出维度 | `<实际向量长度，填写整数>` | 无此字段 |
+| 输入类型 | `text`，或服务明确支持时填 `multimodal` | 无此字段 |
 
-### 用自定义模型接口
+按服务文档填写 base，脚本不统一追加 `/v1`。方舟原生适配器通常使用 `/api/v3`，不能机械套用 OpenAI 地址。这里的字段不涵盖 Azure 的 api_version、VikingDB 的 AK/SK、自定义请求头等完整上游能力，需要这些设置时使用完整 `ov.conf`。
 
-想接自己的 OpenAI 兼容服务（自建中转、One-API、其他厂商的兼容接口）时，预设选「自定义（OpenAI 兼容）」，然后填满这 5 项：模型 API 密钥（在上方）、高级 - 覆写模型 API 地址、高级 - 覆写向量嵌入模型、高级 - 覆写向量维度、高级 - 覆写视觉语言模型 (VLM)。
+无鉴权服务可留空 Key，但云服务仍需自己的有效凭据。v0.5.6 的 OpenAI Embedding 适配器在有 base 时可用内部占位；VLM 配置和 OpenAI SDK 要求非空 Key，因此本包仅在 `VLM_PROVIDER=openai` 且 Key 为空时写入 `no-key`。这不是实际密钥，不会让需要鉴权的服务免于鉴权，也不来自另一模型组。
 
-地址要写到 `/v1` 为止，例如 `https://your-proxy.example.com/v1`；向量维度必须和该向量模型真实输出维度一致。五项缺任一项，容器启动时会直接退出，`[ov-init]` 日志会列出缺的字段名。
+### Ollama 的协议选择
 
-### 用 Ollama 本地模型
+若使用已准备好的 Ollama：Embedding 接口类型选 `ollama`，地址填容器可访问的 OpenAI 兼容 base，例如 `http://host.docker.internal:11434/v1`，模型名和实际维度自行核对，输入选 `text`。容器映射了 `host.docker.internal` 到宿主机；Ollama 的监听与网络访问仍需自行配置。
 
-1. 在宿主机装好 Ollama，拉两个模型：`ollama pull nomic-embed-text`、`ollama pull qwen2.5:7b`。
-2. Ollama 默认只监听 `127.0.0.1`，容器访问不到。启动时设 `OLLAMA_HOST=0.0.0.0`，并允许 Docker 网段访问。
-3. 安装时预设选「Ollama 本地模型」，模型 API 密钥留空（脚本会自动填一个占位值）。容器里已经把 `host.docker.internal` 指向宿主机，预设默认连 `11434`。Ollama 没装好或模型没拉，服务能起来但用不了，装完先跑一次第 3 节的 doctor。
-4. 想换别的 Ollama 模型：可以选预设「自定义」并把 API 地址填成 Ollama 的 `http://host.docker.internal:11434/v1`、向量模型和 VLM 分别填对应模型；也可以装完后去 Studio 的「文件模式」改 `ov.conf`（见第 4 节）。
+VLM 接口类型选 **`openai`**，地址独立填写该 Ollama 服务的 `/v1` 兼容 base，模型须支持所用的 chat/vision/tools 功能。此时走上游 OpenAIVLM 与 OpenAI 兼容协议，**不走 LiteLLM 的原生 `ollama/` 路由**。两组可连接不同 Ollama 实例；不要把原生 `/api/chat` 地址填成兼容 API base。表单不提供原生 Ollama VLM 选项。
 
-Ollama 端口不要暴露到公网。
+这只说明生成的适配器与地址映射，未执行真实 Ollama 请求或完整容器启动。
 
-## 2. 装完三步
+### 暂不配置模型
 
-1. 打开 `http://<你的IP>:<安装时的HTTP端口>/studio`，账号 `root`，密码是参数页里的 **root 密钥**。
-2. 在 **Users** 页面建一个账号和用户，创建完会直接显示该用户的 **User API Key**，复制保存。
-3. 日常访问都用这个 User Key（CLI、SDK、`curl` 都一样）。root 密钥只管管理，拿它调数据接口会被拒绝（`PERMISSION_DENIED`）。
+把某组的所有字段都留空，可只配置另一组；两组都留空时，脚本仍可生成含管理 Key、监听和本地存储的基础配置。选择“未配置”却填写同组其他字段属于半组，会报错。
 
-```bash
-curl http://<你的IP>:1933/health
-curl "http://<你的IP>:1933/api/v1/fs/ls?uri=viking://" -H "X-API-Key: <User API Key>"
-```
+**这条路径未经完整 HTTP/Studio 启动验证。** 不写 Embedding 段时，上游 v0.5.6 会启用默认 `local`、512 维模型，不等于关闭向量。标准镜像的构建依赖链未选择 `local-embed`，本次未核验镜像内已安装包；不能保证默认 local 可用。未配 VLM 时摘要/对话/视觉功能也不能视为可用。
 
-## 3. 怎么确认真的能用
+默认集合可能先按 512 维创建，之后换 Embedding 仍受已有集合维度/元数据检查约束。建议在导入资料前确认实际要使用的模型与维度。不要靠删工作区绕过检查，不写 v0.5.6 不存在的 `enable_default_resources`。
 
-安装阶段没配好模型是起不来的（见第 1 节），所以这里要查的是「配了但不通」。三个检查入口，只管到各自那一段，别看错：
+## 使用与验证
 
-| 入口 | 查什么 | 可信度 |
-| --- | --- | --- |
-| `GET /health` | 进程还活着 | 只能说明没崩，模型对不对完全看不出 |
-| `GET /ready` | 各组件就绪状态 | **模型这项不可信，永远显示 ok**。它只看配置里有没有 embedding 这一节，不会真去调用。Key 写错了、模型名写错了，它照样一片绿。只有 Ollama 连不上时它会有反应（那项显示 `unreachable`） |
-| `openviking-server doctor` | 真的去访问模型 | 唯一能查出模型不可用的办法，但**输出的视觉模型（VLM）那一项也不真测**，显示 PASS 别全信 |
+完整服务成功启动后，打开 `http://<服务器地址>:<HTTP访问端口>/studio/`。Studio 使用 API Key 连接，不是 `root` 账号加密码：
 
-所以装完请跑一次 doctor：
+- 系统管理 API Key（Root）：服务配置、账号与用户等控制面管理。
+- 用户访问 API Key（User/Admin）：创建账号/用户后取得，供日常资料读写、CLI/SDK 检索使用；Root 不能替代数据身份。
+- Embedding/VLM 服务 API Key：分别调用两个外部模型服务，与前两类身份无关。
 
-```bash
-docker exec -it <容器名> openviking-server doctor
-```
+需要管理初始化时，在 Studio 相应管理连接中使用 Root；保存创建得到的用户 Key，日常工作台和数据接口使用该用户身份。Bot 默认关闭，启用前也需要适当的 User/Admin 数据访问 Key。
 
-看两行：`Embedding` 是 PASS 才算模型通；如果是 `FAIL` / `probe failed`，回来检查 Key、API 地址或 Ollama 是否可达。
+`/health` 说明服务存活；`/ready` 检查初始化、存储等条件，但其中 Embedding 子检查只看 provider 对象存在，不实际调用模型。不能以 healthy 或 ready 推断模型正确。
 
-## 4. 常见问题
+Studio 的连接测试检查当次草稿的单次请求；保存执行配置校验；两者都不保证新配置能完成启动或兼容旧集合。`openviking-server doctor` 可补充 Embedding 诊断，VLM 的 PASS 不能直接当成真实 VLM 请求成功。最终还需以实际导入、后台任务结果和检索核验业务。本包本轮只做本地脚本与配置模块验证，未进行这些运行测试。
 
-**改了安装参数没生效。**
-`ov.conf` 只在第一次启动时生成，之后改表单不会再碰它。想让表单重新生效：先备份 `./data/ov.conf`，删掉它，再重启容器——重建时会重新校验模型，表单那几项必须填对，否则容器直接退出并在日志里说明缺什么。这会丢掉你后来在 Studio 里做的所有配置。
+没有 `ov.conf` 时，官方入口的等待服务对所有路径返回 pending `503`，不是 Studio。当前脚本会生成基础文件或在参数错误时退出，不应把这两种状态混为“界面已启动”。
 
-**换了向量模型，启动失败并提示已恢复旧配置。**
-旧索引是按旧模型的维度建的，换模型后维度对不上，服务层会回滚到上一份能用的配置，前端只显示「已恢复旧配置」。真实异常在容器日志里。如果旧数据本来就没用（刚装、还没导入东西），停掉应用，清空 `./data/data`（容器内 `/app/.openviking/data/data`，账号、资源、向量都在里面），保留同级的 `ov.conf` 和 `scripts`，再重启重新配模型即可。
+## 已有安装、模型更换与排障
 
-**在 Studio 里把 embedding 改成了内置 local，重启后失败回滚。**
-官方镜像不带本地嵌入模型的依赖（`llama-cpp-python`），`local` 这个 provider 装了也用不了。要本地跑模型请用 Ollama 预设，不要选 `local`。
+已有 `ov.conf` 始终优先，包括旧版生成的文件。旧的 `MODEL_PRESET`、`MODEL_API_BASE`、`MODEL_API_KEY` 不再生成配置：compose 仅保留它们的可空映射用于识别迁移。若文件缺失且只有旧变量，脚本报迁移错误；请恢复备份的配置，或在部署环境中补齐新独立组。提供新组时忽略旧共享变量，不把旧地址或 Key 注入任一新组。旧变量里与新组同名的模型名/维度仍须配合对应 provider 等字段，不会自动猜测。
 
-**ghcr.io 拉不动 / 很慢。**
-把 `docker-compose.yml` 里注释掉的那行镜像启用（`openviking-cn-beijing.cr.volces.com/volcengine/openviking:v0.5.6`），替换掉 ghcr 那行。
+更换模型前备份完整数据目录，比较新旧脱敏配置，核对模型实际输出维度及已有集合 schema/embedding 元数据。同维度也可能不兼容；脚本不会重建索引或自动重嵌入。优先在真实配置中修改，保留服务端失败栈；Web 回滚本身不能说明根因。
 
-**想改 API 地址、换向量模型、加视觉模型。**
-表单选「自定义」就能覆盖大多数场景：填上 API 地址、向量模型、维度、VLM 模型，密钥填在上方同一个框里。只有需要更细的控制（`thinking`、`temperature`、`cors_origins`、`public_base_url` 这类细节）才需要进 Studio → 设置 → 服务端配置 → **文件模式**，直接编辑 `ov.conf` 原文，保存后点「保存并重启」。也可以改宿主机上的 `./data/ov.conf` 再重启容器，效果一样。想整体重来才用容器里的交互向导：`docker exec -it <容器名> openviking-server init`。
+遇到保存后重启回滚，收集失败时间窗的 stdout/stderr、保存前后脱敏配置差异、实际运行镜像与启动/挂载信息，以及集合 `collection_meta.json` 的向量维度和 embedding 元数据。`replay complete (0 records)` 仅表示此次增量重放计数，不等于集合或工作区没有数据。本次包修改不代表已定位或修复任何用户实例的回滚故障。
 
-**VikingBot 怎么开。**
-默认关闭。API Key 模式下 Bot 需要一个 User/Admin 密钥（root 密钥不行）。在 `./data/ov.conf` 里给 `bot.ov_server.api_key` 填上 User Key，再把 compose 里的 `OPENVIKING_WITH_BOT` 改成 `1`，重启应用。
+公网使用可通过 1Panel 反向代理配置 HTTPS，并按需设置 `server.public_base_url` 和限制 `server.cors_origins`。VikingBot 需要在真实配置中设置 `bot.ov_server.api_key`，再将 compose 的 `OPENVIKING_WITH_BOT` 改成 `1`；不要填 Root。
 
-**给公网访问 / 上 HTTPS。**
-用 1Panel 反代到安装时设的端口，并把 `ov.conf` 里的 `server.public_base_url` 填成外部 HTTPS 地址。按需把 `server.cors_origins` 从 `*` 收紧到自己的域名。
+## 数据与升级
 
-## 5. 数据目录与升级
+相对应用目录 `./data` 挂载到容器 `/app/.openviking`：
 
-`./data` 挂到容器里的 `/app/.openviking`：
+- `./data/ov.conf`：服务配置，新建时原子发布为 `600`，已存在时不覆盖。
+- `./data/ovcli.conf`：CLI 配置。
+- `./data/data`：工作区，对应容器 `/app/.openviking/data`，包含账号/用户凭据、资料、向量与队列。
+- `./data/scripts`：本包启动脚本。
 
-- `ov.conf`：服务配置（首次启动生成，权限 `600`，已存在时绝不覆盖）
-- `ovcli.conf`：命令行配置
-- `data/`：工作区，账号、资源、向量数据都在这里
+升级前停止应用并备份整个 `./data`。保留旧配置与工作区，不让多个使用本地向量后端的实例同时共享工作区。不得将 `./data/data` 当成可随意清理的空索引目录。
 
-升级步骤：先停应用，把整个 `./data` 备份下来（不要只备份 `ov.conf`），再升级、启动。本地向量后端不支持多个实例共享同一个工作区。图标来自官方仓库的 `docs/images/ov-logo-square.png`。
+若 ghcr.io 不可达，compose 保留了同 tag 的内地镜像注释，可按需切换。第三方镜像的安全性、可用性与合规风险由使用者自行评估。本包未通过拉镜像或起容器验证运行效果。
 
-容器内端口固定 `1933`，宿主机端口在应用参数页改。
+图标来自上游仓库 `docs/images/ov-logo-square.png`。OpenViking 的作者与许可证以[上游仓库](https://github.com/volcengine/OpenViking)为准。
 
-## 6. 它能做什么
-
-- 一个文件系统装下知识、记忆、技能，都能用 `viking://` 路径访问。
-- 目录级语义检索，可以只看某个项目或记忆子树，不用扫全库。
-- 三级上下文加载：L0 摘要、L1 概览、L2 全文，先判断相关性再读全文。
-- 会话可归档成可读的 Markdown，并自动抽取记忆。
-- 多账号与用户隔离，可选资源 ACL，支持 API Key 认证。
-- 提供 Python / Go / TypeScript SDK 和完整 HTTP API。
-
-## 相关链接
+## 链接
 
 - 官网：<https://openviking.ai/>
 - 文档：<https://docs.openviking.ai/>
 - GitHub：<https://github.com/volcengine/OpenViking>
-- 部署指南：<https://docs.openviking.ai/en/guides/03-deployment>
-- 配置指南：<https://docs.openviking.ai/en/guides/01-configuration>
+- [v0.5.6 部署说明](https://github.com/volcengine/OpenViking/blob/831ad81f5838d3502812a48bbec2e1d2930ed13c/docs/zh/guides/03-deployment.md)
+- [v0.5.6 配置说明](https://github.com/volcengine/OpenViking/blob/831ad81f5838d3502812a48bbec2e1d2930ed13c/docs/zh/guides/01-configuration.md)

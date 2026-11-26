@@ -1,126 +1,114 @@
 # OpenViking
 
-OpenViking is Volcengine's open-source self-evolving context database: agent memory, knowledge and skills all live in one `viking://` filesystem you can browse, search and manage like files.
+OpenViking is Volcengine's open-source context database for agent knowledge, memory and skills, organized as a `viking://` filesystem. This package uses the official `ghcr.io/volcengine/openviking` image and includes the HTTP service, Web Studio and VikingBot (disabled by default). The pinned version is `0.5.6`; `latest` follows upstream changes. Configuration behavior was checked against v0.5.6.
 
-Before installing you must have the models ready: a working model API key (OpenAI, Volcengine Ark, or your own OpenAI-compatible endpoint), or an Ollama instance with the models pulled. The models are configured at install time — without them the container exits during startup (with `restart: always` in the compose file it keeps restarting and never comes up) and the log names the missing field, instead of handing you something that looks healthy and does nothing.
+## Installation parameters
 
-This app packages the official image `ghcr.io/volcengine/openviking`, pinned to `0.5.6` (verified for `linux/amd64` and `linux/arm64`); a `latest` channel is also available — back up before using it. It includes the HTTP service (default port `1933`), the Web Studio console, and VikingBot (disabled by default).
+Embedding and VLM have separate provider, API base, key and model fields. They can use different vendors, or explicitly use the same base and key. Empty values never inherit from the other group. There is no shared model preset.
 
-## 1. Install
+Generate your private system management key on your own machine, enter it in the form and store it securely. Do not post it in logs or issues:
 
-The form has eight fields: the first four are what you normally touch, the last four are only needed when the preset is Custom.
+```bash
+python3 -c 'import secrets; print(secrets.token_hex(32))'
+```
 
-| Field | What to enter |
+| Field | Purpose and conditions |
 | --- | --- |
-| HTTP Port | `1933` by default; usually leave it |
-| Root API Key | Randomly generated — **save it now**; it is your Studio login password |
-| Model Preset | One of OpenAI (compatible proxies included), Volcengine Ark, Ollama, Custom (OpenAI-compatible). Defaults to OpenAI |
-| Model API Key | The key for that preset. **Required for OpenAI / Ark / Custom; leave empty for Ollama** |
-| Advanced - override API base URL | Custom preset only |
-| Advanced - override embedding model | Custom preset only |
-| Advanced - override embedding dimension | Custom preset only |
-| Advanced - override VLM model | Custom preset only |
+| HTTP Host Port | Host access port, default `1933`; the container port stays `1933`. The mapping remains editable after installation |
+| System Management API Key (Root) | Supply a strong random private key of at least 32 characters; this is neither a user access key nor a model service key |
+| Embedding Provider | `openai` (OpenAI-compatible), `volcengine` (Ark) or `ollama` (compatible embedding API); Configure later leaves it unset |
+| Embedding API Base | This embedding service's complete API base; required when configuring the group, following its adapter protocol |
+| Embedding Service API Key | Only for this embedding service; required for Ark, optional for unauthenticated compatible services or Ollama |
+| Embedding Model | Actual model name or endpoint ID; required for this group |
+| Embedding Output Dimension | Actual positive integer vector length; required for this group. The package accepts `1..65536`, which does not mean every model/backend supports the entire range |
+| Embedding Input Type | Empty means `text` when configured. `multimodal` requires both adapter and model support; Ollama embeddings are text only |
+| VLM Provider (Summary / Chat / Vision) | `openai` (OpenAI-compatible) or `volcengine` (Ark); Configure later leaves it unset |
+| VLM API Base | Only for the summary/chat/vision service; required for this group |
+| VLM Service API Key | Independent of Embedding; required for Ark, optional for an unauthenticated compatible service |
+| VLM Chat / Vision Model | Actual model name or endpoint ID; required for this group. Text summaries do not require vision; verify vision or tool-call capability for the intended task |
 
-With the first three presets there are no model names, base URLs or dimensions to fill in — the preset covers them:
+All parameters except the port are used only to **create** `./data/ov.conf` and are marked noneditable after installation. Once a file exists, the script preserves its bytes, permissions, keys, storage settings and all other configuration. Make subsequent changes in Studio's server configuration file mode or the actual `./data/ov.conf`, then restart. Changing installation environment variables does not overwrite an existing file.
 
-| Preset | Chat and vision model | Embedding model (dimension) |
+The form does not hide conditional fields. To enable a group, provide its provider, base and model, plus the actual Embedding dimension. Authentication requirements depend on the adapter. Both groups must pass validation before any file is published. Partial groups, invalid dimensions or unsupported providers produce errors naming the fields, without leaving a partial configuration. The script does not test connectivity, model capabilities or existing collection compatibility.
+
+### Two custom OpenAI-compatible services
+
+Replace every angle-bracket placeholder below. Model names come from the respective services; there is no assumed model or universal dimension:
+
+| Field | Embedding group | VLM group |
 | --- | --- | --- |
-| OpenAI | `gpt-4o` | `text-embedding-3-small` (1536) |
-| Volcengine Ark | `doubao-seed-2-0-lite-260428` | `doubao-embedding-vision-251215` (1024) |
-| Ollama | `qwen2.5:7b` | `nomic-embed-text` (768) |
+| Provider | `openai` | `openai` |
+| API base | `<OpenAI-compatible base specified by embedding service>` | `<OpenAI-compatible base specified by chat service>` |
+| API key | `<embedding service key; empty if unauthenticated>` | `<chat service key; empty if unauthenticated>` |
+| Model | `<actual embedding model>` | `<actual summary/chat/vision model>` |
+| Output dimension | `<actual vector length, entered as an integer>` | Not applicable |
+| Input type | `text`, or `multimodal` only when supported | Not applicable |
 
-### Using a custom model endpoint
+Use the API base required by each service. The script does not append `/v1` to every provider. The native Ark adapter typically uses `/api/v3`; do not apply OpenAI paths mechanically. The form does not expose all upstream settings, such as Azure api_version, VikingDB AK/SK or custom headers. Use a complete `ov.conf` for those settings.
 
-To point OpenViking at your own OpenAI-compatible service (a self-hosted gateway, One-API, another vendor's compatible endpoint), choose the Custom preset and fill all five: the model API key (above), Advanced - override API base URL, Advanced - override embedding model, Advanced - override embedding dimension, and Advanced - override VLM model.
+Unauthenticated services may have empty keys; cloud services still need their own valid credentials. The v0.5.6 OpenAI embedding adapter uses an internal placeholder when a base is provided. VLM configuration and the OpenAI SDK require a nonempty key, so this package writes `no-key` only when `VLM_PROVIDER=openai` and its key is empty. It is an adapter placeholder, not a real credential, an authentication bypass or a key inherited from Embedding.
 
-The base URL must include `/v1`, for example `https://your-proxy.example.com/v1`. The dimension must match what that embedding model actually outputs. If any of the five is missing, the container exits at startup and the `[ov-init]` log lists the missing field names.
+### Ollama protocol selection
 
-### Using local Ollama
+For an already prepared Ollama service, select Embedding provider `ollama` and enter its container-accessible OpenAI-compatible base, such as `http://host.docker.internal:11434/v1`. Supply the actual model and dimension, and select `text`. The container maps `host.docker.internal` to the host; Ollama listening and network access must still be configured appropriately.
 
-1. Install Ollama on the host and pull two models: `ollama pull nomic-embed-text` and `ollama pull qwen2.5:7b`.
-2. Ollama listens on `127.0.0.1` by default, which containers cannot reach. Start it with `OLLAMA_HOST=0.0.0.0` and allow the Docker subnet.
-3. Choose the Ollama preset and leave the model API key empty (the script fills in a placeholder). The container already maps `host.docker.internal` to the host, and the preset points at port `11434`. If Ollama is not running or the models are not pulled, the service starts but cannot use them — run doctor from section 3 right after installing.
-4. To use different Ollama models, either pick the Custom preset with the base URL set to `http://host.docker.internal:11434/v1` and your own embedding/VLM models, or edit `ov.conf` in Studio's file mode after installing (section 4).
+For VLM select **`openai`** and independently enter that Ollama service's `/v1` compatible base. Its model must support the chat/vision/tools used by your tasks. This selects upstream OpenAIVLM and the OpenAI-compatible protocol, **not LiteLLM's native `ollama/` route**. The groups can address different Ollama instances. A native `/api/chat` URL is not a compatible API base. The form does not offer a native Ollama VLM provider.
 
-Do not expose the Ollama port to the internet.
+This describes the generated adapter/address mapping only. Real Ollama requests and complete container startup were not tested.
 
-## 2. Three steps after installing
+### Leaving models unconfigured
 
-1. Open `http://<your-ip>:<configured-http-port>/studio`, log in as `root` with the **root API key** from the app's parameter page.
-2. On the **Users** page, create an account and a user. The user's **User API Key** is shown right away — copy it.
-3. Use that User key for everything (CLI, SDKs, `curl`). The root key is for administration only; calling data APIs with it returns `PERMISSION_DENIED`.
+Leave every field in a group empty to omit that group and configure only the other one. With both groups empty, the script can still create a basic configuration containing the management key, listener and local storage. Selecting Configure later while filling other fields in that group is a partial configuration and produces an error.
 
-```bash
-curl http://<your-ip>:1933/health
-curl "http://<your-ip>:1933/api/v1/fs/ls?uri=viking://" -H "X-API-Key: <User API Key>"
-```
+**This path has not been verified through full HTTP/Studio startup.** Omitting Embedding makes upstream v0.5.6 select its default `local` model with 512 dimensions; it does not disable embeddings. The standard image's build dependency chain does not select `local-embed`, and installed packages inside the image were not inspected. Default local functionality is not guaranteed. Omitting VLM also does not provide working summary/chat/vision functionality.
 
-## 3. How to tell it actually works
+A collection may first be created with 512 dimensions; changing the embedding model afterwards remains subject to existing dimension/metadata checks. Establish the intended model and actual dimension before importing data. Do not delete the workspace to bypass checks or add `enable_default_resources`, which v0.5.6 does not recognize.
 
-A container that was installed without models does not start at all (see section 1), so what is left to check is "configured but not reachable". Three checks, each covering only its own part:
+## Access and verification
 
-| Endpoint | What it checks | How much to trust it |
-| --- | --- | --- |
-| `GET /health` | The process is alive | Only that it has not crashed. Says nothing about models |
-| `GET /ready` | Component readiness | **The model part is meaningless — it always shows ok.** It only checks whether an `embedding` section exists in the config, never calls the model. A wrong key or a wrong model name still shows all green. The only thing it catches is an unreachable Ollama (`unreachable`) |
-| `openviking-server doctor` | Actually reaches the models | The only way to find out a model is broken. **Its vision (VLM) line is not a real probe either** — PASS there means little |
+After the complete service starts successfully, open `http://<server>:<http-host-port>/studio/`. Studio connects using API keys, rather than a `root` username and password:
 
-So run doctor once after installing:
+- System Management API Key (Root): control-plane administration, including service configuration, accounts and users.
+- User Access API Key (User/Admin): obtained when creating an account/user; used for ordinary data access and CLI/SDK searches. Root cannot replace a data identity.
+- Embedding/VLM Service API Keys: independently authenticate calls to the two external model services. They are unrelated to the preceding identities.
 
-```bash
-docker exec -it <container-name> openviking-server doctor
-```
+Use Root in the appropriate Studio administration connection when initializing accounts. Save the resulting user key for everyday workspace and data API access. Bot is disabled by default and also requires a suitable User/Admin data-access key when enabled.
 
-Check one line: `Embedding` must be PASS. If it says `FAIL` / `probe failed`, recheck the key, the API base, or whether Ollama is reachable.
+`/health` indicates service liveness. `/ready` checks initialization, storage and other conditions, but its Embedding subcheck only looks for a provider object rather than calling a model. Neither healthy nor ready proves correct model behavior.
 
-## 4. Troubleshooting
+Studio connection testing checks one request against the current draft. Saving performs configuration validation. Neither guarantees complete startup or compatibility with an existing collection. `openviking-server doctor` can supplement Embedding diagnostics; its VLM PASS is not itself proof of a real VLM request. Check actual ingestion, background task results and retrieval for business functionality. This package revision was checked using local scripts and configuration modules only, without those runtime tests.
 
-**Changing install parameters does nothing.**
-`ov.conf` is generated once, on first start; form edits never touch it again. To make the form apply again, back up `./data/ov.conf`, delete it, and restart the container — regeneration re-checks the models, so the form values must be correct or the container exits and the log says what is missing. This discards everything you configured in Studio since.
+Without `ov.conf`, upstream's pending configuration server returns `503` on every route; it is not Studio. This package's script creates a basic file or exits on invalid parameters. Do not confuse either condition with an already running UI.
 
-**Changed the embedding model and startup fails, saying the old configuration was restored.**
-The existing index was built for the old model's dimension, so the new model does not match and the service rolls back to the last working config; the UI only says "old configuration restored" and the real exception is in the container log. If that old data does not matter (fresh install, nothing imported yet), stop the app, clear `./data/data` (inside the container `/app/.openviking/data/data` — accounts, resources and vectors live there), keep `ov.conf` and `scripts` alongside it, and restart to configure the model again.
+## Existing installations, model changes and troubleshooting
 
-**Set embedding to the built-in `local` provider in Studio and startup failed and rolled back.**
-The official image does not ship the local embedding dependency (`llama-cpp-python`), so the `local` provider cannot work there. To run models locally, use the Ollama preset — do not pick `local`.
+Existing `ov.conf` files always take priority, including files created by older packages. `MODEL_PRESET`, `MODEL_API_BASE` and `MODEL_API_KEY` no longer generate configuration. Compose retains optional mappings solely for migration detection. A missing file with legacy-only variables produces a migration error: restore the backed-up configuration or populate the new independent groups in the deployment environment. When new groups are supplied, old shared values are ignored and never injected into either group. Old model/dimension variables whose names overlap with new fields still require their matching provider and other group fields; the script does not guess them.
 
-**ghcr.io is slow or unreachable.**
-Enable the commented image line in `docker-compose.yml` (`openviking-cn-beijing.cr.volces.com/volcengine/openviking:v0.5.6`) and drop the ghcr one.
+Before changing models, back up the entire data directory, compare redacted configuration revisions and check actual output dimensions against the existing collection schema and embedding metadata. Equal dimensions do not guarantee compatible vector spaces. The script never rebuilds indexes or re-embeds data. Edit the actual configuration and preserve server failure traces; a Web rollback notification does not identify the cause.
 
-**Need a different API base, embedding model or vision model.**
-The Custom preset covers most cases: enter the base URL, embedding model, its dimension and the VLM model, with the key in the same field above. Deeper control (`thinking`, `temperature`, `cors_origins`, `public_base_url` and similar) still means Studio → Settings → Server configuration → **file mode**, editing `ov.conf` directly and pressing Save and restart. Editing `./data/ov.conf` on the host and restarting the container works the same way. Use the in-container wizard (`docker exec -it <container-name> openviking-server init`) only when you want to regenerate from scratch.
+For a restart rollback, collect stdout/stderr over the failing interval, the redacted before/after configuration diff, actual running image and command/mount information, plus vector dimensions and embedding metadata from `collection_meta.json`. `replay complete (0 records)` counts that incremental replay, not total collection or workspace data. This package change does not claim to diagnose or fix a user's restart rollback incident.
 
-**Enabling VikingBot.**
-Disabled by default. In API-key mode the Bot needs a User/Admin key (a root key does not work). Put the User key in `bot.ov_server.api_key` in `./data/ov.conf`, set `OPENVIKING_WITH_BOT` to `1` in the compose file, and restart.
+For public access, configure HTTPS through a 1Panel reverse proxy and set `server.public_base_url` and appropriate `server.cors_origins`. To enable VikingBot, configure `bot.ov_server.api_key` in the actual file and set compose's `OPENVIKING_WITH_BOT` to `1`. Do not use Root as the Bot's data key.
 
-**Public access and HTTPS.**
-Proxy to the configured port with 1Panel and set `server.public_base_url` in `ov.conf` to the external HTTPS URL. Narrow `server.cors_origins` from `*` to your own origins where appropriate.
+## Data and upgrades
 
-## 5. Data directory and upgrades
+The app-relative `./data` directory is mounted at `/app/.openviking`:
 
-`./data` is mounted at `/app/.openviking` inside the container:
+- `./data/ov.conf`: server configuration, published atomically with mode `600` when new; existing files are never overwritten.
+- `./data/ovcli.conf`: CLI configuration.
+- `./data/data`: workspace at container path `/app/.openviking/data`, containing accounts/user credentials, resources, vectors and queues.
+- `./data/scripts`: this package's startup script.
 
-- `ov.conf` — server configuration (generated on first start, mode `600`, never overwritten once it exists)
-- `ovcli.conf` — CLI configuration
-- `data/` — workspace: accounts, resources, vector data
+Stop the app and back up all of `./data` before upgrading. Preserve both configuration and workspace. Multiple local-vector-backend instances must not share a workspace concurrently. `./data/data` is not a disposable empty index directory.
 
-To upgrade, stop the app, back up the entire `./data` directory (not just `ov.conf`), then upgrade and start. Multiple instances must not share one workspace with the local vector backend. The logo comes from the upstream repo's `docs/images/ov-logo-square.png`.
+Compose retains a commented mainland China mirror with the same tag for ghcr.io connectivity issues. Users must assess third-party image security, availability and compliance risks. This revision was not verified by pulling an image or running a container.
 
-The container always listens on `1933`; change the host port in the app parameters.
-
-## 6. What it does
-
-- One filesystem for knowledge, memory and skills, each reachable by `viking://` path.
-- Directory-scoped semantic search, so you can look inside one project or memory subtree instead of scanning everything.
-- Three context layers: L0 abstract, L1 overview, L2 full content — judge relevance before reading.
-- Sessions become readable Markdown with extracted memories.
-- Multiple accounts with user isolation, opt-in resource ACLs, API-key authentication.
-- Python / Go / TypeScript SDKs and a complete HTTP API.
+The logo comes from upstream's `docs/images/ov-logo-square.png`. OpenViking authorship and licensing are recorded in the [upstream repository](https://github.com/volcengine/OpenViking).
 
 ## Links
 
 - Website: <https://openviking.ai/>
 - Docs: <https://docs.openviking.ai/>
 - GitHub: <https://github.com/volcengine/OpenViking>
-- Deployment guide: <https://docs.openviking.ai/en/guides/03-deployment>
-- Configuration guide: <https://docs.openviking.ai/en/guides/01-configuration>
+- [v0.5.6 deployment guide](https://github.com/volcengine/OpenViking/blob/831ad81f5838d3502812a48bbec2e1d2930ed13c/docs/en/guides/03-deployment.md)
+- [v0.5.6 configuration guide](https://github.com/volcengine/OpenViking/blob/831ad81f5838d3502812a48bbec2e1d2930ed13c/docs/en/guides/01-configuration.md)
