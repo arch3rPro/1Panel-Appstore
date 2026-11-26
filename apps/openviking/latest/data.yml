@@ -14,8 +14,8 @@ additionalProperties:
         ja: HTTP アクセスポート
         ko: HTTP 접속 포트
       description:
-        zh: 宿主机访问端口；容器内端口固定为 1933。
-        en: Host port; the container listens on 1933.
+        zh: 服务访问端口，默认 1933。
+        en: Service access port, 1933 by default.
       rule: paramPort
     - default: ''
       edit: false
@@ -31,10 +31,8 @@ additionalProperties:
         ja: システム管理 API キー（Root）
         ko: 시스템 관리 API 키 (Root)
       description:
-        zh: 自备至少 32 字符的强随机管理 Key；不是用户访问 Key，也不是外部模型 Key。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf 中修改。
-        en: Provide a strong private random management key of at least 32 characters; this is neither a user access key nor
-          a model service key. Used only to create ov.conf once; install parameters never overwrite an existing file. Edit
-          Studio or the actual ov.conf afterwards.
+        zh: 用于管理 OpenViking，填写至少 32 字符的随机密钥。
+        en: Enter a random key of at least 32 characters to manage OpenViking.
     - default: ''
       edit: false
       envKey: EMBEDDING_PROVIDER
@@ -49,11 +47,8 @@ additionalProperties:
         ja: Embedding プロバイダー
         ko: Embedding 제공자
       description:
-        zh: 整组留空可稍后配置；填写任一项则需接口类型、地址、模型名、实际维度。省略会使用上游 local/512 默认，完整启动未验证。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实
-          ov.conf 中修改。
-        en: Leave the entire group empty to omit it (upstream local/512 default; full startup unverified). Otherwise provider,
-          base, model and actual dimension are required. Used only to create ov.conf once; install parameters never overwrite
-          an existing file. Edit Studio or the actual ov.conf afterwards.
+        zh: 选择向量模型的接口类型；暂不配置请整组留空。
+        en: Select the embedding API type, or leave the whole group empty for later.
       values:
         - label: 未配置 / Configure later
           value: ''
@@ -77,11 +72,8 @@ additionalProperties:
         ja: Embedding API ベース URL
         ko: Embedding API 기본 URL
       description:
-        zh: 仅此组使用，不从 VLM 继承。按接口文档填完整 base；Ollama Embedding 使用 /v1，方舟通常为 /api/v3。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio
-          或真实 ov.conf 中修改。
-        en: 'Only this group uses this base; no inheritance from VLM. Follow the adapter docs: Ollama embeddings use /v1;
-          Ark typically uses /api/v3. Used only to create ov.conf once; install parameters never overwrite an existing file.
-          Edit Studio or the actual ov.conf afterwards.'
+        zh: 填写向量模型服务的 API 地址。
+        en: Enter the embedding service API base URL.
     - default: ''
       edit: false
       envKey: EMBEDDING_API_KEY
@@ -96,11 +88,8 @@ additionalProperties:
         ja: Embedding サービス API キー
         ko: Embedding 서비스 API 키
       description:
-        zh: 仅此模型服务的 Key，不从 VLM 继承。方舟必填；无需鉴权的 OpenAI 兼容服务或 Ollama 可空，适配器使用占位值。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio
-          或真实 ov.conf 中修改。
-        en: Key for this model service only; no VLM inheritance. Required for Ark; may be empty for unauthenticated OpenAI-compatible
-          services or Ollama (adapter placeholder). Used only to create ov.conf once; install parameters never overwrite an
-          existing file. Edit Studio or the actual ov.conf afterwards.
+        zh: 填写向量模型服务的 API Key；无需鉴权时可留空。
+        en: Enter the embedding service API key, or leave blank if authentication is not required.
     - default: ''
       edit: false
       envKey: EMBEDDING_MODEL
@@ -115,9 +104,8 @@ additionalProperties:
         ja: Embedding モデル名
         ko: Embedding 모델명
       description:
-        zh: 填该服务的实际模型名或 endpoint ID，不预设任何模型。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf 中修改。
-        en: Actual model name or endpoint ID for this service; no model is assumed. Used only to create ov.conf once; install
-          parameters never overwrite an existing file. Edit Studio or the actual ov.conf afterwards.
+        zh: 填写服务提供的向量模型名称。
+        en: Enter the embedding model name provided by the service.
     - default: ''
       edit: false
       envKey: EMBEDDING_DIMENSION
@@ -132,11 +120,8 @@ additionalProperties:
         ja: Embedding 出力次元数
         ko: Embedding 출력 차원
       description:
-        zh: 启用此组时必填真实整数，包校验范围 1..65536；查模型输出，不套用其他模型维度。更换模型需核对旧集合，不自动迁移。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf
-          中修改。
-        en: 'Required for this group: actual integer output dimension, package range 1..65536. Verify the model output and
-          existing collection; no automatic migration. Used only to create ov.conf once; install parameters never overwrite
-          an existing file. Edit Studio or the actual ov.conf afterwards.'
+        zh: 填写模型文档标明的向量维度。
+        en: Enter the vector dimension specified in the model documentation.
     - default: ''
       edit: false
       envKey: EMBEDDING_INPUT
@@ -151,11 +136,8 @@ additionalProperties:
         ja: Embedding 入力タイプ
         ko: Embedding 입력 유형
       description:
-        zh: 组启用后留空按 text。multimodal 仅 OpenAI 兼容/方舟适配器允许，实际模型也须支持；Ollama 仅 text。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio
-          或真实 ov.conf 中修改。
-        en: Empty means text when the group is configured. Multimodal requires both a capable model and the OpenAI-compatible/Ark
-          adapter; Ollama is text only. Used only to create ov.conf once; install parameters never overwrite an existing file.
-          Edit Studio or the actual ov.conf afterwards.
+        zh: 默认文本；多模态模型可选 multimodal。
+        en: Text by default, or multimodal for a multimodal model.
       values:
         - label: 未设置（组启用后 text） / Unset (text when configured)
           value: ''
@@ -177,11 +159,8 @@ additionalProperties:
         ja: VLM プロバイダー（要約/会話/視覚）
         ko: VLM 제공자 (요약/대화/시각)
       description:
-        zh: 整组留空可稍后配置；启用需接口类型、地址、模型名。与 Embedding 独立；Ollama 使用 OpenAI 兼容选项及 /v1，不走原生路由。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在
-          Studio 或真实 ov.conf 中修改。
-        en: Leave the whole group empty to omit it. Otherwise provider, base and model are required, independently of Embedding.
-          For Ollama choose OpenAI-compatible with /v1, not a native route. Used only to create ov.conf once; install parameters
-          never overwrite an existing file. Edit Studio or the actual ov.conf afterwards.
+        zh: 选择摘要、对话或视觉模型的接口类型。
+        en: Select the API type for the summary, chat or vision model.
       values:
         - label: 未配置 / Configure later
           value: ''
@@ -203,11 +182,8 @@ additionalProperties:
         ja: VLM API ベース URL
         ko: VLM API 기본 URL
       description:
-        zh: 只供摘要/对话/视觉模型使用，不从 Embedding 继承。不统一追加 /v1；按所选协议和服务文档填写。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf
-          中修改。
-        en: Base for summary/chat/vision only, never inherited from Embedding. Follow this service and adapter protocol; /v1
-          is not appended automatically. Used only to create ov.conf once; install parameters never overwrite an existing
-          file. Edit Studio or the actual ov.conf afterwards.
+        zh: 填写此模型服务的 API 地址。
+        en: Enter this model service's API base URL.
     - default: ''
       edit: false
       envKey: VLM_API_KEY
@@ -222,11 +198,8 @@ additionalProperties:
         ja: VLM サービス API キー
         ko: VLM 서비스 API 키
       description:
-        zh: 与 Embedding 独立。方舟必填；无鉴权 OpenAI 兼容服务可空，脚本仅为适配器填 no-key 占位，不是真实凭据。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实
-          ov.conf 中修改。
-        en: Independent of Embedding. Required for Ark; may be empty for an unauthenticated compatible service. The script
-          supplies only the adapter placeholder no-key, not a real credential. Used only to create ov.conf once; install parameters
-          never overwrite an existing file. Edit Studio or the actual ov.conf afterwards.
+        zh: 填写此模型服务的 API Key；无需鉴权时可留空。
+        en: Enter this model service's API key, or leave blank if authentication is not required.
     - default: ''
       edit: false
       envKey: VLM_MODEL
@@ -241,8 +214,5 @@ additionalProperties:
         ja: VLM モデル名（要約/会話/視覚）
         ko: VLM 모델명 (요약/대화/시각)
       description:
-        zh: 填实际模型名或 endpoint ID。纯文本摘要不强制视觉；视觉/工具调用能力按任务确认，接口类型不能保证模型能力。 仅首次生成 ov.conf 使用；已有文件时修改安装参数不会覆盖它，请在 Studio 或真实 ov.conf
-          中修改。
-        en: Actual model name or endpoint ID. Text summaries do not require vision; verify vision or tool-call support for
-          the intended task. Used only to create ov.conf once; install parameters never overwrite an existing file. Edit Studio
-          or the actual ov.conf afterwards.
+        zh: 填写服务提供的摘要、对话或视觉模型名称。
+        en: Enter the summary, chat or vision model name provided by the service.
