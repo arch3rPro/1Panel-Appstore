@@ -80,6 +80,30 @@ Studio 的连接测试检查当次草稿的单次请求；保存执行配置校�
 
 没有 `ov.conf` 时，官方入口的等待服务对所有路径返回 pending `503`，不是 Studio。当前脚本会生成基础文件或在参数错误时退出，不应把这两种状态混为“界面已启动”。
 
+## 启用 VikingBot
+
+Bot 已包含在官方镜像中，本包默认关闭。以下适用于已在 API Key 模式下正常运行的服务：
+
+1. 在 Studio 使用 Root 管理身份创建账号和用户，保存该用户的 User/Admin API Key。Bot 访问资料需要这个用户 Key，不能只填 Root。
+2. 备份实际挂载的 `./data/ov.conf`，将下列字段合并进去：在现有 `server` 内增加 `with_bot`，在 `bot.ov_server` 内填写用户凭据。保留原有 host、port、Root Key、模型、存储及其他配置，**不要用此片段替换整个文件**。
+
+   ```json
+   {
+     "server": {"with_bot": true},
+     "bot": {
+       "ov_server": {
+         "api_key_type": "user",
+         "api_key": "<User/Admin 用户访问 Key>"
+       }
+     }
+   }
+   ```
+
+3. Bot 默认继承根 `vlm`，确认该对话模型支持任务所需的工具调用即可，无需另配第三套模型。显式配置 `bot.agents.model` 或 `bot.agents.credentials` 时才使用独立 Bot 模型。
+4. 保存后在 1Panel 重启应用，再以用户身份进入 Studio 的 VikingBot 页面测试对话。启动日志中可查看 `Vikingbot gateway started`，并以页面实际回复核验。
+
+开关统一用 `server.with_bot`；compose 的 `OPENVIKING_WITH_BOT` 保持 `0`，无需同时修改，也无需额外映射 Bot 端口，服务会通过现有 HTTP 端口代理。停用时将 `server.with_bot` 改为 `false` 并重启。启用失败可恢复备份，保留启动日志按实际异常排查，不清工作区。
+
 ## 已有安装、模型更换与排障
 
 已有 `ov.conf` 始终优先，包括旧版生成的文件。旧的 `MODEL_PRESET`、`MODEL_API_BASE`、`MODEL_API_KEY` 不再生成配置：compose 仅保留它们的可空映射用于识别迁移。若文件缺失且只有旧变量，脚本报迁移错误；请恢复备份的配置，或在部署环境中补齐新独立组。提供新组时忽略旧共享变量，不把旧地址或 Key 注入任一新组。旧变量里与新组同名的模型名/维度仍须配合对应 provider 等字段，不会自动猜测。
@@ -88,7 +112,9 @@ Studio 的连接测试检查当次草稿的单次请求；保存执行配置校�
 
 遇到保存后重启回滚，收集失败时间窗的 stdout/stderr、保存前后脱敏配置差异、实际运行镜像与启动/挂载信息，以及集合 `collection_meta.json` 的向量维度和 embedding 元数据。`replay complete (0 records)` 仅表示此次增量重放计数，不等于集合或工作区没有数据。本次包修改不代表已定位或修复任何用户实例的回滚故障。
 
-公网使用可通过 1Panel 反向代理配置 HTTPS，并按需设置 `server.public_base_url` 和限制 `server.cors_origins`。VikingBot 需要在真实配置中设置 `bot.ov_server.api_key`，再将 compose 的 `OPENVIKING_WITH_BOT` 改成 `1`；不要填 Root。
+公网使用可通过 1Panel 反向代理配置 HTTPS，并按需设置 `server.public_base_url` 和限制 `server.cors_origins`。
+
+如需上游终端向导，可先备份配置，再手动运行 `docker exec -it <容器名> openviking-server init`；它需要交互，不接入自动启动脚本。
 
 ## 数据与升级
 

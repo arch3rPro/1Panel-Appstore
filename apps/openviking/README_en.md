@@ -80,6 +80,30 @@ Studio connection testing checks one request against the current draft. Saving p
 
 Without `ov.conf`, upstream's pending configuration server returns `503` on every route; it is not Studio. This package's script creates a basic file or exits on invalid parameters. Do not confuse either condition with an already running UI.
 
+## Enable VikingBot
+
+Bot is included in the official image and disabled by default in this package. Start with a service already running normally in API-key mode:
+
+1. In Studio, use the Root management identity to create an account and user, then save the user's User/Admin API key. Bot needs that user key to access data; Root alone cannot provide this access.
+2. Back up the mounted `./data/ov.conf` and merge the following fields into it: add `with_bot` to the existing `server` object and user credentials to `bot.ov_server`. Keep the existing host, port, Root key, models, storage and other settings. **Do not replace the whole file with this fragment.**
+
+   ```json
+   {
+     "server": {"with_bot": true},
+     "bot": {
+       "ov_server": {
+         "api_key_type": "user",
+         "api_key": "<User/Admin access key>"
+       }
+     }
+   }
+   ```
+
+3. Bot inherits the root `vlm` by default; ensure that model supports the tool calls needed by your tasks. No third model service is required. Explicit `bot.agents.model` or `bot.agents.credentials` selects a separate Bot model.
+4. Save, restart the app in 1Panel and open Studio's VikingBot page using the user identity to test a conversation. Look for `Vikingbot gateway started` in startup logs and verify an actual reply in the page.
+
+Use `server.with_bot` as the switch. Keep compose's `OPENVIKING_WITH_BOT` at `0`; no second switch or additional Bot port mapping is needed, as the service proxies through its existing HTTP port. To disable Bot, set `server.with_bot` to `false` and restart. If enabling fails, restore the backup and diagnose the actual startup errors without clearing the workspace.
+
 ## Existing installations, model changes and troubleshooting
 
 Existing `ov.conf` files always take priority, including files created by older packages. `MODEL_PRESET`, `MODEL_API_BASE` and `MODEL_API_KEY` no longer generate configuration. Compose retains optional mappings solely for migration detection. A missing file with legacy-only variables produces a migration error: restore the backed-up configuration or populate the new independent groups in the deployment environment. When new groups are supplied, old shared values are ignored and never injected into either group. Old model/dimension variables whose names overlap with new fields still require their matching provider and other group fields; the script does not guess them.
@@ -88,7 +112,9 @@ Before changing models, back up the entire data directory, compare redacted conf
 
 For a restart rollback, collect stdout/stderr over the failing interval, the redacted before/after configuration diff, actual running image and command/mount information, plus vector dimensions and embedding metadata from `collection_meta.json`. `replay complete (0 records)` counts that incremental replay, not total collection or workspace data. This package change does not claim to diagnose or fix a user's restart rollback incident.
 
-For public access, configure HTTPS through a 1Panel reverse proxy and set `server.public_base_url` and appropriate `server.cors_origins`. To enable VikingBot, configure `bot.ov_server.api_key` in the actual file and set compose's `OPENVIKING_WITH_BOT` to `1`. Do not use Root as the Bot's data key.
+For public access, configure HTTPS through a 1Panel reverse proxy and set `server.public_base_url` and appropriate `server.cors_origins`.
+
+For the upstream terminal wizard, back up the configuration and manually run `docker exec -it <container-name> openviking-server init`. It is interactive and is not part of the automatic startup script.
 
 ## Data and upgrades
 
